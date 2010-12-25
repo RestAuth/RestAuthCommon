@@ -68,6 +68,15 @@ def get_version():
 		version = '0.0-' + line.split( ': ' )[1].strip()
 	return version
 
+class version( Command ):
+	description = "Print version and exit."
+	user_options = []
+
+	def initialize_options( self ): pass
+	def finalize_options( self ): pass
+	def run( self ):
+		print( get_version() )
+
 class clean( _clean ):
 	def run( self ):
 		for directory in [ 'doc', 'build' ]:
@@ -86,5 +95,5 @@ setup(
 	url = url,
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean }
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version }
 )
