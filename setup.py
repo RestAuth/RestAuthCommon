@@ -46,9 +46,9 @@ class build_doc( Command ):
 
 class clean( _clean ):
 	def run( self ):
-		doc_dest = 'doc'
-		if os.path.exists( doc_dest ):
-			shutil.rmtree( doc_dest )
+		for directory in [ 'doc', 'build' ]:
+			if os.path.exists( directory ):
+				shutil.rmtree( directory )
 			
 		_clean.run( self )
 

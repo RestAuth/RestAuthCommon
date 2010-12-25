@@ -12,13 +12,38 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Collection of handlers for various MIME types.
+"""
 
-class MarshalError( Exception ): pass
-class UnmarshalError( Exception ): pass
+class MarshalError( Exception ):
+	"""Thrown if data can't be marshalled."""
+	pass
+class UnmarshalError( Exception ): 
+	"""Thrown if data can't be unmarshalled."""
+	pass
 
 class content_handler( object ):
-
+	"""
+	This class is a common base class for all content handlers. If you
+	want to implement your own content handler, you must subclass this
+	class and implement all marshal_* and unmarshal_* methods.
+	"""
+	
 	def marshal( self, obj ):
+		"""
+		Shortcut for marshalling just any object. 
+		
+		B{Note:} If you know the type of I{obj} in advance, you should
+		use the marshal_* methods directly for improved speed.
+
+		@param obj: The object to marshall.
+		
+		@return: The marshalled representation of the object.
+		@rtype: str
+
+		@raise MarshalError: If marshalling goes wrong in any way.
+		"""
 		func_name = 'marshal_%s'%(obj.__class__.__name__)
 		try:
 			func = getattr( self, func_name )
@@ -28,10 +53,26 @@ class content_handler( object ):
 		except Exception as e:
 			raise MarshalError( e )
 
-	def unmarshal( self, data, typ ):
+	def unmarshal( self, raw_data, typ ):
+		"""
+		Shortcut for unmarshalling a string to an object of type I{typ}.
+		
+		B{Note:} You may want to use the unmarshal_* methods directly
+		for improved speed.
+
+		@param raw_data: The string to unmarshall.
+		@type  raw_data: str
+		@param typ: The typ of the unmarshalled object.
+		@type  typ: type
+
+		@return: The unmarshalled object.
+		@rtype: typ
+		
+		@raise UnmarshalError: If unmarshalling goes wrong in any way.
+		"""
 		try:
 			func = getattr( self, 'unmarshal_%s'%(typ.__name__) )
-			val = func( data )
+			val = func( raw_data )
 		except UnmarshalError as e:
 			raise e
 		except Exception as e:
