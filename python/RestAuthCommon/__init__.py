@@ -16,7 +16,12 @@
 This module provides easy marshalling and unmarshalling of objects, used by the
 RestAuth reference client and server implementations.
 """
-import handlers
+try:
+	from RestAuthCommon import handlers
+except ImportError:
+	# python2.5 and earlier
+	import handlers
+
 CONTENT_HANDLERS = { 'application/json': handlers.json, 
 	'application/xml': handlers.xml,
 	'application/x-www-form-urlencoded': handlers.form }
