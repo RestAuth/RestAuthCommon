@@ -13,16 +13,53 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
+name = 'RestAuthCommon'
 
-from distutils.core import setup
+import os, shutil
+from distutils.core import setup, Command
+from subprocess import Popen, PIPE
+from distutils.command.clean import clean as _clean
+
+class build_doc( Command ):
+	description = "Build epydoc documentation."
+	user_options = [('dest=', None, 'Output directory of documentation' )]
+
+	def initialize_options( self ):
+		self.dest = 'doc'
+
+	def finalize_options( self ):
+		command = self.get_command_name()
+		options = self.distribution.command_options[ command ]
+
+		if 'dest' in options:
+			self.dest = options['dest'][1]
+
+	def run( self ):
+		html_dest = self.dest + '/html'
+		if not os.path.exists( html_dest ):
+			os.makedirs( html_dest )
+			
+		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
+			html_dest, '--no-private', 'python/RestAuthCommon' ]
+		p = Popen( cmd )
+		p.communicate()
+
+class clean( _clean ):
+	def run( self ):
+		doc_dest = 'doc'
+		if os.path.exists( doc_dest ):
+			shutil.rmtree( doc_dest )
+			
+		_clean.run( self )
 
 setup(
-	name='restauth-common',
+	name=name,
 	version='1.0',
 	description='RestAuth shared library',
 	author='Mathias Ertl',
 	author_email='mati@fsinf.at',
 	url='http://fs.fsinf.at/wiki/RestAuth',
 	package_dir = {'': 'python'},
-	packages=['RestAuthCommon']
+	packages = ['RestAuthCommon'],
+	cmdclass = { 'build_doc': build_doc, 'clean': clean }
 )
