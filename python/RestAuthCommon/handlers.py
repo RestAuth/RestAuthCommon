@@ -16,6 +16,8 @@
 Collection of handlers for various MIME types.
 """
 
+import sys
+
 class MarshalError( Exception ):
 	"""Thrown if data can't be marshalled."""
 	pass
@@ -103,7 +105,24 @@ class json( content_handler ):
 	mime = 'application/json'
 
 	def __init__( self ):
-		import json
+		"""
+		The constructor tries to import the json module and, if not
+		found, the simplejson module instead.
+
+		@raise RuntimeError: If no json library could be found. This
+			should only occur when you have python < 2.6 and
+			simplejson is not installed.
+		"""
+		try:
+			import json
+			self.json = json
+		except ImportError:
+			try:
+				import simplejson as json
+			except ImportError as e:
+				raise RuntimeError( "" )
+				
+		
 		self.json = json
 
 	def unmarshal_str( self, body ):
