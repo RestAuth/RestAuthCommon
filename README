@@ -16,3 +16,7 @@ reference server implementation will only use it when receiving data encoded in
 JSON, the reference client library provides an option to use a different format
 or your own implementation of a JSON marshaller/unmarshaller - see the
 respective documentation for details.
+
+=== Documentation ===
+To build the library documentation, execute python setup.py build_doc. This
+command requires epydoc to be installed.

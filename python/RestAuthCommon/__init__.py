@@ -86,39 +86,3 @@ def unmarshal( content_type, raw_data, typ ):
 	"""
 	handler = CONTENT_HANDLERS[content_type]()
 	return handler.unmarshal( raw_data, typ )
-
-def unmarshal_dict( content_type, raw_data, keys ):
-	"""
-	Unmarshal the string I{raw_data} in the format I{content_type} into a 
-	dictionary and verify that this dictionary only contains the specified
-	I{keys}. If I{keys} only contains one element, this method returns just
-	the string, otherwise it returns the unmarshalled dictionary.
-
-	This method primarily exists as as a means to ensure standars compliance
-	of clients in the reference service implementation. Using this method,
-	the server will throw an error if the client sends any unknown keys.
-
-	@param content_type: The format that the object should be marshalled
-		into. This has to be one of the keys defined in
-		L{CONTENT_HANDLERS}.
-	@type  content_type: str
-	@param raw_data: The raw string that should be unmarshalled.
-	@type  raw_data: str
-	@param keys: The keys that the dictionary should contain.
-	@type  keys: list
-
-	@return: Either the unmarshalled dictionary or the value if I{keys}
-		contains just one value.
-	@rtype: dict/str
-
-	@raise handlers.UnmarshalError: When the handler was unable unmarshal
-		the object.
-	"""
-	data = unmarshal( content_type, raw_data, dict )
-	if sorted( keys ) != sorted( data.keys() ):
-		raise handlers.MarshalError( "Did not find expected keys in string" ) 
-	if len( keys ) == 1:
-		return data[keys[0]]
-	else:
-		return [ data[key] for key in keys ]
-
