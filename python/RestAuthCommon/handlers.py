@@ -29,6 +29,9 @@ class content_handler( object ):
 	want to implement your own content handler, you must subclass this
 	class and implement all marshal_* and unmarshal_* methods.
 	"""
+
+	mime = None
+	"""Override this with the MIME type handled by your handler."""
 	
 	def marshal( self, obj ):
 		"""
@@ -97,6 +100,8 @@ class content_handler( object ):
 		return self.marshal_str( str( obj ) )
 
 class json( content_handler ):
+	mime = 'application/json'
+
 	def __init__( self ):
 		import json
 		self.json = json
@@ -126,6 +131,8 @@ class json( content_handler ):
 		return self.json.dumps( obj )
 
 class form( content_handler ):
+	mime = 'application/x-www-form-urlencoded'
+
 	def unmarshal_dict( self, body ):
 		# TODO: this doesn't work, QueryDict is not defined
 		return QueryDict( body, encoding=request.encoding)
@@ -150,4 +157,4 @@ class form( content_handler ):
 		return self.marshal_dict( d )
 
 class xml( content_handler ):
-	pass
+	mime = 'application/xml'
