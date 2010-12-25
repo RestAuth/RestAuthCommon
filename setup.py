@@ -14,8 +14,10 @@
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
 name = 'RestAuthCommon'
+url = 'https://fs.fsinf.at/wiki/RestAuth/RestAuthCommon'
 
 import os, sys, shutil
+from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
@@ -47,9 +49,24 @@ class build_doc( Command ):
 			os.makedirs( html_dest )
 			
 		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
-			html_dest, '--no-private', 'python/RestAuthCommon' ]
+			html_dest, '--no-private', '-u', url, 
+			'python/RestAuthCommon' ]
 		p = Popen( cmd )
 		p.communicate()
+
+def get_version():
+	version = '0.1'
+	if exists( '.version' ):
+		print( 'get version from file...' )
+		version = open( '.version' ).readlines()[0]
+	elif exists( '.svn' ):
+		cmd = [ 'svn', 'info' ]
+		p = Popen( cmd, stdout=PIPE )
+		stdin, stderr = p.communicate()
+		lines = stdin.split( "\n" )
+		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
+		version = '0.0-' + line.split( ': ' )[1].strip()
+	return version
 
 class clean( _clean ):
 	def run( self ):
@@ -59,15 +76,15 @@ class clean( _clean ):
 			
 		_clean.run( self )
 
+
 setup(
-	name=name,
-	version='1.0',
-	description='RestAuth shared library',
-	author='Mathias Ertl',
+	name = name,
+	version = get_version(),
+	description = 'RestAuth shared library',
+	author = 'Mathias Ertl',
 	author_email='mati@fsinf.at',
-	url='http://fs.fsinf.at/wiki/RestAuth',
+	url = url
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean }
 )
-	@rtype: str or list
