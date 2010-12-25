@@ -83,7 +83,7 @@ setup(
 	description = 'RestAuth shared library',
 	author = 'Mathias Ertl',
 	author_email='mati@fsinf.at',
-	url = url
+	url = url,
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean }
