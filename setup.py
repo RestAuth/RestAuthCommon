@@ -15,7 +15,7 @@
 
 name = 'RestAuthCommon'
 
-import os, shutil
+import os, sys, shutil
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
@@ -35,6 +35,13 @@ class build_doc( Command ):
 			self.dest = options['dest'][1]
 
 	def run( self ):
+		try: 
+			# check for epydoc
+			import epydoc
+		except ImportError:
+			print( "Error: epydoc is not installed." )
+			sys.exit(1)
+
 		html_dest = self.dest + '/html'
 		if not os.path.exists( html_dest ):
 			os.makedirs( html_dest )
@@ -63,3 +70,4 @@ setup(
 	packages = ['RestAuthCommon'],
 	cmdclass = { 'build_doc': build_doc, 'clean': clean }
 )
+	@rtype: str or list
