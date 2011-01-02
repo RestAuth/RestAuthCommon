@@ -152,9 +152,20 @@ class json( content_handler ):
 class form( content_handler ):
 	mime = 'application/x-www-form-urlencoded'
 
+	def __init__( self ):
+		try:
+			from urllib.parse import parse_qs, urlencode
+		except ImportError:
+			from urlparse import parse_qs
+			from urllib import urlencode
+		self.parse_qs = parse_qs
+		self.urlencode = urlencode
+
 	def unmarshal_dict( self, body ):
-		# TODO: this doesn't work, QueryDict is not defined
-		return QueryDict( body, encoding=request.encoding)
+		return_dict = {}
+		for key, value in self.parse_qs( body, True ).iteritems():
+			return_dict[key] = value[0]
+		return return_dict
 
 	def marshal_str( self, obj ):
 		return obj
@@ -166,10 +177,7 @@ class form( content_handler ):
 			return "0"
 
 	def marshal_dict( self, obj ):
-		# TODO: this doesn't work, QueryDict is not defined
-		d = QueryDict('', True )
-		d.update( obj )
-		return d.urlencode()
+		return self.urlencode( obj )
 
 	def marshal_list( self, obj ):
 		d = dict( [ ('key%s'%i, obj[i]) for i in range(0,len(obj)) ] )
