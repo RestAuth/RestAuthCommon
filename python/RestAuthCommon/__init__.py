@@ -86,3 +86,40 @@ def unmarshal( content_type, raw_data, typ ):
 	"""
 	handler = CONTENT_HANDLERS[content_type]()
 	return handler.unmarshal( raw_data, typ )
+
+def resource_validator( name ):
+	"""
+	General check that removes some really bad namesa. 
+
+	This filters names containing a slash ("/") or colon (":") and those
+	starting or ending with '.'. It also filters control characters etc.,
+	including those from unicode.
+	"""
+	if '/' in name or ':' in name or '\\' in name:
+		return False
+
+	if name.startswith( '.' ) or name.endswith( '.' ):
+		return False
+
+	# filter various dangerous characters
+	for enc_char in name:
+#		enc_char = enc_char.decode( 'utf-8' )
+		if stringprep.in_table_c21_c22( enc_char ):
+			# control characters
+			return False
+		if stringprep.in_table_c3( enc_char ):
+			return False
+		if stringprep.in_table_c4( enc_char ):
+			return False
+		if stringprep.in_table_c5( enc_char ):
+			return False
+		if stringprep.in_table_c6( enc_char ):
+			return False
+		if stringprep.in_table_c7( enc_char ):
+			return False
+		if stringprep.in_table_c8( enc_char ):
+			return False
+		if stringprep.in_table_c9( enc_char ):
+			return False
+
+	return True
