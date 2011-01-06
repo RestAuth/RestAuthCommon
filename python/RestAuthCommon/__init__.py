@@ -95,6 +95,8 @@ def resource_validator( name ):
 	starting or ending with '.'. It also filters control characters etc.,
 	including those from unicode.
 	"""
+	import stringprep
+
 	if '/' in name or ':' in name or '\\' in name:
 		return False
 
