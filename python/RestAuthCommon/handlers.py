@@ -99,7 +99,7 @@ class content_handler( object ):
 	def marshal_dict( self, obj ): pass
 	
 	def marshal_unicode( self, obj ):
-		return self.marshal_str( str( obj ) )
+		return self.marshal_str( obj.encode( 'utf-8' ) )
 
 class json( content_handler ):
 	mime = 'application/json'
@@ -147,6 +147,9 @@ class json( content_handler ):
 		return self.json.dumps( obj )
 
 	def marshal_dict( self, obj ):
+		return self.json.dumps( obj )
+	
+	def marshal_unicode( self, obj ):
 		return self.json.dumps( obj )
 
 class form( content_handler ):
