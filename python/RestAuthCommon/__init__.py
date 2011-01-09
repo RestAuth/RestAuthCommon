@@ -105,7 +105,9 @@ def resource_validator( name ):
 
 	# filter various dangerous characters
 	for enc_char in name:
-#		enc_char = enc_char.decode( 'utf-8' )
+		if enc_char.__class__ == str:
+			enc_char = enc_char.decode( 'utf-8' )
+
 		if stringprep.in_table_c21_c22( enc_char ):
 			# control characters
 			return False
