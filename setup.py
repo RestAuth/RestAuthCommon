@@ -55,7 +55,7 @@ class build_doc( Command ):
 		p.communicate()
 
 def get_version():
-	version = '0.1'
+	version = '0.0'
 	if exists( '.version' ):
 		print( 'get version from file...' )
 		version = open( '.version' ).readlines()[0]
@@ -66,7 +66,13 @@ def get_version():
 		lines = stdin.split( "\n" )
 		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
 		version = '0.0-' + line.split( ': ' )[1].strip()
-	return version
+	elif os.path.exists( '.git' ): # get from git
+		date = time.strftime( '%Y.%m.%d' )
+		cmd = [ 'git', 'rev-parse', '--short', 'HEAD' ]
+		p = Popen( cmd, stdout=PIPE )
+		stdin, stderr = p.communicate()
+		version = '%s-%s-%s'%(version, date, stdin.strip() )
+	return version.strip()
 
 class version( Command ):
 	description = "Print version and exit."
