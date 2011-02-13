@@ -16,7 +16,7 @@
 name = 'RestAuthCommon'
 url = 'https://fs.fsinf.at/wiki/RestAuth/RestAuthCommon'
 
-import os, sys, shutil
+import os, sys, shutil, time
 from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
