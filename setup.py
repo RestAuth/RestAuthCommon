@@ -59,19 +59,12 @@ def get_version():
 	if exists( '.version' ):
 		print( 'get version from file...' )
 		version = open( '.version' ).readlines()[0]
-	elif exists( '.svn' ):
-		cmd = [ 'svn', 'info' ]
-		p = Popen( cmd, stdout=PIPE )
-		stdin, stderr = p.communicate()
-		lines = stdin.split( "\n" )
-		line = [ line for line in lines if line.startswith( 'Revision' ) ][0]
-		version = '0.0-' + line.split( ': ' )[1].strip()
 	elif os.path.exists( '.git' ): # get from git
 		date = time.strftime( '%Y.%m.%d' )
 		cmd = [ 'git', 'rev-parse', '--short', 'HEAD' ]
 		p = Popen( cmd, stdout=PIPE )
 		stdin, stderr = p.communicate()
-		version = '%s-%s-%s'%(version, date, stdin.strip() )
+		version = '%s-%s-%s'%(version, date, stdin.decode('utf-8').strip() )
 	return version.strip()
 
 class version( Command ):
@@ -91,7 +84,6 @@ class clean( _clean ):
 			
 		_clean.run( self )
 
-
 setup(
 	name = name,
 	version = get_version(),
@@ -101,5 +93,6 @@ setup(
 	url = url,
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean, 'version': version }
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 
+		'version': version }
 )
