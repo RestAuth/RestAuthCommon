@@ -30,6 +30,8 @@ class content_handler( object ):
 	This class is a common base class for all content handlers. If you
 	want to implement your own content handler, you must subclass this
 	class and implement all marshal_* and unmarshal_* methods.
+	
+	**Never use this class directly.** It does not marshal or unmarshal any content itself.
 	"""
 
 	mime = None
@@ -39,15 +41,13 @@ class content_handler( object ):
 		"""
 		Shortcut for marshalling just any object. 
 		
-		B{Note:} If you know the type of I{obj} in advance, you should
+		**Note:** If you know the type of **obj** in advance, you should
 		use the marshal_* methods directly for improved speed.
 
-		@param obj: The object to marshall.
-		
-		@return: The marshalled representation of the object.
-		@rtype: str
-
-		@raise MarshalError: If marshalling goes wrong in any way.
+		:param obj: The object to marshall.
+		:return: The marshalled representation of the object.
+		:rtype: str
+		:raise MarshalError: If marshalling goes wrong in any way.
 		"""
 		func_name = 'marshal_%s'%(obj.__class__.__name__)
 		try:
@@ -60,20 +60,18 @@ class content_handler( object ):
 
 	def unmarshal( self, raw_data, typ ):
 		"""
-		Shortcut for unmarshalling a string to an object of type I{typ}.
+		Shortcut for unmarshalling a string to an object of type *typ*.
 		
-		B{Note:} You may want to use the unmarshal_* methods directly
+		**Note:** You may want to use the unmarshal_* methods directly
 		for improved speed.
 
-		@param raw_data: The string to unmarshall.
-		@type  raw_data: str
-		@param typ: The typ of the unmarshalled object.
-		@type  typ: type
-
-		@return: The unmarshalled object.
-		@rtype: typ
-		
-		@raise UnmarshalError: If unmarshalling goes wrong in any way.
+		:param raw_data: The string to unmarshall.
+		:type  raw_data: str
+		:param typ: The typ of the unmarshalled object.
+		:type  typ: type
+		:return: The unmarshalled object.
+		:rtype: typ
+		:raise UnmarshalError: If unmarshalling goes wrong in any way.
 		"""
 		try:
 			func = getattr( self, 'unmarshal_%s'%(typ.__name__) )
@@ -88,41 +86,66 @@ class content_handler( object ):
 			                        %(val.__class__, typ) )
 		return val
 
-	def unmarshal_str( self, data ): pass
-	def unmarshal_dict( self, body ): pass
-	def unmarshal_list( self, body ): pass
-	def unmarshal_bool( self, body ): pass
+	def unmarshal_str( self, data ):
+		"""
+		Unmarshal a string.
+		"""
+		pass
+	
+	def unmarshal_dict( self, body ):
+		"""
+		Unmarshal a dictionary.
+		"""
+		pass
+	def unmarshal_list( self, body ):
+		"""
+		Unmarshal a list.
+		"""
+		pass
+	
+	def unmarshal_bool( self, body ):
+		"""
+		Unmarshal a boolean.
+		"""
+		pass
 
-	def marshal_str( self, obj ): pass
-	def marshal_bool( self, obj ): pass
-	def marshal_list( self, obj ): pass
-	def marshal_dict( self, obj ): pass
+	def marshal_str( self, obj ):
+		"""
+		Marshal a string.
+		"""
+		pass
+	
+	def marshal_bool( self, obj ):
+		"""
+		Marshal a boolean.
+		"""
+		pass
+	
+	def marshal_list( self, obj ):
+		"""
+		Marshal a list.
+		"""
+		pass
+	def marshal_dict( self, obj ):
+		"""
+		Marshal a dictionary.
+		"""
+		pass
 	
 	def marshal_unicode( self, obj ):
 		return self.marshal_str( obj.encode( 'utf-8' ) )
 
 class json( content_handler ):
+	"""
+	Concrete implementation of a :py:class:`content_handler` that uses JSON. This is the default
+	content handler in both server and client library.
+	"""
+	
 	mime = 'application/json'
+	"""The mime-type used by this content handler is 'application/json'."""
 
 	def __init__( self ):
-		"""
-		The constructor tries to import the json module and, if not
-		found, the simplejson module instead.
-
-		@raise RuntimeError: If no json library could be found. This
-			should only occur when you have python < 2.6 and
-			simplejson is not installed.
-		"""
-		try:
-			import json
-			self.json = json
-		except ImportError:
-			try:
-				import simplejson as json
-			except ImportError as e:
-				raise RuntimeError( "" )
-				
-		
+		import json
 		self.json = json
 
 	def unmarshal_str( self, body ):
@@ -153,7 +176,13 @@ class json( content_handler ):
 		return self.json.dumps( obj )
 
 class form( content_handler ):
+	"""
+	Concrete implementation of a :py:class:`content_handler` that uses HTML forms. This content
+	handler should not be used in any real world scenario, as it has many problems with unicode.
+	"""
+	
 	mime = 'application/x-www-form-urlencoded'
+	"""The mime-type used by this content handler is 'application/x-www-form-urlencoded'."""
 
 	def __init__( self ):
 		try:
@@ -187,4 +216,7 @@ class form( content_handler ):
 		return self.marshal_dict( d )
 
 class xml( content_handler ):
+	"""
+	Future location of the XML content handler. This handler is not yet implemented!
+	"""
 	mime = 'application/xml'
