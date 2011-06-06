@@ -23,34 +23,18 @@ from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 
 class build_doc( Command ):
-	description = "Build epydoc documentation."
-	user_options = [('dest=', None, 'Output directory of documentation' )]
+	description = "Build API documentation."
+	user_options = []
 
 	def initialize_options( self ):
-		self.dest = 'doc'
+		pass
 
 	def finalize_options( self ):
 		command = self.get_command_name()
 		options = self.distribution.command_options[ command ]
 
-		if 'dest' in options:
-			self.dest = options['dest'][1]
-
 	def run( self ):
-		try: 
-			# check for epydoc
-			import epydoc
-		except ImportError:
-			print( "Error: epydoc is not installed." )
-			sys.exit(1)
-
-		html_dest = self.dest + '/html'
-		if not os.path.exists( html_dest ):
-			os.makedirs( html_dest )
-			
-		cmd = [ 'epydoc', '-v', '--html', '--name', name, '-o',
-			html_dest, '--no-private', '-u', url, 
-			'python/RestAuthCommon' ]
+		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
 
@@ -76,9 +60,9 @@ class version( Command ):
 
 class clean( _clean ):
 	def run( self ):
-		for directory in [ 'doc', 'build' ]:
-			if os.path.exists( directory ):
-				shutil.rmtree( directory )
+		cmd = [ 'make', '-C', 'doc', 'clean' ]
+		p = Popen( cmd, stdout=PIPE )
+		version = p.communicate()[0].decode( 'utf-8' )
 			
 		_clean.run( self )
 
