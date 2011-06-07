@@ -177,7 +177,7 @@ class json( content_handler ):
 		return self.json.dumps( obj )
 	
 	def marshal_unicode( self, obj ):
-		return self.json.dumps( obj )
+		return self.json.dumps( [obj] )
 
 class form( content_handler ):
 	"""
