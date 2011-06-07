@@ -149,7 +149,11 @@ class json( content_handler ):
 		self.json = json
 
 	def unmarshal_str( self, body ):
-		return self.json.loads( body )
+		pure = self.json.loads( body )
+		if pure.__class__ != list or len( pure ) != 1:
+			raise UnmarshalError( "Could not parse body as string" )
+		
+		return pure[0]
 
 	def unmarshal_dict( self, body ):
 		return self.json.loads( body )
@@ -161,7 +165,7 @@ class json( content_handler ):
 		return self.json.loads( body )
 	
 	def marshal_str( self, obj ):
-		return self.json.dumps( obj )
+		return self.json.dumps( [obj] )
 
 	def marshal_bool( self, obj ):
 		return self.json.dumps( obj )
