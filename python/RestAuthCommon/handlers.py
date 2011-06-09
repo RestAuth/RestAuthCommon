@@ -20,12 +20,11 @@ Collection of handlers for various MIME types.
 
 import sys
 
-class MarshalError( Exception ):
-	"""Thrown if data can't be marshalled."""
-	pass
-class UnmarshalError( Exception ): 
-	"""Thrown if data can't be unmarshalled."""
-	pass
+try:
+	from RestAuthCommon import error
+except ImportError:
+	# python2.5 and earlier
+	import error
 
 class content_handler( object ):
 	"""
