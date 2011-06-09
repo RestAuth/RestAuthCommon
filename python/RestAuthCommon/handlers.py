@@ -48,7 +48,7 @@ class content_handler( object ):
 		:param obj: The object to marshall.
 		:return: The marshalled representation of the object.
 		:rtype: str
-		:raise MarshalError: If marshalling goes wrong in any way.
+		:raise error.MarshalError: If marshalling goes wrong in any way.
 		"""
 		func_name = 'marshal_%s'%(obj.__class__.__name__)
 		try:
@@ -72,7 +72,7 @@ class content_handler( object ):
 		:type  typ: type
 		:return: The unmarshalled object.
 		:rtype: typ
-		:raise UnmarshalError: If unmarshalling goes wrong in any way.
+		:raise error.UnmarshalError: If unmarshalling goes wrong in any way.
 		"""
 		try:
 			func = getattr( self, 'unmarshal_%s'%(typ.__name__) )
@@ -80,7 +80,7 @@ class content_handler( object ):
 		except error.UnmarshalError as e:
 			raise e
 		except Exception as e:
-			raise UnmarshalError( e )
+			raise error.UnmarshalError( e )
 		
 		if val.__class__ != typ:
 			raise error.UnmarshalError( "Request body contained %s instead of %s"
@@ -152,7 +152,7 @@ class json( content_handler ):
 	def unmarshal_str( self, body ):
 		pure = self.json.loads( body )
 		if pure.__class__ != list or len( pure ) != 1:
-			raise UnmarshalError( "Could not parse body as string" )
+			raise error.UnmarshalError( "Could not parse body as string" )
 		
 		return pure[0]
 

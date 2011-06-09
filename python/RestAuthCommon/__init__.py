@@ -58,7 +58,7 @@ def marshal( content_type, obj ):
 	:return: The string representation of the object.
 	:rtype:  str
 
-	:raise handlers.MarshalError: When the handler could not marshal the object.
+	:raise error.MarshalError: When the handler could not marshal the object.
 	:see also: :py:meth:`.content_handler.marshal`
 	"""
 	handler = CONTENT_HANDLERS[content_type]()
@@ -83,7 +83,7 @@ def unmarshal( content_type, raw_data, typ ):
 	:rtype: typ
 	:return: The unmarshalled data. The object has the type specified by the I{typ} parameter.
 	
-	:raise handlers.UnmarshalError: When the handler was unable unmarshal the object.
+	:raise error.UnmarshalError: When the handler was unable unmarshal the object.
 
 	:see also: :py:meth:`.content_handler.unmarshal`
 	"""
