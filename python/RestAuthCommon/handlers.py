@@ -54,10 +54,10 @@ class content_handler( object ):
 		try:
 			func = getattr( self, func_name )
 			return func( obj )
-		except MarshalError as e:
+		except error.MarshalError as e:
 			raise e
 		except Exception as e:
-			raise MarshalError( e )
+			raise error.MarshalError( e )
 
 	def unmarshal( self, raw_data, typ ):
 		"""
@@ -77,13 +77,13 @@ class content_handler( object ):
 		try:
 			func = getattr( self, 'unmarshal_%s'%(typ.__name__) )
 			val = func( raw_data )
-		except UnmarshalError as e:
+		except error.UnmarshalError as e:
 			raise e
 		except Exception as e:
 			raise UnmarshalError( e )
 		
 		if val.__class__ != typ:
-			raise UnmarshalError( "Request body contained %s instead of %s"
+			raise error.UnmarshalError( "Request body contained %s instead of %s"
 			                        %(val.__class__, typ) )
 		return val
 
