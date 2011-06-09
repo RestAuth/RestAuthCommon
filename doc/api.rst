@@ -9,3 +9,9 @@ Content handlers
 
 .. automodule:: RestAuthCommon.handlers
    :members:
+
+Error handling
+==============
+
+.. automodule:: RestAuthCommon.error
+   :members:
