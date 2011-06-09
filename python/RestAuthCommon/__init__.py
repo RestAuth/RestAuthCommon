@@ -1,6 +1,6 @@
 # This file is part of RestAuthCommon.
 #
-#    RestAuthClient.py is free software: you can redistribute it and/or modify
+#    RestAuthCommon is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
@@ -11,9 +11,11 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
+#    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
 """
 A collection of functions used in both server and client reference implementations.
+
+.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
 """
 try:
 	from RestAuthCommon import handlers
