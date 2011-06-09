@@ -22,10 +22,12 @@ class RestAuthException( Exception ):
 	"""
 	Common base class for all RestAuth related exceptions.
 	"""
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
+#	def __init__(self, value):
+#		self.value = value
+#	def __str__(self):
+#		return repr(self.value)
+		
+	response_code=500
 		
 
 		
@@ -34,11 +36,11 @@ class RestAuthImplementationException( RestAuthException ):
 	Base class for errors that should not occur in a production environment. If you ever catch
 	such an exception, it is most likely due to a buggy client or server implementation.
 	"""
-	def __init__( self, response ):
-		self.response = response
-
-	def __str__( self ):
-		return repr( self.value )
+#	def __init__( self, value ):
+#		self.response = response
+#
+#	def __str__( self ):
+#		return repr( self.value )
 		
 class BadRequest( RestAuthImplementationException ):
 	"""
@@ -51,11 +53,11 @@ class BadRequest( RestAuthImplementationException ):
 
 class MarshalError( RestAuthImplementationException ):
 	"""Thrown if data can't be marshalled."""
-	pass
+	response_code=400
 
 class UnmarshalError( RestAuthImplementationException ): 
 	"""Thrown if data can't be unmarshalled."""
-	pass
+	response_code=400
 
 
 
