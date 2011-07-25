@@ -13,23 +13,19 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
 """
-A collection of protocol-related exceptions.
+Exceptions related to RestAuth communication.
 
 .. moduleauthor:: Mathias Ertl <mati@fsinf.at>
 """
 
+
 class RestAuthException( Exception ):
 	"""
-	Common base class for all RestAuth related exceptions.
+	Common base class for all RestAuth related exceptions. All exceptions in this module are a
+	subclass of this exception.
 	"""
-#	def __init__(self, value):
-#		self.value = value
-#	def __str__(self):
-#		return repr(self.value)
 		
 	response_code=500
-		
-
 		
 class RestAuthImplementationException( RestAuthException ):
 	"""
