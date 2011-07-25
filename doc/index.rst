@@ -6,27 +6,35 @@
 Welcome to RestAuthCommon's documentation!
 ==========================================
 
-RestAuthCommon is a small project that collects various code that is used in
-both `server <https://redmine.fsinf.at/projects/restauth-server>`_ and 
-`client <https://redmine.fsinf.at/projects/restauth-python>`_ reference
-implementations, which are both written in python.
-
-It contains very little code and is most likely not very useful outside the
-context of the two projects that depend on it. 
+RestAuthCommon is a small project that collects various code that is used in both `server
+<https://server.restauth.net>`_ and `client <https://python.restauth.net>`_ reference
+implementations of the `RestAuth protocol <https://restauth.net>`_, which are both written in
+python.
 
 
-Contents:
+Installation
+============
+.. toctree::
+   :maxdepth: 1
+   
+   install/from-source
+   install/debian-ubuntu
+   
+Documentation
+=============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   api
+   content_handlers
+   validation
+   error
 
 Further resources
 =================
-* `bugtracker, downloads, further documentation <https://redmine.fsinf.at/projects/restauthcommon>`_
+* `bugtracker <https://redmine.fsinf.at/projects/restauthcommon>`_
 * `git repository <http://git.fsinf.at/restauth/restauth-common>`_
-* Jabber/XMPP chat: `rest@conference.jabber.at`
+* Jabber/XMPP chat: ``rest@conference.jabber.at``
 
 Indices and tables
 ==================
