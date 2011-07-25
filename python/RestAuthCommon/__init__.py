@@ -95,8 +95,8 @@ def resource_validator( name ):
 	Check the *name* of a resource for some really bad characters that shouldn't be used
 	anywhere in RestAuth. 
 
-	This filters names containing a slash ("/") or colon (":") and those starting or ending with
-	'.'. It also filters control characters etc., including those from unicode.
+	This filters names containing a slash ("/") or colon (":") and those starting with '.'. It
+	also filters control characters etc., including those from unicode.
 	
 	:param str name: The name to validate
 	:returns: False if the name contains any invalid characters, True otherwise.
