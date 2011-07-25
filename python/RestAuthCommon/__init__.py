@@ -100,7 +100,7 @@ def resource_validator( name ):
 	
 	:param str name: The name to validate
 	:returns: False if the name contains any invalid characters, True otherwise.
-	:rtype: bool
+	:rtype: boolean
 	"""
 	if '/' in name or ':' in name or '\\' in name or name.startswith( '.' ):
 		return False
