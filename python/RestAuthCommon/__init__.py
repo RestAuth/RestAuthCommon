@@ -27,6 +27,8 @@ CONTENT_HANDLERS = { 'application/json': handlers.json,
 	'application/xml': handlers.xml,
 	'application/x-www-form-urlencoded': handlers.form }
 """
+.. WARNING:: This variable will be moved to :py:mod:`.RestAuthCommon.handlers` soon.
+
 Mapping of MIME types to their respective handler implemenation. You can use this dictionary to
 dynamically look up a content handler if you do not know the requested content type in advance.
 
@@ -49,6 +51,8 @@ def marshal( content_type, obj ):
 	This method is just intended as a shortcut for :py:meth:`.content_handler.unmarshal`. If you
 	intend to use a handler multiple times, it is better to instantiate a specific handler
 	directly to save dictionary lookups and object instantiations.
+	
+	.. WARNING:: This method will be deprecated soon.
 
 	:param content_type: The format that the object should be marshalled into. This has to be
 		one of the keys defined in :py:obj:`.CONTENT_HANDLERS`.
@@ -73,6 +77,8 @@ def unmarshal( content_type, raw_data, typ ):
 	intend to use a handler multiple times, it is better to instantiate a specific handler
 	directly to save dictionary lookups and object instantiations.
 	
+	.. WARNING:: This method will be deprecated soon.
+	
 	:param content_type: The format that the object should be marshalled into. This has to be
 		one of the keys defined in :py:obj:`.CONTENT_HANDLERS`.
 	:type  content_type: str
@@ -92,6 +98,8 @@ def unmarshal( content_type, raw_data, typ ):
 
 def resource_validator( name ):
 	"""
+	.. WARNING:: This code will be moved to its own submodule soon.
+	
 	Check the *name* of a resource for some really bad characters that shouldn't be used
 	anywhere in RestAuth. 
 
@@ -100,7 +108,7 @@ def resource_validator( name ):
 	
 	:param str name: The name to validate
 	:returns: False if the name contains any invalid characters, True otherwise.
-	:rtype: boolean
+	:rtype: bool
 	"""
 	if '/' in name or ':' in name or '\\' in name or name.startswith( '.' ):
 		return False

@@ -13,7 +13,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
 """
-Collection of handlers for various MIME types.
+Classes and methods related to content handling.
 
 .. moduleauthor:: Mathias Ertl <mati@fsinf.at>
 """
