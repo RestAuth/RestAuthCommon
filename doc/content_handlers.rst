@@ -33,8 +33,8 @@ handler:
 You can also use this feature to implement your own content handlers. This is useful if your setup
 includes software that encodes or decodes data in a way not understood by the other side of the
 communication. Please see the respective documentation of the `RestAuth server
-<https://server.restauth.net/config/content_handlers>`_ and for `RestAuthClient
-<https://python.restauth.net/guide/content_handlers>`_ for more information.
+<https://server.restauth.net/config/content_handlers>`__ and for `RestAuthClient
+<https://python.restauth.net/guide/content_handlers>`__ for more information.
 
 API documentation
 -----------------
