@@ -15,7 +15,7 @@
 """
 Exceptions related to RestAuth communication.
 
-.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
+.. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
 
@@ -133,7 +133,7 @@ class ResourceNotFound( RestAuthError ):
 		"""
 		Get the type of the queried resource that wasn't found.
 
-		See the `specification <https://fs.fsinf.at/wiki/RestAuth/Specification#Resource-Type_header>`_
+		See the `specification <https://restauth.net/wiki/Specification#Resource-Type_header>`_
 		for possible values.
 		
 		:return: The resource type that causes this exception.

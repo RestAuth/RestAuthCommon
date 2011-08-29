@@ -15,7 +15,7 @@
 """
 Classes and methods related to content handling.
 
-.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
+.. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
 import sys

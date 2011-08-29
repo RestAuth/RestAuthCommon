@@ -15,7 +15,7 @@
 """
 A collection of functions used in both server and client reference implementations.
 
-.. moduleauthor:: Mathias Ertl <mati@fsinf.at>
+.. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 try:
 	from RestAuthCommon import handlers

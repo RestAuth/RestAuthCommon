@@ -14,7 +14,7 @@
 #    along with RestAuthClient.py.  If not, see <http://www.gnu.org/licenses/>.
 
 name = 'RestAuthCommon'
-url = 'https://fs.fsinf.at/wiki/RestAuth/RestAuthCommon'
+url = 'https://common.restauth.net'
 
 import os, sys, shutil, time
 from os.path import exists
@@ -71,7 +71,7 @@ setup(
 	version = get_version(),
 	description = 'RestAuth shared library',
 	author = 'Mathias Ertl',
-	author_email='mati@fsinf.at',
+	author_email='mati@restauth.net',
 	url = url,
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
