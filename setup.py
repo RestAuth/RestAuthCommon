@@ -39,7 +39,7 @@ class build_doc( Command ):
 		p.communicate()
 
 def get_version():
-	version = '0.0'
+	version = '0.5.0'
 	if exists( '.version' ):
 		version = open( '.version' ).readlines()[0]
 	elif os.path.exists( '.git' ): # get from git
