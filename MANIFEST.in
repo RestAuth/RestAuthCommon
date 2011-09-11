@@ -1,0 +1,5 @@
+include COPYING
+include ChangeLog
+include AUTHORS
+include COPYRIGHT
+recursive-include doc/_build/html/ *.html *.css *.css *.inv *.txt

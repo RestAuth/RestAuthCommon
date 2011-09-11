@@ -21,6 +21,7 @@ from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
+from distutils.command.build import build as _build
 
 class build_doc( Command ):
 	description = "Build API documentation."
@@ -31,7 +32,6 @@ class build_doc( Command ):
 
 	def finalize_options( self ):
 		command = self.get_command_name()
-		options = self.distribution.command_options[ command ]
 
 	def run( self ):
 		cmd = [ 'make', '-C', 'doc', 'html' ]
@@ -65,6 +65,9 @@ class clean( _clean ):
 		version = p.communicate()[0].decode( 'utf-8' )
 			
 		_clean.run( self )
+		
+class build( _build ):
+	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 setup(
 	name = name,
@@ -73,8 +76,25 @@ setup(
 	author = 'Mathias Ertl',
 	author_email='mati@restauth.net',
 	url = url,
+	download_url = 'https://common.restauth.net/download/restauth-common-0.5.0.tar.gz',
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
-	cmdclass = { 'build_doc': build_doc, 'clean': clean, 
-		'version': version }
+	keywords = [],
+	classifiers = [
+		"Programming Language :: Python",
+		"Programming Language :: Python :: 3",
+		"Operating System :: OS Independent",
+		"Environment :: Other Environment",
+		"Development Status :: 4 - Beta",
+		"License :: OSI Approved :: GNU General Public License (GPL)",
+		"Intended Audience :: Developers",
+		"Intended Audience :: System Administrators",
+		"Topic :: System :: Systems Administration :: Authentication/Directory",
+		"Topic :: Internet :: WWW/HTTP",
+		"Topic :: Software Development :: Libraries :: Python Modules",
+		"Environment :: Web Environment",
+	],
+	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 
+		'version': version },
+	long_description = """text in reST format"""
 )

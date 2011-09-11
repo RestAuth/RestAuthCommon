@@ -2,3 +2,6 @@
 *.swp
 *.swo
 doc/_build
+build/
+MANIFEST
+dist/
