@@ -1,3 +1,7 @@
+restauth-common 0.5.1 (XX XX 20XX)
+
+  * This package is now included in PyPI
+
 restauth-common 0.5.0 (29 August 2011)
 
   * Initial version based on version 0.5 of the RestAuth protocol.
