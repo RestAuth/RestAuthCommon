@@ -21,7 +21,7 @@ from os.path import exists
 from distutils.core import setup, Command
 from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
-from distutils.command.build import build as _build
+#from distutils.command.build import build as _build
 
 class build_doc( Command ):
 	description = "Build API documentation."
@@ -66,8 +66,8 @@ class clean( _clean ):
 			
 		_clean.run( self )
 		
-class build( _build ):
-	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
+#class build( _build ):
+#	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 setup(
 	name = name,
@@ -96,7 +96,7 @@ setup(
 		"Topic :: Software Development :: Libraries :: Python Modules",
 		"Environment :: Web Environment",
 	],
-	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 
+	cmdclass = { 'build_doc': build_doc, 'clean': clean, 
 		'version': version },
 	long_description = """RestAuthCommon is a small set of classes used by both `RestAuth server
 <https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_.
