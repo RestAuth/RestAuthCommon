@@ -46,7 +46,7 @@ def get_version():
 		date = time.strftime( '%Y.%m.%d' )
 		cmd = [ 'git', 'describe' ]
 		p = Popen( cmd, stdout=PIPE )
-		version = p.communicate()[0].decode( 'utf-8' )
+		version = p.communicate()[0]
 	return version.strip()
 
 class version( Command ):
@@ -80,6 +80,7 @@ setup(
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	keywords = [],
+	requires = ['mimeparse'],
 	license = "GNU General Public License (GPL) v3",
 	classifiers = [
 		"Programming Language :: Python",
@@ -98,5 +99,9 @@ setup(
 	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 
 		'version': version },
 	long_description = """RestAuthCommon is a small set of classes used by both `RestAuth server
-<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_."""
+<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_.
+
+This library requires the `mimeparse module <https://code.google.com/p/mimeparse/>`_ (`PyPI link
+<http://pypi.python.org/pypi/mimeparse/0.1.3>`_).
+"""
 )
