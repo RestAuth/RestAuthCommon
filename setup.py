@@ -80,6 +80,7 @@ setup(
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	keywords = [],
+	license = "GNU General Public License (GPL) v3",
 	classifiers = [
 		"Programming Language :: Python",
 		"Programming Language :: Python :: 3",
@@ -96,5 +97,6 @@ setup(
 	],
 	cmdclass = { 'build': build, 'build_doc': build_doc, 'clean': clean, 
 		'version': version },
-	long_description = """text in reST format"""
+	long_description = """RestAuthCommon is a small set of classes used by both `RestAuth server
+<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_."""
 )
