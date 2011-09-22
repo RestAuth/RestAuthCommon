@@ -166,19 +166,19 @@ class json( content_handler ):
 		return self.json.loads( body )
 	
 	def marshal_str( self, obj ):
-		return self.json.dumps( [obj] )
+		return self.json.dumps( [obj], separators=(',', ':') )
 
 	def marshal_bool( self, obj ):
-		return self.json.dumps( obj )
+		return self.json.dumps( obj, separators=(',', ':') )
 
 	def marshal_list( self, obj ):
-		return self.json.dumps( obj )
+		return self.json.dumps( obj, separators=(',', ':') )
 
 	def marshal_dict( self, obj ):
-		return self.json.dumps( obj )
+		return self.json.dumps( obj, separators=(',', ':') )
 	
 	def marshal_unicode( self, obj ):
-		return self.json.dumps( [obj] )
+		return self.json.dumps( [obj], separators=(',', ':') )
 
 class form( content_handler ):
 	"""
