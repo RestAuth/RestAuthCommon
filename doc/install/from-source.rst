@@ -52,12 +52,11 @@ Install mimeparse
 +++++++++++++++++
 
 First, you will need to install the `mimeparse <https://code.google.com/p/mimeparse/>`_ library. You
-can do this either via methods provided by your operating system, using easy_install (with superuser
-privileges):
+can do this either via methods provided by your operating system, using :command:`pip`:
 
 .. code-block:: bash
    
-   easy_install mimeparse
+   pip install mimeparse
    
 ... or by downloading and installing the source by hand:
 
@@ -68,12 +67,11 @@ privileges):
    cd mimeparse-0.1.3
    python setup.py install
 
-.. NOTE:: Both ``easy_install`` and ``setup.py install`` usually require superuser privileges.
+.. NOTE:: Both :command:`pip install` and :command:`setup.py install` usually require superuser
+   privileges.
 
 Install RestAuthCommon
 ++++++++++++++++++++++
-
-
 
 Installation of **RestAuthCommon** itself is very easy. Just go to the directory where your source
 is located ("RestAuthCommon" in the above example) and just run:
