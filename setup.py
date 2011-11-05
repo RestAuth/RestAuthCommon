@@ -46,7 +46,15 @@ def get_version():
 		date = time.strftime( '%Y.%m.%d' )
 		cmd = [ 'git', 'describe' ]
 		p = Popen( cmd, stdout=PIPE )
-		version = p.communicate()[0]
+		version = p.communicate()[0].decode( 'utf-8' )
+	elif os.path.exists( 'debian/changelog' ): # building .deb
+		f = open( 'debian/changelog' )
+		version = re.search( '\((.*)\)', f.readline() ).group(1)
+		f.close()
+		
+		if ':' in version: # strip epoch:
+			version = version.split( ':', 1 )[1]
+		version = version.rsplit( '-', 1 )[0] # strip debian revision
 	return version.strip()
 
 class version( Command ):
