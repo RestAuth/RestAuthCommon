@@ -4,10 +4,7 @@ Installation from source
 Requirements
 ------------
 
-**RestAuthCommon** requires:
-
-* `Python 2.6 <http://www.python.org/>`_ or later
-* The `mimeparse <https://code.google.com/p/mimeparse/>`_ module
+**RestAuthCommon** requires `Python 2.6 <http://www.python.org/>`_ or later.
 
 Get source
 ----------
@@ -48,32 +45,7 @@ latest release is version 0.5.0.
 Installation
 ------------
 
-Install mimeparse
-+++++++++++++++++
-
-First, you will need to install the `mimeparse <https://code.google.com/p/mimeparse/>`_ library. You
-can do this either via methods provided by your operating system, using :command:`pip`:
-
-.. code-block:: bash
-   
-   pip install mimeparse
-   
-... or by downloading and installing the source by hand:
-
-.. code-block:: bash
-
-   wget http://mimeparse.googlecode.com/files/mimeparse-0.1.3.tar.gz
-   tar xzf mimeparse-0.1.3.tar.gz
-   cd mimeparse-0.1.3
-   python setup.py install
-
-.. NOTE:: Both :command:`pip install` and :command:`setup.py install` usually require superuser
-   privileges.
-
-Install RestAuthCommon
-++++++++++++++++++++++
-
-Installation of **RestAuthCommon** itself is very easy. Just go to the directory where your source
+Installation of **RestAuthCommon** is very easy. Just go to the directory where your source
 is located ("RestAuthCommon" in the above example) and just run:
 
 .. code-block:: bash

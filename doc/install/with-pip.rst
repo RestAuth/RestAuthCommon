@@ -7,6 +7,6 @@ library using :command:`pip`:
 
 .. code-block:: bash
 
-   pip install mimeparse RestAuthCommon
+   pip install RestAuthCommon
 
 .. WARNING:: :command:`pip install` requires superuser privileges on most systems.

@@ -88,7 +88,7 @@ setup(
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	keywords = [],
-	requires = ['mimeparse'],
+	requires = [],
 	license = "GNU General Public License (GPL) v3",
 	classifiers = [
 		"Programming Language :: Python",
@@ -108,8 +108,5 @@ setup(
 		'version': version },
 	long_description = """RestAuthCommon is a small set of classes used by both `RestAuth server
 <https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_.
-
-This library requires the `mimeparse module <https://code.google.com/p/mimeparse/>`_ (`PyPI link
-<http://pypi.python.org/pypi/mimeparse/0.1.3>`_).
 """
 )
