@@ -1,5 +1,6 @@
 restauth-common 0.5.1 (XX XX 20XX)
 
+  * Handle version in a more consistant manner
   * This package is now included in PyPI
   * Use the most compact JSON representation
 
