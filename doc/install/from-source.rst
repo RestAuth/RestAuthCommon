@@ -21,8 +21,8 @@ clone the repository to a directory named "RestAuthCommon", simply do:
    git clone http://git.fsinf.at/restauth/restauth-common.git RestAuthCommon
 
 Older versions are marked as tags. You can view available tags with :command:`git tag -l`. You can
-use any of those versions with :command:`git checkout`, for example :command:`git checkout 1.0`.
-To move back to the newest version, use :command:`git checkout master`.
+use any of those versions with :command:`git checkout <tag>`. To move back to the newest version, use
+:command:`git checkout master`.
 
 If you ever want to update the source code, just use:
 
@@ -37,8 +37,8 @@ If you ever want to update the source code, just use:
 Official releases
 +++++++++++++++++
 
-You can download official releases of RestAuth `here <https://common.restauth.net/download>`_. The
-latest release is version |latest-release|.
+You can download official releases of RestAuthCommon `here <https://common.restauth.net/download>`_.
+The latest release is version |latest-release|.
 
 .. _install_from-source_installation:
 
