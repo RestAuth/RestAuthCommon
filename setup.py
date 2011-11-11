@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of RestAuthCommon.
 #
 #    RestAuthClient.py is free software: you can redistribute it and/or modify
@@ -85,7 +86,7 @@ class clean( _clean ):
 
 setup(
 	name = name,
-	version = get_version(),
+	version = str(get_version()),
 	description = 'RestAuth shared library',
 	author = 'Mathias Ertl',
 	author_email='mati@restauth.net',
