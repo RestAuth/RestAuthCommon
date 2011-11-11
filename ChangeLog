@@ -1,5 +1,6 @@
 restauth-common 0.5.1 (XX XX 20XX)
 
+  * fix setup.py file in Python3 file (previously it threw an exception)
   * Handle version in a more consistant manner
   * This package is now included in PyPI
   * Use the most compact JSON representation
