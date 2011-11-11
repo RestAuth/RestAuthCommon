@@ -23,6 +23,8 @@ from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 #from distutils.command.build import build as _build
 
+LATEST_RELEASE = '0.5.0'
+
 class build_doc( Command ):
 	description = "Build API documentation."
 	user_options = []
@@ -34,12 +36,16 @@ class build_doc( Command ):
 		command = self.get_command_name()
 
 	def run( self ):
+		version = get_version()
+		os.environ['SPHINXOPTS'] = '-D release=%s -D version=%s'%(version, version)
+		os.environ['LATEST_RELEASE'] = LATEST_RELEASE
+		
 		cmd = [ 'make', '-C', 'doc', 'html' ]
 		p = Popen( cmd )
 		p.communicate()
 
 def get_version():
-	version = '0.5.0'
+	version = LATEST_RELEASE
 	if exists( '.version' ):
 		version = open( '.version' ).readlines()[0]
 	elif os.path.exists( '.git' ): # get from git
@@ -84,7 +90,7 @@ setup(
 	author = 'Mathias Ertl',
 	author_email='mati@restauth.net',
 	url = url,
-	download_url = 'https://common.restauth.net/download/restauth-common-0.5.0.tar.gz',
+	download_url = 'http://git.fsinf.at/restauth/restauth-common',
 	package_dir = {'': 'python'},
 	packages = ['RestAuthCommon'],
 	keywords = [],

@@ -38,7 +38,7 @@ Official releases
 +++++++++++++++++
 
 You can download official releases of RestAuth `here <https://common.restauth.net/download>`_. The
-latest release is version 0.5.0.
+latest release is version |latest-release|.
 
 .. _install_from-source_installation:
 
