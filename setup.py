@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#
 # This file is part of RestAuthCommon.
 #
 #    RestAuthClient.py is free software: you can redistribute it and/or modify
