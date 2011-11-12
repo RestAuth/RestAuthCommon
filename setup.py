@@ -80,9 +80,6 @@ class clean( _clean ):
 		version = p.communicate()[0].decode( 'utf-8' )
 			
 		_clean.run( self )
-		
-#class build( _build ):
-#	sub_commands = [('build_doc', lambda self: True)] + _build.sub_commands
 
 setup(
 	name = name,
