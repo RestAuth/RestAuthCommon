@@ -78,6 +78,13 @@ class clean( _clean ):
 		cmd = [ 'make', '-C', 'doc', 'clean' ]
 		p = Popen( cmd, stdout=PIPE )
 		version = p.communicate()[0].decode( 'utf-8' )
+		
+		if os.path.exists( 'build' ):
+			shutil.rmtree( 'build' )
+		if os.path.exists( 'dist' ):
+			shutil.rmtree( 'dist' )
+		if os.path.exists( 'MANIFEST' ):
+			os.remove( 'MANIFEST' )
 			
 		_clean.run( self )
 
