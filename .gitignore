@@ -5,3 +5,4 @@ doc/_build
 build/
 MANIFEST
 dist/
+Makefile.local
