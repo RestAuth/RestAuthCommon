@@ -25,7 +25,7 @@ from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 #from distutils.command.build import build as _build
 
-LATEST_RELEASE = '0.5.0'
+LATEST_RELEASE = '0.5.1'
 
 class build_doc( Command ):
 	description = "Build API documentation."

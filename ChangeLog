@@ -1,4 +1,4 @@
-restauth-common 0.5.1 (XX XX 20XX)
+restauth-common 0.5.1 (13 November 2011)
 
   * Catch ValueErrors from json library and wrap them in an
     UnmarshalError/MarshalError
