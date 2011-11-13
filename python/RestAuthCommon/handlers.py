@@ -150,35 +150,62 @@ class json( content_handler ):
 		self.json = json
 
 	def unmarshal_str( self, body ):
-		pure = self.json.loads( body )
-		if pure.__class__ != list or len( pure ) != 1:
-			raise error.UnmarshalError( "Could not parse body as string" )
+		try:
+			pure = self.json.loads( body )
+			if pure.__class__ != list or len( pure ) != 1:
+				raise error.UnmarshalError( "Could not parse body as string" )
 		
-		return pure[0]
+			return pure[0]
+		except ValueError:
+			raise error.UnmarshalError( e )
 
 	def unmarshal_dict( self, body ):
-		return self.json.loads( body )
+		try:
+			return self.json.loads( body )
+		except ValueError as e:
+			raise error.UnmarshalError( e )
 
 	def unmarshal_list( self, body ):
-		return self.json.loads( body )
+		try:
+			return self.json.loads( body )
+		except ValueError as e:
+			raise error.UnmarshalError( e )
 
 	def unmarshal_bool( self, body ):
-		return self.json.loads( body )
+		try:
+			return self.json.loads( body )
+		except ValueError as e:
+			raise error.UnmarshalError( e )
 	
 	def marshal_str( self, obj ):
-		return self.json.dumps( [obj], separators=(',', ':') )
+		try:
+			return self.json.dumps( [obj], separators=(',', ':') )
+		except ValueError as e:
+			raise error.MarshalError( e )
 
 	def marshal_bool( self, obj ):
-		return self.json.dumps( obj, separators=(',', ':') )
+		try:
+			return self.json.dumps( obj, separators=(',', ':') )
+		except ValueError as e:
+			raise error.MarshalError( e )
 
 	def marshal_list( self, obj ):
-		return self.json.dumps( obj, separators=(',', ':') )
+		try:
+			return self.json.dumps( obj, separators=(',', ':') )
+		except ValueError as e:
+			raise error.MarshalError( e )
 
 	def marshal_dict( self, obj ):
-		return self.json.dumps( obj, separators=(',', ':') )
+		try:
+			return self.json.dumps( obj, separators=(',', ':') )
+		except ValueError as e:
+			raise error.MarshalError( e )
 	
 	def marshal_unicode( self, obj ):
-		return self.json.dumps( [obj], separators=(',', ':') )
+		try:
+			return self.json.dumps( [obj], separators=(',', ':') )
+		except ValueError as e:
+			raise error.MarshalError( e )
 
 class form( content_handler ):
 	"""

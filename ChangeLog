@@ -1,5 +1,7 @@
 restauth-common 0.5.1 (XX XX 20XX)
 
+  * Catch ValueErrors from json library and wrap them in an
+    UnmarshalError/MarshalError
   * setup.py now cleans *all* generated files
   * fix setup.py file in Python3 file (previously it threw an exception)
   * Handle version in a more consistant manner
