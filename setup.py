@@ -119,6 +119,7 @@ setup(
 	cmdclass = { 'build_doc': build_doc, 'clean': clean, 
 		'version': version },
 	long_description = """RestAuthCommon is a small set of classes used by both `RestAuth server
-<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_.
+<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_
+(`PyPI <http://pypi.python.org/pypi/RestAuthClient/>`_).
 """
 )
