@@ -11,6 +11,9 @@ RestAuthCommon is a small project that collects various code that is used in bot
 implementations of the `RestAuth protocol <https://restauth.net>`_, which are both written in
 python.
 
+RestAuthCommon is Free Software, licensed unter the GNU General Public Licence, version 3. Please
+feel free to :doc:`contribute </contribute>`.
+
 
 Installation
 ============
@@ -30,12 +33,6 @@ Documentation
    content_handlers
    validation
    error
-
-Further resources
-=================
-* `bugtracker <https://redmine.fsinf.at/projects/restauthcommon>`_
-* `git repository <http://git.fsinf.at/restauth/restauth-common>`_
-* Jabber/XMPP chat: ``rest@conference.jabber.at``
 
 Indices and tables
 ==================

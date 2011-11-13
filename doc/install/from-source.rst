@@ -46,7 +46,7 @@ Installation
 ------------
 
 Installation of **RestAuthCommon** is very easy. Just go to the directory where your source
-is located ("RestAuthCommon" in the above example) and just run:
+is located ("RestAuthCommon" in the above example) and run:
 
 .. code-block:: bash
 
