@@ -1,0 +1,5 @@
+restauth-common (0.5.1-1) unstable; urgency=low
+  
+  * Initial version
+
+ -- Mathias Ertl <mati@restauth.net>  Mon, 06 Jun 2011 23:25:23 +0200
