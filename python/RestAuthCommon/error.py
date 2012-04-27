@@ -71,6 +71,15 @@ class Unauthorized( RestAuthSetupException ):
 	On a protocol level, this represents HTTP status code 401.
 	"""
 	response_code=401
+	
+class Forbidden( RestAuthSetupException ):
+	"""
+	Thrown when service authentication succeeded, but the client is not allowed to perform
+	such a request.
+	
+	On a protocol level, this represents HTTP status code 403.
+	"""
+	response_code=403
 
 class ContentTypeException( RestAuthSetupException ):
 	"""
