@@ -27,7 +27,7 @@ Description: common files for RestAuth reference implementations.
 
 Package: python-restauth-common-doc
 Architecture: all
-Depends: ${misc:Depends}, libjs-jquery, libjs-underscore
+Depends: ${misc:Depends}, libjs-jquery
 Section: doc
 Description: API documentation and examples for restauth-common
  This includes sphinx documentation in HTML format and additional examples.
