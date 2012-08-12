@@ -20,6 +20,9 @@ clone the repository to a directory named "RestAuthCommon", simply do:
 
    git clone http://git.fsinf.at/restauth/restauth-common.git RestAuthCommon
 
+.. NOTE:: A mirror of this git-repository is available
+   `on github <https://github.com/matigit/restauth-common>`_.
+
 Older versions are marked as tags. You can view available tags with :command:`git tag -l`. You can
 use any of those versions with :command:`git checkout <tag>`. To move back to the newest version, use
 :command:`git checkout master`.
@@ -30,7 +33,7 @@ If you ever want to update the source code, just use:
 
    python setup.py clean
    git pull
-   
+
 ... and do the same as if you where
 :ref:`doing a new installation <install_from-source_installation>`.
 
