@@ -19,6 +19,16 @@ Classes and methods related to content handling.
 """
 
 import sys
+try:
+    import simplejson as libjson
+except ImportError:
+    import json as libjson
+
+try:
+    from urllib.parse import parse_qs, urlencode
+except ImportError:
+    from urlparse import parse_qs
+    from urllib import urlencode
 
 try:
     from RestAuthCommon import error
@@ -151,13 +161,9 @@ class json(content_handler):
     mime = 'application/json'
     """The mime-type used by this content handler is 'application/json'."""
 
-    def __init__(self):
-        import json
-        self.json = json
-
     def unmarshal_str(self, body):
         try:
-            pure = self.json.loads(body)
+            pure = libjson.loads(body)
             if pure.__class__ != list or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
@@ -167,49 +173,49 @@ class json(content_handler):
 
     def unmarshal_dict(self, body):
         try:
-            return self.json.loads(body)
+            return libjson.loads(body)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_list(self, body):
         try:
-            return self.json.loads(body)
+            return libjson.loads(body)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_bool(self, body):
         try:
-            return self.json.loads(body)
+            return libjson.loads(body)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def marshal_str(self, obj):
         try:
-            return self.json.dumps([obj], separators=(',', ':'))
+            return libjson.dumps([obj], separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_bool(self, obj):
         try:
-            return self.json.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
-            return self.json.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
-            return self.json.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_unicode(self, obj):
         try:
-            return self.json.dumps([obj], separators=(',', ':'))
+            return libjson.dumps([obj], separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
@@ -225,18 +231,9 @@ class form(content_handler):
     """The mime-type used by this content handler is
     'application/x-www-form-urlencoded'."""
 
-    def __init__(self):
-        try:
-            from urllib.parse import parse_qs, urlencode
-        except ImportError:
-            from urlparse import parse_qs
-            from urllib import urlencode
-        self.parse_qs = parse_qs
-        self.urlencode = urlencode
-
     def unmarshal_dict(self, body):
         return_dict = {}
-        for key, value in self.parse_qs(body, True).iteritems():
+        for key, value in parse_qs(body, True).iteritems():
             return_dict[key] = value[0]
         return return_dict
 
@@ -250,7 +247,7 @@ class form(content_handler):
             return "0"
 
     def marshal_dict(self, obj):
-        return self.urlencode(obj)
+        return urlencode(obj)
 
     def marshal_list(self, obj):
         d = dict([('key%s' % i, obj[i]) for i in range(0, len(obj))])
