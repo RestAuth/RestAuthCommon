@@ -3,6 +3,7 @@ restauth-common 0.6.1 (XX XX 2012)
   * New exception 'Forbidden' for requests that throw HTTP status 403 Forbidden
   * Adhere to python coding standards
   * Update Copyright notices (some files still contained 'Foobar' as a program name)
+  * All python source code is now pep8 clean
 
 restauth-common 0.5.1 (13 November 2011)
 
