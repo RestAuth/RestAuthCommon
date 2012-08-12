@@ -16,4 +16,4 @@ administrators to manage permissions for users in a central and easy way.
 
 This project contains a few shared classes used by both `RestAuth server`_ and
 RestAuthClient_. This git repository is just used as a mirror, the master
-repository can be found at https://git.fsinf.at/restauth/restauth-common
+repository can be found at https://git.fsinf.at/restauth/restauth-common.
