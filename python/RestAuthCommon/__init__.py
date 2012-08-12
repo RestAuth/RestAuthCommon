@@ -18,6 +18,8 @@ implementations.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
+
+import stringprep
 try:
     from RestAuthCommon.handlers import CONTENT_HANDLERS
 except ImportError:
@@ -103,7 +105,6 @@ def resource_validator(name):
         return False
 
     # filter various dangerous characters
-    import stringprep
     for enc_char in name:
         if enc_char.__class__ == str:
             enc_char = enc_char.decode('utf-8')
