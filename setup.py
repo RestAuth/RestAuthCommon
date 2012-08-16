@@ -29,7 +29,7 @@ from subprocess import Popen, PIPE
 from distutils.command.clean import clean as _clean
 #from distutils.command.build import build as _build
 
-LATEST_RELEASE = '0.5.1'
+LATEST_RELEASE = '0.6.0'
 
 
 class build_doc(Command):
