@@ -1,6 +1,7 @@
 restauth-common (0.6.0-1) unstable; urgency=low
   
   * Bump from upstream
+  * Remove debian/source/options
 
  -- Mathias Ertl <mati@restauth.net>  Tue, 28 Aug 2012 20:22:59 +0200
 
