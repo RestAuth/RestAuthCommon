@@ -1,3 +1,9 @@
+restauth-common (0.6.0-1) unstable; urgency=low
+  
+  * Bump from upstream
+
+ -- Mathias Ertl <mati@restauth.net>  Tue, 28 Aug 2012 20:22:59 +0200
+
 restauth-common (0.5.1-1) unstable; urgency=low
   
   * Initial version
