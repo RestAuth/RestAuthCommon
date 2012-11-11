@@ -11,7 +11,7 @@ Vcs-Git: http://git.fsinf.at/apt/restauth-common.git
 Package: python-restauth-common
 Architecture: all
 Section: python
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, python-simplejson
 Provides: ${python:Provides}
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
