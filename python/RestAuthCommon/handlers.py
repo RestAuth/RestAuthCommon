@@ -264,9 +264,9 @@ class XMLContentHandler(ContentHandler):
     mime = 'application/xml'
 
 CONTENT_HANDLERS = {
-    'application/json': json,
-    'application/xml': xml,
-    'application/x-www-form-urlencoded': form
+    'application/json': JSONContentHandler,
+    'application/xml': XMLContentHandler,
+    'application/x-www-form-urlencoded': FormContentHandler,
 }
 """
 Mapping of MIME types to their respective handler implemenation. You can use
