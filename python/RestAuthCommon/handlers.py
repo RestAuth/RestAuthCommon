@@ -38,7 +38,7 @@ except ImportError:
     import error
 
 
-class content_handler(object):
+class ContentHandler(object):
     """
     This class is a common base class for all content handlers. If you
     want to implement your own content handler, you must subclass this
@@ -153,9 +153,9 @@ class content_handler(object):
         return self.marshal_str(obj.encode('utf-8'))
 
 
-class json(content_handler):
+class JSONContentHandler(ContentHandler):
     """
-    Concrete implementation of a :py:class:`content_handler` that uses JSON.
+    Concrete implementation of a :py:class:`ContentHandler` that uses JSON.
     This is the default content handler in both server and client library.
     """
 
@@ -223,9 +223,9 @@ class json(content_handler):
             raise error.MarshalError(e)
 
 
-class form(content_handler):
+class FormContentHandler(ContentHandler):
     """
-    Concrete implementation of a :py:class:`content_handler` that uses HTML
+    Concrete implementation of a :py:class:`ContentHandler` that uses HTML
     forms. This content handler should not be used in any real world scenario,
     as it has many problems with unicode.
     """
@@ -257,7 +257,7 @@ class form(content_handler):
         return self.marshal_dict(d)
 
 
-class xml(content_handler):
+class XMLContentHandler(ContentHandler):
     """
     Future location of the XML content handler. This handler is not yet
     implemented!  """
@@ -284,6 +284,11 @@ application/xml                   :py:class:`.handlers.xml`  not yet
 ================================= ========================== =================
 
 If you want to provide your own implementation of a
-:py:class:`.content_handler`, you can add it to this dictionary with the
+:py:class:`.ContentHandler`, you can add it to this dictionary with the
 appropriate MIME type as the key.
 """
+
+# old names, for compatability:
+json = JSONContentHandler
+xml = XMLContentHandler
+form = FormContentHandler
