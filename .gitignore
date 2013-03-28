@@ -6,4 +6,7 @@ doc/_build
 build/
 MANIFEST
 dist/
+bin/
+include/
+lib/
 Makefile.local
