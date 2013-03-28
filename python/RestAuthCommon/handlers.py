@@ -25,7 +25,8 @@ except ImportError:
     import json as libjson
 
 try:
-    from urllib.parse import parse_qs, urlencode
+    from urllib.parse import parse_qs
+    from urllib.parse import urlencode
 except ImportError:
     from urlparse import parse_qs
     from urllib import urlencode
