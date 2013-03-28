@@ -172,6 +172,8 @@ class json(content_handler):
             raise error.UnmarshalError(e)
 
     def unmarshal_dict(self, body):
+        if isinstance(body, bytes):
+            body = body.decode('utf-8')
         try:
             return libjson.loads(body)
         except ValueError as e:
