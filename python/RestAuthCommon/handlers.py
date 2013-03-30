@@ -243,7 +243,14 @@ class FormContentHandler(ContentHandler):
     'application/x-www-form-urlencoded'."""
 
     def unmarshal_dict(self, body):
-        return parse_qs(body, True)
+        parsed_dict = parse_qs(body, True)
+        ret_dict = {}
+        for key, value in parsed_dict.items():
+            if isinstance(value, list) and len(value) == 1:
+                ret_dict[key] = value[0]
+            else:
+                ret_dict[key] = value
+        return ret_dict
 
     def unmarshal_list(self, body):
         if body == '':
