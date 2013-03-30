@@ -156,9 +156,6 @@ class ContentHandler(object):
         """
         pass
 
-    def marshal_unicode(self, obj):
-        return self.marshal_str(obj.encode('utf-8'))
-
 
 class JSONContentHandler(ContentHandler):
     """
@@ -228,12 +225,6 @@ class JSONContentHandler(ContentHandler):
         try:
             return libjson.dumps(obj, separators=(',', ':'),
                                  cls=self.ByteEncoder)
-        except ValueError as e:
-            raise error.MarshalError(e)
-
-    def marshal_unicode(self, obj):
-        try:
-            return libjson.dumps([obj], separators=(',', ':'))
         except ValueError as e:
             raise error.MarshalError(e)
 
