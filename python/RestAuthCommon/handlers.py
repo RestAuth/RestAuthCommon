@@ -42,6 +42,18 @@ class ContentHandler(object):
     mime = None
     """Override this with the MIME type handled by your handler."""
 
+    librarypath = None
+    """Override this with any 3rd-party library you do not want module-load
+    time imports. Use self.load_library() to load that library into your
+    namespace."""
+
+    @property
+    def library(self):
+        """Library configured with the ``librarypath`` class variable."""
+        if self._library is None:
+            self._library = __import__(self.librarypath)
+        return self._library
+
     def marshal(self, obj):
         """
         Shortcut for marshalling just any object.
