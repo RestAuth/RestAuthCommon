@@ -19,6 +19,7 @@ Classes and methods related to content handling.
 """
 
 import json as libjson
+import sys
 
 try:
     from urllib.parse import parse_qs  # python3
@@ -168,6 +169,12 @@ class JSONContentHandler(ContentHandler):
     mime = 'application/json'
     """The mime-type used by this content handler is 'application/json'."""
 
+    class ByteEncoder(libjson.JSONEncoder):
+        def default(self, obj):
+            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+                return obj.decode('utf-8')
+            return json.JSONEncoder.default(self, obj)
+
     def unmarshal_str(self, body):
         try:
             pure = libjson.loads(body)
@@ -179,8 +186,6 @@ class JSONContentHandler(ContentHandler):
             raise error.UnmarshalError(e)
 
     def unmarshal_dict(self, body):
-        if isinstance(body, bytes):
-            body = body.decode('utf-8')
         try:
             return libjson.loads(body)
         except ValueError as e:
@@ -200,25 +205,29 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            return libjson.dumps([obj], separators=(',', ':'))
+            return libjson.dumps([obj], separators=(',', ':'),
+                                 cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_bool(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'),
+                                 cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'),
+                                 cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'))
+            return libjson.dumps(obj, separators=(',', ':'),
+                                 cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
