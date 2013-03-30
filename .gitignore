@@ -11,3 +11,5 @@ include/
 lib/
 share/
 Makefile.local
+py2/
+py3/
