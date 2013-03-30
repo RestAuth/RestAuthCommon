@@ -21,8 +21,10 @@ import unittest
 
 from RestAuthCommon.error import MarshalError
 from RestAuthCommon.handlers import ContentHandler
-from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthCommon.handlers import FormContentHandler
+from RestAuthCommon.handlers import JSONContentHandler
+from RestAuthCommon.handlers import PickleContentHandler
+from RestAuthCommon.handlers import YamlContentHandler
 
 
 class TestHandler(ContentHandler):
@@ -90,12 +92,22 @@ class TestContentHandler(object):
         {'a': {'foo': 'bar'}, 'b': '2'},
     ]
 
+    if sys.version_info >= (3, 0):
+        marshal_type = bytes
+        unmarshal_type = str
+    else:
+        marshal_type = str
+        unmarshal_type = unicode
+
     def stringtest(self, strings):
         for teststr in strings:
             marshalled = self.handler.marshal_str(teststr)
-            self.assertTrue(isinstance(marshalled, str))
+            self.assertTrue(isinstance(marshalled, self.marshal_type),
+                            type(marshalled))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
+            self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
+                            type(unmarshalled))
             self.assertEqual(teststr, unmarshalled)
 
         # convert strings to unicodes in python2
@@ -104,20 +116,26 @@ class TestContentHandler(object):
                 teststr = unicode(teststr)
 
                 marshalled = self.handler.marshal_str(teststr)
-                self.assertTrue(isinstance(marshalled, str))
+                self.assertTrue(isinstance(marshalled, self.marshal_type),
+                                type(marshalled))
 
                 unmarshalled = self.handler.unmarshal_str(marshalled)
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
+                                type(unmarshalled))
                 self.assertEqual(teststr, unmarshalled)
 
         # convert strings to bytes in python3
         if sys.version_info >= (3, 0):
             for teststr in strings:
-                teststr = bytes(teststr, 'utf-8')
+                bytestr = bytes(teststr, 'utf-8')
 
-                marshalled = self.handler.marshal_str(teststr)
-                self.assertTrue(isinstance(marshalled, str))
+                marshalled = self.handler.marshal_str(bytestr)
+                self.assertTrue(isinstance(marshalled, self.marshal_type),
+                                type(marshalled))
                 unmarshalled = self.handler.unmarshal_str(marshalled)
-                self.assertEqual(teststr.decode('utf-8'), unmarshalled)
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
+                                type(unmarshalled))
+                self.assertEqual(teststr, unmarshalled)
 
     def test_str(self):
         self.stringtest(self.strings)
@@ -127,8 +145,9 @@ class TestContentHandler(object):
     def dicttest(self, dicts):
         for testdict in dicts:
             marshalled = self.handler.marshal_dict(testdict)
-            self.assertTrue(isinstance(marshalled, str))
+            self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
             unmarshalled = self.handler.unmarshal_dict(marshalled)
+            self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
             self.assertEqual(testdict, unmarshalled)
 
     def test_dict(self):
@@ -142,9 +161,10 @@ class TestContentHandler(object):
     def listtest(self, lists):
         for testlist in lists:
             marshalled = self.handler.marshal_list(testlist)
-            self.assertTrue(isinstance(marshalled, str))
+            self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_list(marshalled)
+            self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
             self.assertEqual(testlist, unmarshalled)
 
     def test_list(self):
@@ -168,3 +188,13 @@ class TestFormContentHandler(unittest.TestCase, TestContentHandler):
         for testdict in self.nested_dicts:
             self.assertRaises(MarshalError,
                               self.handler.marshal_dict, (testdict))
+
+
+class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
+    def setUp(self):
+        self.handler = PickleContentHandler()
+
+
+class TestYamlContentHandler(unittest.TestCase, TestContentHandler):
+    def setUp(self):
+        self.handler = YamlContentHandler()

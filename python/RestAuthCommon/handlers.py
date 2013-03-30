@@ -19,6 +19,7 @@ Classes and methods related to content handling.
 """
 
 import json as libjson
+import pickle
 import sys
 
 try:
@@ -172,27 +173,33 @@ class JSONContentHandler(ContentHandler):
         def default(self, obj):
             if sys.version_info >= (3, 0) and isinstance(obj, bytes):
                 return obj.decode('utf-8')
-            return json.JSONEncoder.default(self, obj)
+            return libjson.JSONEncoder.default(self, obj)
+
+    class ByteDecoder(libjson.JSONDecoder):
+        def decode(self, obj):
+            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+                obj = obj.decode('utf-8')
+            return libjson.JSONDecoder.decode(self, obj)
 
     def unmarshal_str(self, body):
         try:
-            pure = libjson.loads(body)
+            pure = libjson.loads(body, cls=self.ByteDecoder)
             if pure.__class__ != list or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
             return pure[0]
-        except ValueError:
+        except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_dict(self, body):
         try:
-            return libjson.loads(body)
+            return libjson.loads(body, cls=self.ByteDecoder)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_list(self, body):
         try:
-            return libjson.loads(body)
+            return libjson.loads(body, cls=self.ByteDecoder)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
@@ -204,29 +211,45 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            return libjson.dumps([obj], separators=self.SEPARATORS,
+            dumped = libjson.dumps([obj], separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
+            if sys.version_info >= (3, 0):
+                return dumped.encode('utf-8')
+            else:
+                return dumped
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_bool(self, obj):
         try:
-            return libjson.dumps(obj, separators=self.SEPARATORS,
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
+            if sys.version_info >= (3, 0):
+                return dumped.encode('utf-8')
+            else:
+                return dumped
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
-            return libjson.dumps(obj, separators=self.SEPARATORS,
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
+            if sys.version_info >= (3, 0):
+                return dumped.encode('utf-8')
+            else:
+                return dumped
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
-            return libjson.dumps(obj, separators=self.SEPARATORS,
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
+            if sys.version_info >= (3, 0):
+                return dumped.encode('utf-8')
+            else:
+                return dumped
         except ValueError as e:
             raise error.MarshalError(e)
 
@@ -256,6 +279,9 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
+        if sys.version_info >= (3, 0):
+            body = body.decode('utf-8')
+
         parsed_dict = parse_qs(body, True)
         ret_dict = {}
         for key, value in parsed_dict.items():
@@ -270,6 +296,9 @@ class FormContentHandler(ContentHandler):
         return ret_dict
 
     def unmarshal_list(self, body):
+        if sys.version_info >= (3, 0):
+            body = body.decode('utf-8')
+
         if body == '':
             return []
 
@@ -280,6 +309,9 @@ class FormContentHandler(ContentHandler):
         return parsed
 
     def unmarshal_str(self, body):
+        if sys.version_info >= (3, 0):
+            body = body.decode('utf-8')
+
         parsed = parse_qs(body, True)['str'][0]
         if sys.version_info < (3, 0):
             parsed = parsed.decode('utf-8')
@@ -288,7 +320,10 @@ class FormContentHandler(ContentHandler):
     def marshal_str(self, obj):
         if sys.version_info < (3, 0):
             obj = obj.encode('utf-8')
-        return urlencode({'str': obj})
+        if sys.version_info >= (3, 0):
+            return urlencode({'str': obj}).encode('utf-8')
+        else:
+            return urlencode({'str': obj})
 
     def marshal_bool(self, obj):
         if obj:
@@ -319,20 +354,119 @@ class FormContentHandler(ContentHandler):
             if isinstance(v, dict):
                 raise error.MarshalError(
                     "FormContentHandler doesn't support nested dictionaries.")
-        return urlencode(obj, doseq=True)
+        if sys.version_info >= (3, 0):
+            return urlencode(obj, doseq=True).encode('utf-8')
+        else:
+            return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
         if sys.version_info < (3, 0):
             obj = [e.encode('utf-8') for e in obj]
-        return urlencode({'list': obj}, doseq=True)
+        if sys.version_info >= (3, 0):
+            return urlencode({'list': obj}, doseq=True).encode('utf-8')
+        else:
+            return urlencode({'list': obj}, doseq=True)
 
 
 class PickleContentHandler(ContentHandler):
     mime = 'application/pickle'
 
+    def marshal_str(self, obj):
+        try:
+            return pickle.dumps(obj, protocol=2)
+        except pickle.PickleError as e:
+            raise error.MarshalError(str(e))
+
+    def marshal_dict(self, obj):
+        try:
+            return pickle.dumps(obj, protocol=2)
+        except pickle.PickleError as e:
+            raise error.MarshalError(str(e))
+
+    def marshal_list(self, obj):
+        try:
+            return pickle.dumps(obj, protocol=2)
+        except pickle.PickleError as e:
+            raise error.MarshalError(str(e))
+
+    def unmarshal_str(self, data):
+        try:
+            unpickled = pickle.loads(data)
+
+            if sys.version_info >= (3, 0) and isinstance(unpickled, bytes):
+                # if bytes were pickled, we have to decode them
+                unpickled = unpickled.decode('utf-8')
+            return unpickled
+        except pickle.PickleError as e:
+            raise error.UnmarshalError(str(e))
+
+    def unmarshal_list(self, data):
+        try:
+            return pickle.loads(data)
+        except pickle.PickleError as e:
+            raise error.UnmarshalError(str(e))
+
+    def unmarshal_dict(self, data):
+        try:
+            return pickle.loads(data)
+        except pickle.PickleError as e:
+            raise error.UnmarshalError(str(e))
+
 
 class YamlContentHandler(ContentHandler):
     mime = 'application/yaml'
+    librarypath = 'yaml'
+
+    def marshal_str(self, obj):
+        try:
+            if sys.version_info >= (3, 0):
+                return self.library.dump(obj).encode('utf-8')
+            else:
+                return self.library.dump(obj)
+        except self.library.YAMLError as e:
+            raise error.MarshalError(str(e))
+
+    def marshal_dict(self, obj):
+        try:
+            if sys.version_info >= (3, 0):
+                return self.library.dump(obj).encode('utf-8')
+            else:
+                return self.library.dump(obj)
+        except self.library.YAMLError as e:
+            raise error.MarshalError(str(e))
+
+    def marshal_list(self, obj):
+        try:
+            if sys.version_info >= (3, 0):
+                return self.library.dump(obj).encode('utf-8')
+            else:
+                return self.library.dump(obj)
+        except self.library.YAMLError as e:
+            raise error.MarshalError(str(e))
+
+    def unmarshal_str(self, data):
+        try:
+            unmarshalled = self.library.load(data)
+            if unmarshalled is None:
+                return ''
+            if sys.version_info >= (3, 0) and isinstance(unmarshalled, bytes):
+                return unmarshalled.decode('utf-8')
+            else:
+                return unmarshalled
+        except self.library.YAMLError as e:
+            raise error.UnmarshalError(str(e))
+
+    def unmarshal_list(self, data):
+        try:
+            return self.library.load(data)
+        except self.library.YAMLError as e:
+            raise error.UnmarshalError(str(e))
+
+    def unmarshal_dict(self, data):
+        try:
+            return self.library.load(data)
+        except self.library.YAMLError as e:
+            raise error.UnmarshalError(str(e))
 
 
 class XMLContentHandler(ContentHandler):
