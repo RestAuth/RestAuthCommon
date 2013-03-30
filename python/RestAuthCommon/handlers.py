@@ -47,6 +47,8 @@ class ContentHandler(object):
     time imports. Use self.load_library() to load that library into your
     namespace."""
 
+    _library = None
+
     @property
     def library(self):
         """Library configured with the ``librarypath`` class variable."""
