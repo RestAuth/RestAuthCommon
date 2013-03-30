@@ -232,10 +232,10 @@ class JSONContentHandler(ContentHandler):
 
 
 class FormContentHandler(ContentHandler):
-    """
-    Concrete implementation of a :py:class:`ContentHandler` that uses HTML
-    forms. This content handler should not be used in any real world scenario,
-    as it has many problems with unicode.
+    """Handler for HTML Form urlencoded content.
+
+    .. WARNING:: Because of the limitations of urlencoded forms, this handler
+       does not support nested dictionaries or unicode characters.
     """
 
     mime = 'application/x-www-form-urlencoded'
@@ -254,7 +254,7 @@ class FormContentHandler(ContentHandler):
         return parse_qs(body, True)['str'][0]
 
     def marshal_str(self, obj):
-        return urlencode({'str': obj.encode('utf-8')})
+        return urlencode({'str': obj})
 
     def marshal_bool(self, obj):
         if obj:
