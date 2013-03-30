@@ -110,32 +110,47 @@ class ContentHandler(object):
         return val
 
     def unmarshal_str(self, data):
-        """
-        Unmarshal a string.
+        """Unmarshal a string.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: str
         """
         pass
 
     def unmarshal_dict(self, body):
-        """
-        Unmarshal a dictionary.
+        """Unmarshal a dictionary.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: dict
         """
         pass
 
     def unmarshal_list(self, body):
-        """
-        Unmarshal a list.
+        """Unmarshal a list.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: list
         """
         pass
 
     def unmarshal_bool(self, body):
-        """
-        Unmarshal a boolean.
+        """Unmarshal a boolean.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: str
         """
         pass
 
     def marshal_str(self, obj):
-        """
-        Marshal a string.
+        """Marshal a string.
+
+        :param obj: Data to marshal.
+        :type  obj: str, bytes, unicode
+        :rtype: bytes in python3, str in python2
         """
         pass
 
@@ -146,14 +161,20 @@ class ContentHandler(object):
         pass
 
     def marshal_list(self, obj):
-        """
-        Marshal a list.
+        """Marshal a list.
+
+        :param obj: Data to marshal.
+        :type  obj: list
+        :rtype: bytes in python3, str in python2
         """
         pass
 
     def marshal_dict(self, obj):
-        """
-        Marshal a dictionary.
+        """Marshal a dictionary.
+
+        :param obj: Data to marshal.
+        :type  obj: dict
+        :rtype: bytes in python3, str in python2
         """
         pass
 
