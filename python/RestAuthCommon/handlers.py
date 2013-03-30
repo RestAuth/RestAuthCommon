@@ -235,12 +235,25 @@ class FormContentHandler(ContentHandler):
     """Handler for HTML Form urlencoded content.
 
     .. WARNING:: Because of the limitations of urlencoded forms, this handler
-       does not support nested dictionaries or unicode characters.
+       does not support nested dictionaries.
     """
 
     mime = 'application/x-www-form-urlencoded'
     """The mime-type used by this content handler is
     'application/x-www-form-urlencoded'."""
+
+    def _decode_dict(self, d):
+        decoded = {}
+        for key, value in d.items():
+            key = key.decode('utf-8')
+            if isinstance(value, (str, unicode)):
+                decoded[key] = value.decode('utf-8')
+            elif isinstance(value, list):
+                decoded[key] = [e.decode('utf-8') for e in value]
+            elif isinstance(value, dict):
+                decoded[key] = self._decode_dict(value)
+
+        return decoded
 
     def unmarshal_dict(self, body):
         parsed_dict = parse_qs(body, True)
@@ -250,17 +263,31 @@ class FormContentHandler(ContentHandler):
                 ret_dict[key] = value[0]
             else:
                 ret_dict[key] = value
+
+        if sys.version_info < (3, 0):
+            ret_dict = self._decode_dict(ret_dict)
+
         return ret_dict
 
     def unmarshal_list(self, body):
         if body == '':
             return []
-        return parse_qs(body, True)['list']
+
+        parsed = parse_qs(body, True)['list']
+
+        if sys.version_info < (3, 0):
+            parsed = [e.decode('utf-8') for e in parsed]
+        return parsed
 
     def unmarshal_str(self, body):
-        return parse_qs(body, True)['str'][0]
+        parsed = parse_qs(body, True)['str'][0]
+        if sys.version_info < (3, 0):
+            parsed = parsed.decode('utf-8')
+        return parsed
 
     def marshal_str(self, obj):
+        if sys.version_info < (3, 0):
+            obj = obj.encode('utf-8')
         return urlencode({'str': obj})
 
     def marshal_bool(self, obj):
@@ -269,10 +296,27 @@ class FormContentHandler(ContentHandler):
         else:
             return "0"
 
+    def _encode_dict(self, d):
+        encoded = {}
+        for key, value in d.items():
+            key = key.encode('utf-8')
+            if isinstance(value, (str, unicode)):
+                encoded[key] = value.encode('utf-8')
+            elif isinstance(value, list):
+                encoded[key] = [e.encode('utf-8') for e in value]
+            elif isinstance(value, dict):
+                encoded[key] = self._encode_dict(value)
+
+        return encoded
+
     def marshal_dict(self, obj):
+        if sys.version_info < (3, 0):
+            obj = self._encode_dict(obj)
         return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
+        if sys.version_info < (3, 0):
+            obj = [e.encode('utf-8') for e in obj]
         return urlencode({'list': obj}, doseq=True)
 
 
