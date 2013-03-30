@@ -13,16 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import unicode_literals
+
 import json
 import sys
 import unittest
 
 from RestAuthCommon.handlers import ContentHandler
+from RestAuthCommon.handlers import JSONContentHandler
+
 
 class TestHandler(ContentHandler):
     def __init__(self, librarypath):
         self.librarypath = librarypath
     pass
+
 
 class TestLibraryImport(unittest.TestCase):
     def test_basicimport(self):
@@ -40,3 +45,52 @@ class TestLibraryImport(unittest.TestCase):
             self.fail("Access to self.library should throw an exception.")
         except ImportError:
             pass
+
+
+class TestContentHandler(object):
+    strings = [
+        '',
+        'foobar',
+        'whatever',
+        'unicode1 \u6111',
+        'unicode2 \u6155',
+    ]
+
+    def test_str(self):
+        for teststr in self.strings:
+            marshalled = self.handler.marshal_str(teststr)
+            self.assertTrue(isinstance(marshalled, str))
+
+            unmarshalled = self.handler.unmarshal_str(marshalled)
+            self.assertEqual(teststr, unmarshalled)
+
+        if sys.version_info < (3, 0):  # test for python2
+            for teststr in self.strings:
+                teststr = unicode(teststr)
+
+                marshalled = self.handler.marshal_str(teststr)
+                self.assertTrue(isinstance(marshalled, str))
+
+                unmarshalled = self.handler.unmarshal_str(marshalled)
+                self.assertEqual(teststr, unmarshalled)
+
+        if sys.version_info > (3, 0):
+            for teststr in self.strings:
+                teststr = bytes(teststr, 'utf-8')
+
+                marshalled = self.handler.marshal_str(teststr)
+                self.assertTrue(isinstance(marshalled, str))
+                unmarshalled = self.handler.unmarshal_str(marshalled)
+                self.assertEqual(teststr.decode('utf-8'), unmarshalled)
+
+    def test_dict(self):
+        testdict = {'foo': 'bar', 'nested': {'foo': 'bar'}}
+
+        marshalled = self.handler.marshal_dict(testdict)
+        unmarshalled = self.handler.unmarshal_dict(marshalled)
+        self.assertEqual(testdict, unmarshalled)
+
+
+class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
+    def setUp(self):
+        self.handler = JSONContentHandler()
