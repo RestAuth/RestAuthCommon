@@ -70,7 +70,12 @@ class ContentHandler(object):
         :rtype: str
         :raise error.MarshalError: If marshalling goes wrong in any way.
         """
-        func_name = 'marshal_%s' % (obj.__class__.__name__)
+        if isinstance(obj, (bytes, str)):
+            func_name = 'marshal_str'
+        if sys.version_info < (3, 0) and isinstance(obj, unicode):
+            func_name = 'marshal_str'
+        else:
+            func_name = 'marshal_%s' % (obj.__class__.__name__)
         try:
             func = getattr(self, func_name)
             return func(obj)
