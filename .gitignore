@@ -9,4 +9,5 @@ dist/
 bin/
 include/
 lib/
+share/
 Makefile.local
