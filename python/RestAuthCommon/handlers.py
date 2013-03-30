@@ -166,6 +166,8 @@ class JSONContentHandler(ContentHandler):
     mime = 'application/json'
     """The mime-type used by this content handler is 'application/json'."""
 
+    SEPARATORS = (',', ':')
+
     class ByteEncoder(libjson.JSONEncoder):
         def default(self, obj):
             if sys.version_info >= (3, 0) and isinstance(obj, bytes):
@@ -202,28 +204,28 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            return libjson.dumps([obj], separators=(',', ':'),
+            return libjson.dumps([obj], separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_bool(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'),
+            return libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'),
+            return libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
-            return libjson.dumps(obj, separators=(',', ':'),
+            return libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
         except ValueError as e:
             raise error.MarshalError(e)
