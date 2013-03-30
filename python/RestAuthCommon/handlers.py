@@ -18,7 +18,6 @@ Classes and methods related to content handling.
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
-import sys
 try:
     import simplejson as libjson
 except ImportError:
