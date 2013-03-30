@@ -18,23 +18,16 @@ Classes and methods related to content handling.
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
-try:
-    import simplejson as libjson
-except ImportError:
-    import json as libjson
+import json as libjson
 
 try:
-    from urllib.parse import parse_qs
-    from urllib.parse import urlencode
+    from urllib.parse import parse_qs  # python3
+    from urllib.parse import urlencode  # python3
 except ImportError:
-    from urlparse import parse_qs
-    from urllib import urlencode
+    from urlparse import parse_qs  # python2
+    from urllib import urlencode  # python2
 
-try:
-    from RestAuthCommon import error
-except ImportError:
-    # python2.5 and earlier
-    import error
+from RestAuthCommon import error
 
 
 class ContentHandler(object):
