@@ -312,6 +312,13 @@ class FormContentHandler(ContentHandler):
     def marshal_dict(self, obj):
         if sys.version_info < (3, 0):
             obj = self._encode_dict(obj)
+
+        # verify that no value is a dictionary, because the unmarshalling for
+        # that doesn't work:
+        for v in obj.values():
+            if isinstance(v, dict):
+                raise error.MarshalError(
+                    "FormContentHandler doesn't support nested dictionaries.")
         return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
@@ -325,6 +332,7 @@ class XMLContentHandler(ContentHandler):
     Future location of the XML content handler. This handler is not yet
     implemented!  """
     mime = 'application/xml'
+
 
 CONTENT_HANDLERS = {
     'application/json': JSONContentHandler,

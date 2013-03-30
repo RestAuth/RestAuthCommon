@@ -9,6 +9,8 @@ restauth-common 0.6.1 (XX XXXX 2013)
    Old names are still available for now.
   * Add a minor test-suite to test the import feature.
   * Remove unused (and python2 specific) unmarshal_unicode method
+  * FromContentHandler is now almost fully implemented but does not
+    support nested dicts.
 
 restauth-common 0.6.0 (16 August 2012)
 

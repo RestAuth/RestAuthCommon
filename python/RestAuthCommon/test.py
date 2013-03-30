@@ -19,8 +19,10 @@ import json
 import sys
 import unittest
 
+from RestAuthCommon.error import MarshalError
 from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
+from RestAuthCommon.handlers import FormContentHandler
 
 
 class TestHandler(ContentHandler):
@@ -48,24 +50,57 @@ class TestLibraryImport(unittest.TestCase):
 
 
 class TestContentHandler(object):
+    SUPPORT_UNICODE = True
+    SUPPORT_NESTED_DICTS = True
+
     strings = [
         '',
         'foobar',
         'whatever',
+    ]
+
+    unicode_strings = [
         'unicode1 \u6111',
         'unicode2 \u6155',
     ]
 
-    def test_str(self):
-        for teststr in self.strings:
+    lists = [
+        [],
+        ['abc'],
+        ['abc', 'def'],
+    ]
+
+    unicode_lists = [
+        ['unicode1 \u6111'],
+        ['unicode1 \u6111', 'unicode1 \u6155'],
+    ]
+
+    dicts = [
+        {},
+        {'a': '1'},
+        {'a': '1', 'b': '2'},
+    ]
+
+    unicode_dicts = [
+        {'a': 'unicode1 \u6111'},
+    ]
+
+    nested_dicts = [
+        {'a': {'foo': 'bar'}},
+        {'a': {'foo': 'bar'}, 'b': '2'},
+    ]
+
+    def stringtest(self, strings):
+        for teststr in strings:
             marshalled = self.handler.marshal_str(teststr)
             self.assertTrue(isinstance(marshalled, str))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
             self.assertEqual(teststr, unmarshalled)
 
-        if sys.version_info < (3, 0):  # test for python2
-            for teststr in self.strings:
+        # convert strings to unicodes in python2
+        if sys.version_info < (3, 0):
+            for teststr in strings:
                 teststr = unicode(teststr)
 
                 marshalled = self.handler.marshal_str(teststr)
@@ -74,8 +109,9 @@ class TestContentHandler(object):
                 unmarshalled = self.handler.unmarshal_str(marshalled)
                 self.assertEqual(teststr, unmarshalled)
 
-        if sys.version_info > (3, 0):
-            for teststr in self.strings:
+        # convert strings to bytes in python3
+        if sys.version_info >= (3, 0):
+            for teststr in strings:
                 teststr = bytes(teststr, 'utf-8')
 
                 marshalled = self.handler.marshal_str(teststr)
@@ -83,14 +119,52 @@ class TestContentHandler(object):
                 unmarshalled = self.handler.unmarshal_str(marshalled)
                 self.assertEqual(teststr.decode('utf-8'), unmarshalled)
 
-    def test_dict(self):
-        testdict = {'foo': 'bar', 'nested': {'foo': 'bar'}}
+    def test_str(self):
+        self.stringtest(self.strings)
+        if self.SUPPORT_UNICODE:
+            self.stringtest(self.unicode_strings)
 
-        marshalled = self.handler.marshal_dict(testdict)
-        unmarshalled = self.handler.unmarshal_dict(marshalled)
-        self.assertEqual(testdict, unmarshalled)
+    def dicttest(self, dicts):
+        for testdict in dicts:
+            marshalled = self.handler.marshal_dict(testdict)
+            self.assertTrue(isinstance(marshalled, str))
+            unmarshalled = self.handler.unmarshal_dict(marshalled)
+            self.assertEqual(testdict, unmarshalled)
+
+    def test_dict(self):
+        self.dicttest(self.dicts)
+        if self.SUPPORT_NESTED_DICTS:
+            self.dicttest(self.nested_dicts)
+
+        if self.SUPPORT_UNICODE:
+            self.dicttest(self.unicode_dicts)
+
+    def listtest(self, lists):
+        for testlist in lists:
+            marshalled = self.handler.marshal_list(testlist)
+            self.assertTrue(isinstance(marshalled, str))
+
+            unmarshalled = self.handler.unmarshal_list(marshalled)
+            self.assertEqual(testlist, unmarshalled)
+
+    def test_list(self):
+        self.listtest(self.lists)
+        if self.SUPPORT_UNICODE:
+            self.listtest(self.unicode_lists)
 
 
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
         self.handler = JSONContentHandler()
+
+
+class TestFormContentHandler(unittest.TestCase, TestContentHandler):
+    SUPPORT_NESTED_DICTS = False
+
+    def setUp(self):
+        self.handler = FormContentHandler()
+
+    def test_nesteddicts(self):
+        for testdict in self.nested_dicts:
+            self.assertRaises(MarshalError,
+                              self.handler.marshal_dict, (testdict))
