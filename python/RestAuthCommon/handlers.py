@@ -241,13 +241,18 @@ class FormContentHandler(ContentHandler):
     'application/x-www-form-urlencoded'."""
 
     def unmarshal_dict(self, body):
-        return_dict = {}
-        for key, value in parse_qs(body, True).iteritems():
-            return_dict[key] = value[0]
-        return return_dict
+        return parse_qs(body, True)
+
+    def unmarshal_list(self, body):
+        if body == '':
+            return []
+        return parse_qs(body, True)['list']
+
+    def unmarshal_str(self, body):
+        return parse_qs(body, True)['str'][0]
 
     def marshal_str(self, obj):
-        return obj
+        return urlencode({'str': obj.encode('utf-8')})
 
     def marshal_bool(self, obj):
         if obj:
@@ -256,11 +261,10 @@ class FormContentHandler(ContentHandler):
             return "0"
 
     def marshal_dict(self, obj):
-        return urlencode(obj)
+        return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
-        d = dict([('key%s' % i, obj[i]) for i in range(0, len(obj))])
-        return self.marshal_dict(d)
+        return urlencode({'list': obj}, doseq=True)
 
 
 class XMLContentHandler(ContentHandler):
