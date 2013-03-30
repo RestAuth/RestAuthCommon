@@ -273,15 +273,15 @@ Mapping of MIME types to their respective handler implemenation. You can use
 this dictionary to dynamically look up a content handler if you do not know the
 requested content type in advance.
 
-================================= ========================== =================
+================================= ======================================== =================
 MIME type                         handler                    notes
-================================= ========================== =================
-application/json                  :py:class:`.handlers.json` default
-application/x-www-form-urlencoded :py:class:`.handlers.form` Only use this for
+================================= ======================================== =================
+application/json                  :py:class:`.handlers.JSONContentHandler` default
+application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler` Only use this for
                                                              testing
-application/xml                   :py:class:`.handlers.xml`  not yet
-                                                             implemented
-================================= ========================== =================
+application/xml                   :py:class:`.handlers.XMLContentHandler`  not yet
+                                                                           implemented
+================================= ======================================== =================
 
 If you want to provide your own implementation of a
 :py:class:`.ContentHandler`, you can add it to this dictionary with the
