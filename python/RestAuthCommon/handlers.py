@@ -327,6 +327,14 @@ class FormContentHandler(ContentHandler):
         return urlencode({'list': obj}, doseq=True)
 
 
+class PickleContentHandler(ContentHandler):
+    mime = 'application/pickle'
+
+
+class YamlContentHandler(ContentHandler):
+    mime = 'application/yaml'
+
+
 class XMLContentHandler(ContentHandler):
     """
     Future location of the XML content handler. This handler is not yet
@@ -336,8 +344,10 @@ class XMLContentHandler(ContentHandler):
 
 CONTENT_HANDLERS = {
     'application/json': JSONContentHandler,
-    'application/xml': XMLContentHandler,
+    'application/pickle': PickleContentHandler,
     'application/x-www-form-urlencoded': FormContentHandler,
+    'application/xml': XMLContentHandler,
+    'application/yaml': YamlContentHandler,
 }
 """
 Mapping of MIME types to their respective handler implemenation. You can use
