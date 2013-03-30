@@ -530,6 +530,7 @@ appropriate MIME type as the key.
 """
 
 # old names, for compatability:
+content_handler = ContentHandler
 json = JSONContentHandler
 xml = XMLContentHandler
 form = FormContentHandler
