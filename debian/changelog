@@ -6,6 +6,7 @@ restauth-common (0.6.0-33-g3cebde1-1) unstable; urgency=low
   * Use the new test-suite.
   * Add python(3)-yaml to build-dependencies.
   * VCS-* links in debian/control are now https.
+  * Add and honour X-Python(3)-Version fields
 
  -- Mathias Ertl <mati@restauth.net>  Sun, 31 Mar 2013 21:15:12 +0200
 

@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PYVERS=$(shell pyversions -sv) $(shell py3versions -sv)
+PYVERS=$(shell pyversions -rv) $(shell py3versions -rv)
 
 pkgdir = $(CURDIR)/debian/python$(if $(patsubst 3.%,,$(1)),,3)-restauth-common
 
