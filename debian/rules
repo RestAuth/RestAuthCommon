@@ -26,3 +26,10 @@ override_dh_auto_build: ${PYVERS:%=build-python%}
 
 override_dh_auto_install: ${PYVERS:%=install-python%}
 	#dh_auto_install
+
+test-python%:
+	python$* mimeparse_test.py
+
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+override_dh_auto_test: ${PYVERS:%=test-python%}
+endif
