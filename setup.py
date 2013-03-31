@@ -20,17 +20,21 @@ url = 'https://common.restauth.net'
 
 import os
 import re
-import sys
 import shutil
-import time
-from os.path import exists
-from distutils.core import setup, Command
-from subprocess import Popen, PIPE
+import sys
+import unittest
+
 from distutils.command.clean import clean as _clean
-#from distutils.command.build import build as _build
+from distutils.core import Command
+from distutils.core import setup
+from os.path import exists
+from subprocess import PIPE
+from subprocess import Popen
 
 LATEST_RELEASE = '0.6.0'
 
+if 'python' not in sys.path:
+    sys.path.insert(0, 'python')
 
 class build_doc(Command):
     description = "Build API documentation."
@@ -40,7 +44,7 @@ class build_doc(Command):
         pass
 
     def finalize_options(self):
-        command = self.get_command_name()
+        pass
 
     def run(self):
         version = get_version()
@@ -58,7 +62,6 @@ def get_version():
     if exists('.version'):
         version = open('.version').readlines()[0]
     elif os.path.exists('.git'):  # get from git
-        date = time.strftime('%Y.%m.%d')
         cmd = ['git', 'describe', 'master']
         p = Popen(cmd, stdout=PIPE)
         version = p.communicate()[0].decode('utf-8')
@@ -102,16 +105,16 @@ class prepare_debian_changelog(Command):
             sys.exit(0)
 
         version = get_version()
-        cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog']
+        cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog', ]
         p = Popen(cmd)
         p.communicate()
 
 
 class clean(_clean):
     def run(self):
-        cmd = ['make', '-C', 'doc', 'clean']
+        cmd = ['make', '-C', 'doc', 'clean', ]
         p = Popen(cmd, stdout=PIPE)
-        version = p.communicate()[0].decode('utf-8')
+        p.communicate()
 
         if os.path.exists('build'):
             shutil.rmtree('build')
@@ -120,7 +123,65 @@ class clean(_clean):
         if os.path.exists('MANIFEST'):
             os.remove('MANIFEST')
 
+        coverage = os.path.join('doc', 'coverage')
+        if os.path.exists(coverage):
+            print('rm -r %s' % coverage)
+            shutil.rmtree(coverage)
+
         _clean.run(self)
+
+class test(Command):
+    description = "Run test suite."
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        import RestAuthCommon
+        from RestAuthCommon import test
+        unittest.main(RestAuthCommon)
+
+
+class coverage(Command):
+    description = "Run test suite and generate code coverage analysis."
+    user_options = []
+
+    def initialize_options(self):
+        self.dir = os.path.join('doc', 'coverage')
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            import coverage
+        except ImportError:
+            print("You need coverage.py installed.")
+            return
+
+        if not os.path.exists(self.dir):
+            os.makedirs(self.dir)
+
+        omit = [
+            'python/RestAuthCommon/test.py',
+        ]
+
+        cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
+                                branch=True, omit=omit)
+        cov.start()
+
+        import RestAuthCommon
+        from RestAuthCommon import test
+        unittest.main(RestAuthCommon, argv=['setup.py', 'test'], exit=False)
+
+        cov.stop()
+        cov.save()
+        cov.html_report(directory=self.dir)
+
 
 setup(
     name=name,
@@ -144,7 +205,7 @@ setup(
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Topic :: System :: Systems Administration :: "
+        "Topic :: System :: Systems Administration :: ",
         "Authentication/Directory",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -153,7 +214,9 @@ setup(
     cmdclass={
         'build_doc': build_doc,
         'clean': clean,
+        'coverage': coverage,
         'version': version,
+        'test': test,
         'prepare_debian_changelog': prepare_debian_changelog,
     },
     long_description="""RestAuthCommon is a small set of classes used by both

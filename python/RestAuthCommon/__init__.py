@@ -19,6 +19,7 @@ implementations.
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
+import sys
 import stringprep
 
 
@@ -41,7 +42,7 @@ def resource_validator(name):
 
     # filter various dangerous characters
     for enc_char in name:
-        if enc_char.__class__ == str:
+        if sys.version_info < (3, 0) and isinstance(enc_char, str):
             enc_char = enc_char.decode('utf-8')
 
         if stringprep.in_table_c21_c22(enc_char):
