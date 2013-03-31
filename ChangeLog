@@ -1,16 +1,18 @@
 restauth-common 0.6.1 (XX XXXX 2013)
 
   * Various python3 compatability fixes
-  * Add a requirements.txt file
   * Rename content handlers to standard python camel case:
     * json --> JSONContentHandler
     * xml --> XMLContentHandler
     * form --> FormContentHandler
    Old names are still available for now.
+  * Two new ContentHandlers: PickleContentHandler and YamlContentHandler
+  * Add a requirements.txt file
   * Add a minor test-suite to test the import feature.
   * Remove unused (and python2 specific) unmarshal_unicode method
   * FromContentHandler is now almost fully implemented but does not
     support nested dicts.
+  * Add the setup.py coverage target.
 
 restauth-common 0.6.0 (16 August 2012)
 

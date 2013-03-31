@@ -13,3 +13,5 @@ share/
 Makefile.local
 py2/
 py3/
+doc/coverage
+.coverage
