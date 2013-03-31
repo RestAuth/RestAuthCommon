@@ -4,6 +4,8 @@ restauth-common (0.6.0-33-g3cebde1-1) unstable; urgency=low
   * No longer manually remove sphinx .js files, this is now done by
     dh_sphinxdoc.
   * Use the new test-suite.
+  * Add python(3)-yaml to build-dependencies.
+  * VCS-* links in debian/control are now https.
 
  -- Mathias Ertl <mati@restauth.net>  Sun, 31 Mar 2013 21:15:12 +0200
 
