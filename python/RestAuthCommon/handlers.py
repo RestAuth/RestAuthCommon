@@ -210,10 +210,17 @@ class JSONContentHandler(ContentHandler):
     def unmarshal_str(self, body):
         try:
             pure = libjson.loads(body, cls=self.ByteDecoder)
-            if pure.__class__ != list or len(pure) != 1:
+            if isinstance(pure, list) or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
-            return pure[0]
+            string = pure[0]
+
+            # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
+            # not unicode.
+            if sys.version_info <= 3.0 and isinstance(string, str):
+                return unicode(string)
+
+            return string
         except ValueError as e:
             raise error.UnmarshalError(e)
 
