@@ -217,7 +217,7 @@ class JSONContentHandler(ContentHandler):
 
             # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
             # not unicode.
-            if sys.version_info <= 3.0 and isinstance(string, str):
+            if sys.version_info <= (3, 0) and isinstance(string, str):
                 return unicode(string)
 
             return string
