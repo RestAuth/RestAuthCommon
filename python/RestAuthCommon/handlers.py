@@ -210,7 +210,7 @@ class JSONContentHandler(ContentHandler):
     def unmarshal_str(self, body):
         try:
             pure = libjson.loads(body, cls=self.ByteDecoder)
-            if isinstance(pure, list) or len(pure) != 1:
+            if not isinstance(pure, list) or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
             string = pure[0]
