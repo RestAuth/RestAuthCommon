@@ -123,6 +123,11 @@ class clean(_clean):
         if os.path.exists('MANIFEST'):
             os.remove('MANIFEST')
 
+        coverage = os.path.join('doc', 'coverage')
+        if os.path.exists(coverage):
+            print('rm -r %s' % coverage)
+            shutil.rmtree(coverage)
+
         _clean.run(self)
 
 class test(Command):
@@ -139,6 +144,44 @@ class test(Command):
         import RestAuthCommon
         from RestAuthCommon import test
         unittest.main(RestAuthCommon)
+
+
+class coverage(Command):
+    description = "Run test suite and generate code coverage analysis."
+    user_options = []
+
+    def initialize_options(self):
+        self.dir = os.path.join('doc', 'coverage')
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            import coverage
+        except ImportError:
+            print("You need coverage.py installed.")
+            return
+
+        if not os.path.exists(self.dir):
+            os.makedirs(self.dir)
+
+        omit = [
+            'python/RestAuthCommon/test.py',
+        ]
+
+        cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
+                                branch=True, omit=omit)
+        cov.start()
+
+        import RestAuthCommon
+        from RestAuthCommon import test
+        unittest.main(RestAuthCommon, argv=['setup.py', 'test'], exit=False)
+
+        cov.stop()
+        cov.save()
+        cov.html_report(directory=self.dir)
+
 
 setup(
     name=name,
@@ -171,6 +214,7 @@ setup(
     cmdclass={
         'build_doc': build_doc,
         'clean': clean,
+        'coverage': coverage,
         'version': version,
         'test': test,
         'prepare_debian_changelog': prepare_debian_changelog,
