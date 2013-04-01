@@ -24,6 +24,7 @@ import shutil
 import sys
 import unittest
 
+from distutils.command.clean import clean as _clean
 from subprocess import PIPE
 from subprocess import Popen
 
@@ -121,16 +122,7 @@ class prepare_debian_changelog(Command):
         p.communicate()
 
 
-class clean(Command):
-    description = "Clean any files created by this script."
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
+class clean(_clean):
     def run(self):
         cmd = ['make', '-C', 'doc', 'clean', ]
         p = Popen(cmd, stdout=PIPE)
@@ -147,6 +139,8 @@ class clean(Command):
         if os.path.exists(coverage):
             print('rm -r %s' % coverage)
             shutil.rmtree(coverage)
+
+        _clean.run(self)
 
 
 class test(Command):
