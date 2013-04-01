@@ -1,12 +1,13 @@
-restauth-common (0.6.0-36-gbcf8549-1) unstable; urgency=low
+restauth-common (0.6.0-37-g08bd4fa-1) unstable; urgency=low
   
   * Preparation for the new upstream release
   * No longer manually remove sphinx .js files, this is now done by
     dh_sphinxdoc.
   * Use the new test-suite.
   * Add python(3)-yaml to build-dependencies.
+  * Switch debian package to its own git repository.
   * VCS-* links in debian/control are now https.
-  * Add and honour X-Python(3)-Version fields
+  * Add and honour X-Python(3)-Version fields.
 
  -- Mathias Ertl <mati@restauth.net>  Sun, 31 Mar 2013 21:15:12 +0200
 
