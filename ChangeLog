@@ -1,4 +1,4 @@
-restauth-common 0.6.1 (XX XXXX 2013)
+restauth-common 0.6.1 (01 April 2013)
 
   * Various python3 compatability fixes
   * Rename content handlers to standard python camel case:

@@ -31,7 +31,7 @@ from os.path import exists
 from subprocess import PIPE
 from subprocess import Popen
 
-LATEST_RELEASE = '0.6.0'
+LATEST_RELEASE = '0.6.1'
 
 if 'python' not in sys.path:
     sys.path.insert(0, 'python')
