@@ -33,7 +33,7 @@ from subprocess import Popen
 
 LATEST_RELEASE = '0.6.1'
 
-requires = ['pyyaml>=3.10', ]
+requires = ['pyyaml (>=3.10)', ]
 
 if sys.version_info < (2, 6):
     print('ERROR: Sphinx requires at least Python 2.6 to run.')
@@ -201,9 +201,8 @@ setup(
     package_dir={'': 'python'},
     packages=['RestAuthCommon'],
     keywords=[],
-    requires=[],
+    requires=requires,
     license="GNU General Public License (GPL) v3",
-    install_requires=requires,
     classifiers=[
         "Development Status :: 6 - Mature",
         "Environment :: Other Environment",

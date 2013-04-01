@@ -1,6 +1,5 @@
 restauth-common 0.6.2 (XX XXXX XXXX)
 
-  * add python2 identifier for pypi.
 
 restauth-common 0.6.1 (01 April 2013)
 
@@ -17,6 +16,8 @@ restauth-common 0.6.1 (01 April 2013)
   * FromContentHandler is now almost fully implemented but does not
     support nested dicts.
   * Add the setup.py coverage target.
+  * add various new identifiers for pypi.
+  * Add useful requires directive to install pyyaml
 
 restauth-common 0.6.0 (16 August 2012)
 
