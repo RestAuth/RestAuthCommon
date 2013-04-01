@@ -205,7 +205,6 @@ setup(
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Topic :: System :: Systems Administration :: ",
         "Authentication/Directory",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
