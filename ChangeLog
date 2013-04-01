@@ -1,3 +1,7 @@
+restauth-common 0.6.2 (XX XXXX XXXX)
+
+  * add python2 identifier for pypi.
+
 restauth-common 0.6.1 (01 April 2013)
 
   * Various python3 compatability fixes
