@@ -24,18 +24,16 @@ import shutil
 import sys
 import unittest
 
-from distutils.command.clean import clean as _clean
-from distutils.core import Command
-from distutils.core import setup
-from os.path import exists
 from subprocess import PIPE
 from subprocess import Popen
 
 try:
+    from setuptools import Command
     from setuptools import setup
 except ImportError:
     import distribute_setup
     distribute_setup.use_setuptools()
+    from setuptools import Command
     from setuptools import setup
 
 LATEST_RELEASE = '0.6.1'
@@ -72,7 +70,7 @@ class build_doc(Command):
 
 def get_version():
     version = LATEST_RELEASE
-    if exists('.version'):
+    if os.path.exists('.version'):
         version = open('.version').readlines()[0]
     elif os.path.exists('.git'):  # get from git
         cmd = ['git', 'describe', 'master']
@@ -123,7 +121,16 @@ class prepare_debian_changelog(Command):
         p.communicate()
 
 
-class clean(_clean):
+class clean(Command):
+    description = "Clean any files created by this script."
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
     def run(self):
         cmd = ['make', '-C', 'doc', 'clean', ]
         p = Popen(cmd, stdout=PIPE)
@@ -141,7 +148,6 @@ class clean(_clean):
             print('rm -r %s' % coverage)
             shutil.rmtree(coverage)
 
-        _clean.run(self)
 
 class test(Command):
     description = "Run test suite."
