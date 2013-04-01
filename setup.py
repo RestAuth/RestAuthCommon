@@ -31,7 +31,7 @@ from os.path import exists
 from subprocess import PIPE
 from subprocess import Popen
 
-LATEST_RELEASE = '0.6.0'
+LATEST_RELEASE = '0.6.1'
 
 if 'python' not in sys.path:
     sys.path.insert(0, 'python')
@@ -197,19 +197,18 @@ setup(
     requires=[],
     license="GNU General Public License (GPL) v3",
     classifiers=[
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Operating System :: OS Independent",
+        "Development Status :: 6 - Mature",
         "Environment :: Other Environment",
-        "Development Status :: 4 - Beta",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
-        "Topic :: System :: Systems Administration :: ",
-        "Authentication/Directory",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Environment :: Web Environment",
+        "Topic :: System :: Systems Administration :: Authentication/Directory",
     ],
     cmdclass={
         'build_doc': build_doc,
