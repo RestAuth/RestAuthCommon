@@ -1,6 +1,3 @@
-restauth-common 0.6.2 (XX XXXX XXXX)
-
-
 restauth-common 0.6.1 (01 April 2013)
 
   * Various python3 compatability fixes
@@ -18,6 +15,8 @@ restauth-common 0.6.1 (01 April 2013)
   * Add the setup.py coverage target.
   * add various new identifiers for pypi.
   * Add useful requires directive to install pyyaml
+  * Switch from distutils to distribute, enables automatic installation of
+  	dependencies (pyyaml).
 
 restauth-common 0.6.0 (16 August 2012)
 

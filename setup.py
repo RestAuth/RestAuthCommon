@@ -31,9 +31,16 @@ from os.path import exists
 from subprocess import PIPE
 from subprocess import Popen
 
+try:
+    from setuptools import setup
+except ImportError:
+    import distribute_setup
+    distribute_setup.use_setuptools()
+    from setuptools import setup
+
 LATEST_RELEASE = '0.6.1'
 
-requires = ['pyyaml (>=3.10)', ]
+requires = ['pyyaml>=3.10', ]
 
 if sys.version_info < (2, 6):
     print('ERROR: Sphinx requires at least Python 2.6 to run.')
@@ -201,7 +208,7 @@ setup(
     package_dir={'': 'python'},
     packages=['RestAuthCommon'],
     keywords=[],
-    requires=requires,
+    install_requires=requires,
     license="GNU General Public License (GPL) v3",
     classifiers=[
         "Development Status :: 6 - Mature",
