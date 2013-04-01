@@ -49,6 +49,10 @@ class ContentHandler(object):
     time imports. Use self.load_library() to load that library into your
     namespace."""
 
+    SUPPORT_NESTED_DICTS = True
+    """Set to false if your content handler does not support nested
+    dictionaries as used i.e. during user-creation."""
+
     _library = None
 
     @property
@@ -297,6 +301,8 @@ class FormContentHandler(ContentHandler):
     mime = 'application/x-www-form-urlencoded'
     """The mime-type used by this content handler is
     'application/x-www-form-urlencoded'."""
+
+    SUPPORT_NESTED_DICTS = False
 
     def _decode_dict(self, d):
         decoded = {}
