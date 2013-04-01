@@ -1,6 +1,6 @@
-restauth-common (0.6.0-37-g08bd4fa-1) unstable; urgency=low
+restauth-common (0.6.1-1) unstable; urgency=low
   
-  * Preparation for the new upstream release
+  * Bump from upstream.
   * No longer manually remove sphinx .js files, this is now done by
     dh_sphinxdoc.
   * Use the new test-suite.
