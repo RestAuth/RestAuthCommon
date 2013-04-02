@@ -1,8 +1,10 @@
 #!/usr/bin/make -f
 
-PYVERS=$(shell pyversions -rv) $(shell py3versions -rv)
+PY2VERS=$(shell pyversions -rv)
+PY3VERS=$(shell py3versions -rv)
 
-pkgdir = $(CURDIR)/debian/python$(if $(patsubst 3.%,,$(1)),,3)-restauth-common
+PY2DIR = $(CURDIR)/debian/python-restauth-common
+PY3DIR = $(CURDIR)/debian/python3-restauth-common
 
 %:
 	dh $@ --with python3,python2
@@ -10,26 +12,30 @@ pkgdir = $(CURDIR)/debian/python$(if $(patsubst 3.%,,$(1)),,3)-restauth-common
 override_dh_installchangelogs:
 	dh_installchangelogs ChangeLog
 
-install-python%:
+install-python2%:
 	dh_testdir
-	python$* setup.py install --force --root $(call pkgdir,$*) --no-compile -O0 --install-layout=deb
+	python2$* setup.py install --force --root ${PY2DIR} --no-compile -O0 --install-layout=deb
+
+install-python3%:
+	dh_testdir
+	python3$* setup.py install --force --root ${PY3DIR} --no-compile -O0 --install-layout=deb
 
 build-python%:
 	dh_testdir
 	python$* setup.py build
 
-override_dh_auto_build: ${PYVERS:%=build-python%}
+override_dh_auto_build: ${PY2VERS:%=build-python%} ${PY3VERS:%=build-python%}
 	dh_testdir
 	python setup.py build_doc
 
 	#dh_auto_build
 
-override_dh_auto_install: ${PYVERS:%=install-python%}
+override_dh_auto_install: ${PY2VERS:%=install-python%} ${PY3VERS:%=install-python%}
 	#dh_auto_install
 
 test-python%:
 	python$* setup.py test
 
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
-override_dh_auto_test: ${PYVERS:%=test-python%}
+override_dh_auto_test: ${PY2VERS:%=test-python%} ${PY3VERS:%=install-python%}
 endif
