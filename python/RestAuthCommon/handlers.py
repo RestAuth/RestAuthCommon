@@ -50,7 +50,7 @@ class ContentHandler(object):
     namespace."""
 
     SUPPORT_NESTED_DICTS = True
-    """Set to false if your content handler does not support nested
+    """Set to False if your content handler does not support nested
     dictionaries as used i.e. during user-creation."""
 
     _library = None
@@ -189,9 +189,9 @@ class ContentHandler(object):
 
 
 class JSONContentHandler(ContentHandler):
-    """
-    Concrete implementation of a :py:class:`ContentHandler` that uses JSON.
-    This is the default content handler in both server and client library.
+    """Handler for JSON encoded content.
+
+    .. seealso:: http://www.json.org, http://en.wikipedia.org/wiki/JSON
     """
 
     mime = 'application/json'
@@ -408,7 +408,14 @@ class FormContentHandler(ContentHandler):
 
 
 class PickleContentHandler(ContentHandler):
+    """Handler for pickle-encoded content.
+
+    .. seealso:: http://docs.python.org/2/library/pickle.html,
+       http://en.wikipedia.org/wiki/Pickle_(Python)
+    """
+
     mime = 'application/pickle'
+    """The mime-type used by this content handler is 'application/pickle'."""
 
     def marshal_str(self, obj):
         try:
@@ -453,7 +460,15 @@ class PickleContentHandler(ContentHandler):
 
 
 class YamlContentHandler(ContentHandler):
+    """Handler for YAML encoded content.
+
+    .. NOTE:: This handler requires the third-party py-yaml library.
+
+    .. seealso:: http://www.yaml.org/, http://en.wikipedia.org/wiki/YAML
+    """
     mime = 'application/yaml'
+    """The mime-type used by this content handler is 'application/yaml'."""
+
     librarypath = 'yaml'
 
     def marshal_str(self, obj):
@@ -509,9 +524,10 @@ class YamlContentHandler(ContentHandler):
 
 
 class XMLContentHandler(ContentHandler):
+    """Future location of the XML content handler.
+
+    .. WARNING:: This handler is not yet implemented!
     """
-    Future location of the XML content handler. This handler is not yet
-    implemented!  """
     mime = 'application/xml'
 
 
@@ -527,15 +543,15 @@ Mapping of MIME types to their respective handler implemenation. You can use
 this dictionary to dynamically look up a content handler if you do not know the
 requested content type in advance.
 
-================================= ======================================== =================
-MIME type                         handler                    notes
-================================= ======================================== =================
-application/json                  :py:class:`.handlers.JSONContentHandler` default
-application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler` Only use this for
-                                                             testing
-application/xml                   :py:class:`.handlers.XMLContentHandler`  not yet
-                                                                           implemented
-================================= ======================================== =================
+================================= ==========================================
+MIME type                         Handler
+================================= ==========================================
+application/json                  :py:class:`.handlers.JSONContentHandler`
+application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler`
+application/pickle                :py:class:`.handlers.PickleContentHandler`
+application/xml                   :py:class:`.handlers.XMLContentHandler`
+application/yaml                  :py:class:`.handlers.YamlContentHandler`
+================================= ==========================================
 
 If you want to provide your own implementation of a
 :py:class:`.ContentHandler`, you can add it to this dictionary with the

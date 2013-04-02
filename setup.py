@@ -25,13 +25,25 @@ import sys
 import unittest
 
 from distutils.command.clean import clean as _clean
-from distutils.core import Command
-from distutils.core import setup
-from os.path import exists
 from subprocess import PIPE
 from subprocess import Popen
 
+try:
+    from setuptools import Command
+    from setuptools import setup
+except ImportError:
+    import distribute_setup
+    distribute_setup.use_setuptools()
+    from setuptools import Command
+    from setuptools import setup
+
 LATEST_RELEASE = '0.6.1'
+
+requires = ['pyyaml>=3.10', ]
+
+if sys.version_info < (2, 6):
+    print('ERROR: Sphinx requires at least Python 2.6 to run.')
+    sys.exit(1)
 
 if 'python' not in sys.path:
     sys.path.insert(0, 'python')
@@ -59,7 +71,7 @@ class build_doc(Command):
 
 def get_version():
     version = LATEST_RELEASE
-    if exists('.version'):
+    if os.path.exists('.version'):
         version = open('.version').readlines()[0]
     elif os.path.exists('.git'):  # get from git
         cmd = ['git', 'describe', 'master']
@@ -130,6 +142,7 @@ class clean(_clean):
 
         _clean.run(self)
 
+
 class test(Command):
     description = "Run test suite."
     user_options = []
@@ -189,12 +202,13 @@ setup(
     description='RestAuth shared library',
     author='Mathias Ertl',
     author_email='mati@restauth.net',
+    platforms='any',
     url=url,
     download_url='http://git.fsinf.at/restauth/restauth-common',
     package_dir={'': 'python'},
     packages=['RestAuthCommon'],
     keywords=[],
-    requires=[],
+    install_requires=requires,
     license="GNU General Public License (GPL) v3",
     classifiers=[
         "Development Status :: 6 - Mature",
@@ -204,7 +218,13 @@ setup(
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.1",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
