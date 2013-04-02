@@ -1,6 +1,7 @@
 restauth-common (0.6.1-1) unstable; urgency=low
   
   * Bump from upstream.
+  * Renamed python-restauth-common-doc to just restauth-common-doc.
   * No longer manually remove sphinx .js files, this is now done by
     dh_sphinxdoc.
   * Use the new test-suite.

@@ -28,7 +28,7 @@ Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
  implementation.
 
-Package: python-restauth-common-doc
+Package: restauth-common-doc
 Architecture: all
 Depends: ${misc:Depends}, libjs-jquery, libjs-underscore
 Section: doc
