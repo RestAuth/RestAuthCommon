@@ -6,8 +6,10 @@ PY3VERS=$(shell py3versions -rv)
 PY2DIR = $(CURDIR)/debian/python-restauth-common
 PY3DIR = $(CURDIR)/debian/python3-restauth-common
 
+DH_ARGS=--with python3,python2
+
 %:
-	dh $@ --with python3,python2
+	dh $@ ${DH_ARGS}
 
 override_dh_installchangelogs:
 	dh_installchangelogs ChangeLog
@@ -27,11 +29,10 @@ build-python%:
 override_dh_auto_build: ${PY2VERS:%=build-python%} ${PY3VERS:%=build-python%}
 	dh_testdir
 	python setup.py build_doc
-
-	#dh_auto_build
+	dh_auto_build ${DH_ARGS}
 
 override_dh_auto_install: ${PY2VERS:%=install-python%} ${PY3VERS:%=install-python%}
-	#dh_auto_install
+	dh_auto_install ${DH_ARGS}
 
 test-python%:
 	python$* setup.py test
