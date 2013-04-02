@@ -29,10 +29,10 @@ build-python%:
 override_dh_auto_build: ${PY2VERS:%=build-python%} ${PY3VERS:%=build-python%}
 	dh_testdir
 	python setup.py build_doc
-	dh_auto_build ${DH_ARGS}
+	dh_auto_build
 
 override_dh_auto_install: ${PY2VERS:%=install-python%} ${PY3VERS:%=install-python%}
-	dh_auto_install ${DH_ARGS}
+	dh_auto_install
 
 test-python%:
 	python$* setup.py test
