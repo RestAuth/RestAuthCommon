@@ -3,7 +3,7 @@ Section: python
 Priority: extra
 Maintainer: Mathias Ertl <mati@restauth.net>
 Build-Depends: debhelper (>= 8), python-all (>= 2.6), python3-all,
- python-sphinx, python-yaml, python3-yaml
+ python-sphinx (>= 1.0.7), python-yaml, python3-yaml
 Standards-Version: 3.9.3
 Homepage: https://common.restauth.net
 X-Python-Version: >= 2.6
@@ -30,7 +30,7 @@ Description: common files for RestAuth reference implementations.
 
 Package: restauth-common-doc
 Architecture: all
-Depends: ${misc:Depends}, libjs-jquery, libjs-underscore
+Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Section: doc
 Description: API documentation and examples for restauth-common
  This includes sphinx documentation in HTML format and additional examples.
