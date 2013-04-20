@@ -59,7 +59,12 @@ class ContentHandler(object):
     def library(self):
         """Library configured with the ``librarypath`` class variable."""
         if self._library is None:
-            self._library = __import__(self.librarypath)
+            if '.' in self.librarypath:
+                mod, lib = self.librarypath.rsplit('.', 1)
+                _temp = __import__(mod, fromlist=[lib])
+                self._library = getattr(_temp, lib)
+            else:
+                self._library = __import__(self.librarypath)
         return self._library
 
     def marshal(self, obj):
@@ -529,6 +534,75 @@ class XMLContentHandler(ContentHandler):
     .. WARNING:: This handler is not yet implemented!
     """
     mime = 'application/xml'
+    librarypath='lxml.etree'
+
+    def unmarshal_str(self, data):
+        """Unmarshal a string.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: str
+        """
+        return self.library.fromstring(data).text
+
+    def unmarshal_dict(self, body):
+        """Unmarshal a dictionary.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: dict
+        """
+        iterator = self.library.fromstring(body).findall('elem')
+        return dict((e.attrib['key'], e.text) for e in iterator)
+
+    def unmarshal_list(self, body):
+        """Unmarshal a list.
+
+        :param data: Data to unmarshal.
+        :type  data: bytes in python3, str in python2
+        :rtype: list
+        """
+        iterator = self.library.fromstring(body).findall('elem')
+        return [e.text for e in iterator]
+
+    def marshal_str(self, obj):
+        """Marshal a string.
+
+        :param obj: Data to marshal.
+        :type  obj: str, bytes, unicode
+        :rtype: bytes in python3, str in python2
+        """
+        root = self.library.Element('str')
+        root.text = obj
+        return self.library.tostring(root)
+
+    def marshal_list(self, obj):
+        """Marshal a list.
+
+        :param obj: Data to marshal.
+        :type  obj: list
+        :rtype: bytes in python3, str in python2
+        """
+        root = self.library.Element('list')
+        for value in obj:
+            elem = self.library.Element('elem')
+            elem.text = value
+            root.append(elem)
+        return self.library.tostring(root)
+
+    def marshal_dict(self, obj):
+        """Marshal a dictionary.
+
+        :param obj: Data to marshal.
+        :type  obj: dict
+        :rtype: bytes in python3, str in python2
+        """
+        root = self.library.Element('dict')
+        for key, value in obj.items():
+            elem = self.library.Element('elem', attrib={'key': key})
+            elem.text = value
+            root.append(elem)
+        return self.library.tostring(root)
 
 
 CONTENT_HANDLERS = {
