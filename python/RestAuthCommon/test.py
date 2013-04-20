@@ -71,26 +71,31 @@ class TestContentHandler(object):
         [],
         ['abc'],
         ['abc', 'def'],
+        ['abc', ''],
     ]
 
     unicode_lists = [
         ['unicode1 \u6111'],
         ['unicode1 \u6111', 'unicode1 \u6155'],
+        ['unicode1 \u6111', ''],
     ]
 
     dicts = [
         {},
         {'a': '1'},
         {'a': '1', 'b': '2'},
+        {'a': '1', 'b': ''},
     ]
 
     unicode_dicts = [
         {'a': 'unicode1 \u6111'},
+        {'a': 'unicode1 \u6111', 'b': ''},
     ]
 
     nested_dicts = [
         {'a': {'foo': 'bar'}},
         {'a': {'foo': 'bar'}, 'b': '2'},
+        {'a': {'foo': ''}, 'b': '2'},
     ]
 
     if sys.version_info >= (3, 0):
@@ -108,7 +113,7 @@ class TestContentHandler(object):
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
             self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
-                            type(unmarshalled))
+                            '"%s" is %s, not %s' % (teststr, type(unmarshalled), self.unmarshal_type))
             self.assertEqual(teststr, unmarshalled)
 
         # convert strings to unicodes in python2
