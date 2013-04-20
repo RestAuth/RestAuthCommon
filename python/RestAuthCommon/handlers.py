@@ -545,6 +545,9 @@ class XMLContentHandler(ContentHandler):
         """
         return self.library.fromstring(data).text
 
+    def _unmarshal_dict(self, iterator):
+        return dict((e.attrib['key'], e.text) for e in iterator)
+
     def unmarshal_dict(self, body):
         """Unmarshal a dictionary.
 
@@ -552,8 +555,15 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: dict
         """
-        iterator = self.library.fromstring(body).findall('elem')
-        return dict((e.attrib['key'], e.text) for e in iterator)
+        strs = self.library.fromstring(body).findall('str')
+        d = dict((e.attrib['key'], e.text) for e in strs)
+
+        dicts = self.library.fromstring(body).findall('dict')
+        for subdict in dicts:
+            key = subdict.attrib['key']
+            d[key] = self._unmarshal_dict(subdict.findall('str'))
+
+        return d
 
     def unmarshal_list(self, body):
         """Unmarshal a list.
@@ -562,7 +572,7 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: list
         """
-        iterator = self.library.fromstring(body).findall('elem')
+        iterator = self.library.fromstring(body).findall('str')
         return [e.text for e in iterator]
 
     def marshal_str(self, obj):
@@ -585,10 +595,26 @@ class XMLContentHandler(ContentHandler):
         """
         root = self.library.Element('list')
         for value in obj:
-            elem = self.library.Element('elem')
+            elem = self.library.Element('str')
             elem.text = value
             root.append(elem)
         return self.library.tostring(root)
+
+    def _marshal_dict(self, obj, key=None):
+        root = self.library.Element('dict')
+        if key is not None:
+            root.attrib['key'] = key
+
+        for key, value in obj.items():
+            if isinstance(value, str):
+                elem = self.library.Element('str', attrib={'key': key})
+                elem.text = value
+                root.append(elem)
+            elif isinstance(value, dict):
+                root.append(self._parse_dict(value, key=key))
+            else:
+                raise error.MarshalError('Unknown type encountered')
+        return root
 
     def marshal_dict(self, obj):
         """Marshal a dictionary.
@@ -597,12 +623,7 @@ class XMLContentHandler(ContentHandler):
         :type  obj: dict
         :rtype: bytes in python3, str in python2
         """
-        root = self.library.Element('dict')
-        for key, value in obj.items():
-            elem = self.library.Element('elem', attrib={'key': key})
-            elem.text = value
-            root.append(elem)
-        return self.library.tostring(root)
+        return self.library.tostring(self._parse_dict(obj))
 
 
 CONTENT_HANDLERS = {
