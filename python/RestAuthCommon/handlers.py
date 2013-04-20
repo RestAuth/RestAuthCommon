@@ -543,10 +543,21 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: str
         """
-        return self.library.fromstring(data).text
+        text = self.library.fromstring(data).text
+        if text is None:
+            text = ''
+        return unicode(text)
 
     def _unmarshal_dict(self, iterator):
-        return dict((e.attrib['key'], e.text) for e in iterator)
+        d = {}
+        for elem in iterator:
+            key = elem.attrib['key']
+            if elem.text is None:
+                value = ''
+            else:
+                value = elem.text
+            d[key] = value
+        return d
 
     def unmarshal_dict(self, body):
         """Unmarshal a dictionary.
@@ -555,10 +566,11 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: dict
         """
-        strs = self.library.fromstring(body).findall('str')
-        d = dict((e.attrib['key'], e.text) for e in strs)
+        tree = self.library.fromstring(body)
 
-        dicts = self.library.fromstring(body).findall('dict')
+        d = self._unmarshal_dict(tree.findall('str'))
+
+        dicts = tree.findall('dict')
         for subdict in dicts:
             key = subdict.attrib['key']
             d[key] = self._unmarshal_dict(subdict.findall('str'))
@@ -572,8 +584,13 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: list
         """
-        iterator = self.library.fromstring(body).findall('str')
-        return [e.text for e in iterator]
+        l = []
+        for elem in self.library.fromstring(body).findall('str'):
+            if elem.text is None:
+                l.append('')
+            else:
+                l.append(elem.text)
+        return l
 
     def marshal_str(self, obj):
         """Marshal a string.
