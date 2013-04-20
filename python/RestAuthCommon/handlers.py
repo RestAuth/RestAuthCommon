@@ -606,14 +606,15 @@ class XMLContentHandler(ContentHandler):
             root.attrib['key'] = key
 
         for key, value in obj.items():
-            if isinstance(value, str):
+            if isinstance(value, (str, unicode)):
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
                 root.append(elem)
             elif isinstance(value, dict):
                 root.append(self._marshal_dict(value, key=key))
             else:
-                raise error.MarshalError('Unknown type encountered')
+                raise error.MarshalError('MarshalError (type %s): %s'
+                                         % (type(value), value))
         return root
 
     def marshal_dict(self, obj):
