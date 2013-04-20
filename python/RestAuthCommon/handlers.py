@@ -611,7 +611,7 @@ class XMLContentHandler(ContentHandler):
                 elem.text = value
                 root.append(elem)
             elif isinstance(value, dict):
-                root.append(self._parse_dict(value, key=key))
+                root.append(self._marshal_dict(value, key=key))
             else:
                 raise error.MarshalError('Unknown type encountered')
         return root
@@ -623,7 +623,7 @@ class XMLContentHandler(ContentHandler):
         :type  obj: dict
         :rtype: bytes in python3, str in python2
         """
-        return self.library.tostring(self._parse_dict(obj))
+        return self.library.tostring(self._marshal_dict(obj))
 
 
 CONTENT_HANDLERS = {
