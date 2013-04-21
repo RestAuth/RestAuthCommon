@@ -143,7 +143,7 @@ class ContentHandler(object):
 
         :param data: Data to unmarshal.
         :type  data: bytes in python3, str in python2
-        :rtype: str
+        :rtype: str in python3, unicode in python2
         """
         pass
 
