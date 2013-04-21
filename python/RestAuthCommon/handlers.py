@@ -628,7 +628,11 @@ class XMLContentHandler(ContentHandler):
             root.attrib['key'] = key
 
         for key, value in obj.items():
-            if isinstance(value, (str, unicode)):
+            if isinstance(value, str):
+                elem = self.library.Element('str', attrib={'key': key})
+                elem.text = value
+                root.append(elem)
+            elif not IS_PYTHON3 and isinstance(value, unicode):
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
                 root.append(elem)
