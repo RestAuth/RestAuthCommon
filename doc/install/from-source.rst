@@ -4,7 +4,15 @@ Installation from source
 Requirements
 ------------
 
-**RestAuthCommon** requires `Python 2.6 <http://www.python.org/>`_ or later.
+* **RestAuthCommon** requires `Python 2.6 <http://www.python.org/>`_ or later.
+  On Python3, RestAuthCommon is tested with Python 3.2 and later.
+* Some ContentHandlers require, if used, additional libraries:
+
+  * The :py:class:`~.XMLContentHandler` requires the `lxml library
+    <http://lxml.de/>`_.
+  * The :py:class:`~.YAMLContentHandler` requires the `PyYAML library
+    <http://pyyaml.org/>`_.
+  * The :py:class:`~.Pickle3ContentHandler` requires Python3.
 
 Get source
 ----------
