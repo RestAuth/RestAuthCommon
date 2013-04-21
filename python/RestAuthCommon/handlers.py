@@ -98,7 +98,7 @@ class ContentHandler(object):
         """
         if isinstance(obj, (bytes, str)):
             func_name = 'marshal_str'
-        if sys.version_info < (3, 0) and isinstance(obj, unicode):
+        if IS_PYTHON2 and isinstance(obj, unicode):
             func_name = 'marshal_str'
         else:
             func_name = 'marshal_%s' % (obj.__class__.__name__)
@@ -224,13 +224,13 @@ class JSONContentHandler(ContentHandler):
 
     class ByteEncoder(libjson.JSONEncoder):
         def default(self, obj):
-            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+            if IS_PYTHON3 and isinstance(obj, bytes):
                 return obj.decode('utf-8')
             return libjson.JSONEncoder.default(self, obj)
 
     class ByteDecoder(libjson.JSONDecoder):
         def decode(self, obj):
-            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+            if IS_PYTHON3 and isinstance(obj, bytes):
                 obj = obj.decode('utf-8')
             return libjson.JSONDecoder.decode(self, obj)
 
@@ -244,7 +244,7 @@ class JSONContentHandler(ContentHandler):
 
             # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
             # not unicode.
-            if sys.version_info <= (3, 0) and isinstance(string, str):
+            if IS_PYTHON2 and isinstance(string, str):
                 return unicode(string)
 
             return string
@@ -273,7 +273,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -284,7 +284,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -295,7 +295,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -306,7 +306,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -341,7 +341,7 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         parsed_dict = parse_qs(body, True)
@@ -352,13 +352,13 @@ class FormContentHandler(ContentHandler):
             else:
                 ret_dict[key] = value
 
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         if body == '':
@@ -366,23 +366,23 @@ class FormContentHandler(ContentHandler):
 
         parsed = parse_qs(body, True)['list']
 
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         parsed = parse_qs(body, True)['str'][0]
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             parsed = parsed.decode('utf-8')
         return parsed
 
     def marshal_str(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = obj.encode('utf-8')
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode({'str': obj}).encode('utf-8')
         else:
             return urlencode({'str': obj})
@@ -407,7 +407,7 @@ class FormContentHandler(ContentHandler):
         return encoded
 
     def marshal_dict(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = self._encode_dict(obj)
 
         # verify that no value is a dictionary, because the unmarshalling for
@@ -416,15 +416,15 @@ class FormContentHandler(ContentHandler):
             if isinstance(v, dict):
                 raise error.MarshalError(
                     "FormContentHandler doesn't support nested dictionaries.")
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode(obj, doseq=True).encode('utf-8')
         else:
             return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = [e.encode('utf-8') for e in obj]
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode({'list': obj}, doseq=True).encode('utf-8')
         else:
             return urlencode({'list': obj}, doseq=True)
@@ -463,7 +463,7 @@ class PickleContentHandler(ContentHandler):
         try:
             unpickled = pickle.loads(data)
 
-            if sys.version_info >= (3, 0) and isinstance(unpickled, bytes):
+            if IS_PYTHON3 and isinstance(unpickled, bytes):
                 # if bytes were pickled, we have to decode them
                 unpickled = unpickled.decode('utf-8')
             return unpickled
@@ -498,7 +498,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return self.library.dump(obj).encode('utf-8')
             else:
                 return self.library.dump(obj)
@@ -507,7 +507,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return self.library.dump(obj).encode('utf-8')
             else:
                 return self.library.dump(obj)
@@ -516,7 +516,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_list(self, obj):
         try:
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return self.library.dump(obj).encode('utf-8')
             else:
                 return self.library.dump(obj)
@@ -528,7 +528,7 @@ class YAMLContentHandler(ContentHandler):
             unmarshalled = self.library.load(data)
             if unmarshalled is None:
                 return ''
-            if sys.version_info >= (3, 0) and isinstance(unmarshalled, bytes):
+            if IS_PYTHON3 and isinstance(unmarshalled, bytes):
                 return unmarshalled.decode('utf-8')
             else:
                 return unmarshalled
