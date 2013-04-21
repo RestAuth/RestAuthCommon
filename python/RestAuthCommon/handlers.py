@@ -487,7 +487,8 @@ class PickleContentHandler(ContentHandler):
 class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
 
-    .. NOTE:: This handler requires the third-party py-yaml library.
+    .. NOTE:: This ContentHandler requires `PyYAML library
+       <http://pyyaml.org/>`_.
 
     .. seealso:: `Specification <http://www.yaml.org/>`_,
         `WikiPedia <http://en.wikipedia.org/wiki/YAML>`_
@@ -580,8 +581,10 @@ class YAMLContentHandler(ContentHandler):
 class XMLContentHandler(ContentHandler):
     """Future location of the XML content handler.
 
-    .. WARNING:: This handler is not yet implemented!
+    .. NOTE:: This ContentHandler requires the `lxml library
+        <http://lxml.de/>`_.
     """
+
     mime = 'application/xml'
     librarypath = 'lxml.etree'
 
