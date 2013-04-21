@@ -211,7 +211,8 @@ class ContentHandler(object):
 class JSONContentHandler(ContentHandler):
     """Handler for JSON encoded content.
 
-    .. seealso:: http://www.json.org, http://en.wikipedia.org/wiki/JSON
+    .. seealso:: `Specification <http://www.json.org>`_, `WikiPedia
+        <http://en.wikipedia.org/wiki/JSON>`_
     """
 
     mime = 'application/json'
@@ -430,8 +431,9 @@ class FormContentHandler(ContentHandler):
 class PickleContentHandler(ContentHandler):
     """Handler for pickle-encoded content.
 
-    .. seealso:: http://docs.python.org/2/library/pickle.html,
-       http://en.wikipedia.org/wiki/Pickle_(Python)
+    .. seealso:: `module documentation
+       <http://docs.python.org/2/library/pickle.html>`_,
+       `WikiPedia <http://en.wikipedia.org/wiki/Pickle_(Python)>`_
     """
 
     mime = 'application/pickle'
@@ -484,7 +486,8 @@ class YamlContentHandler(ContentHandler):
 
     .. NOTE:: This handler requires the third-party py-yaml library.
 
-    .. seealso:: http://www.yaml.org/, http://en.wikipedia.org/wiki/YAML
+    .. seealso:: `Specification <http://www.yaml.org/>`_,
+        `WikiPedia <http://en.wikipedia.org/wiki/YAML>`_
     """
     mime = 'application/yaml'
     """The mime-type used by this content handler is 'application/yaml'."""
