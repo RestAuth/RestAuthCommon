@@ -548,15 +548,20 @@ class XMLContentHandler(ContentHandler):
             text = ''
         return unicode(text)
 
-    def _unmarshal_dict(self, iterator):
+    def _unmarshal_dict(self, tree):
         d = {}
-        for elem in iterator:
-            key = elem.attrib['key']
-            if elem.text is None:
-                value = ''
+
+        # find all strings
+        for e in tree.iterfind('str'):
+            if e.text is None:
+                d[e.attrib['key']] = ''
             else:
-                value = elem.text
-            d[key] = value
+                d[e.attrib['key']] = e.text
+
+        # parse subdictionaries
+        for subdict in tree.iterfind('dict'):
+            d[subdict.attrib['key']] = self._unmarshal_dict(subdict)
+
         return d
 
     def unmarshal_dict(self, body):
@@ -566,16 +571,7 @@ class XMLContentHandler(ContentHandler):
         :type  data: bytes in python3, str in python2
         :rtype: dict
         """
-        tree = self.library.fromstring(body)
-
-        d = self._unmarshal_dict(tree.findall('str'))
-
-        dicts = tree.findall('dict')
-        for subdict in dicts:
-            key = subdict.attrib['key']
-            d[key] = self._unmarshal_dict(subdict.findall('str'))
-
-        return d
+        return self._unmarshal_dict(self.library.fromstring(body))
 
     def unmarshal_list(self, body):
         """Unmarshal a list.
@@ -585,7 +581,7 @@ class XMLContentHandler(ContentHandler):
         :rtype: list
         """
         l = []
-        for elem in self.library.fromstring(body).findall('str'):
+        for elem in self.library.fromstring(body).iterfind('str'):
             if elem.text is None:
                 l.append('')
             else:
