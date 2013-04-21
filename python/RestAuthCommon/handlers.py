@@ -31,6 +31,10 @@ except ImportError:
 
 from RestAuthCommon import error
 
+if sys.version_info >= (3, 0):
+    IS_PYTHON3 = True
+else:
+    IS_PYTHON3 = False
 
 class ContentHandler(object):
     """
