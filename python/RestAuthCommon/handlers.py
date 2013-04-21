@@ -49,9 +49,20 @@ class ContentHandler(object):
     """Override this with the MIME type handled by your handler."""
 
     librarypath = None
-    """Override this with any 3rd-party library you do not want module-load
-    time imports. Use self.load_library() to load that library into your
-    namespace."""
+    """Override ``librarypath`` to lazily load named library upon first use.
+
+    This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.
+    ``"lxml.etree"``). The named library is accessable via ``self.library``.
+
+    Example::
+
+        class XMLContentHandler(ContentHandler):
+            librarypath = 'lxml.etree'
+
+            def unmarshal_str(self, data):
+                tree = self.library.Element(data)
+                # ...
+    """
 
     SUPPORT_NESTED_DICTS = True
     """Set to False if your content handler does not support nested
