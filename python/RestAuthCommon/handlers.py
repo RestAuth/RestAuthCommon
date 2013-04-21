@@ -485,6 +485,22 @@ class PickleContentHandler(ContentHandler):
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
+class Pickle3ContentHandler(PickleContentHandler):
+    """Handler for pickle-encoded content, protocol level version 3.
+
+    This version is only supported by the Python3 version the pickle module,
+    this ContentHandler is only usable in Python3.
+
+    .. seealso:: `module documentation
+       <http://docs.python.org/3/library/pickle.html>`_,
+       `WikiPedia <http://en.wikipedia.org/wiki/Pickle_(Python)>`_
+    """
+
+    mime = 'application/pickle3'
+    """The mime-type used by this content handler is 'application/pickle3'."""
+
+    PROTOCOL = 3
+
 
 class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
@@ -672,6 +688,7 @@ class XMLContentHandler(ContentHandler):
 CONTENT_HANDLERS = {
     'application/json': JSONContentHandler,
     'application/pickle': PickleContentHandler,
+    'application/pickle3': Pickle3ContentHandler,
     'application/x-www-form-urlencoded': FormContentHandler,
     'application/xml': XMLContentHandler,
     'application/yaml': YAMLContentHandler,
@@ -681,15 +698,16 @@ Mapping of MIME types to their respective handler implemenation. You can use
 this dictionary to dynamically look up a content handler if you do not know the
 requested content type in advance.
 
-================================= ==========================================
+================================= ===========================================
 MIME type                         Handler
-================================= ==========================================
+================================= ===========================================
 application/json                  :py:class:`.handlers.JSONContentHandler`
 application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler`
 application/pickle                :py:class:`.handlers.PickleContentHandler`
+application/pickle3               :py:class:`.handlers.Pickle3ContentHandler`
 application/xml                   :py:class:`.handlers.XMLContentHandler`
 application/yaml                  :py:class:`.handlers.YAMLContentHandler`
-================================= ==========================================
+================================= ===========================================
 
 If you want to provide your own implementation of a
 :py:class:`.ContentHandler`, you can add it to this dictionary with the
