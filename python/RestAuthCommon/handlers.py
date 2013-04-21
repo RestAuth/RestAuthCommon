@@ -481,7 +481,7 @@ class PickleContentHandler(ContentHandler):
             raise error.UnmarshalError(str(e))
 
 
-class YamlContentHandler(ContentHandler):
+class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
 
     .. NOTE:: This handler requires the third-party py-yaml library.
@@ -672,7 +672,7 @@ CONTENT_HANDLERS = {
     'application/pickle': PickleContentHandler,
     'application/x-www-form-urlencoded': FormContentHandler,
     'application/xml': XMLContentHandler,
-    'application/yaml': YamlContentHandler,
+    'application/yaml': YAMLContentHandler,
 }
 """
 Mapping of MIME types to their respective handler implemenation. You can use
@@ -686,7 +686,7 @@ application/json                  :py:class:`.handlers.JSONContentHandler`
 application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler`
 application/pickle                :py:class:`.handlers.PickleContentHandler`
 application/xml                   :py:class:`.handlers.XMLContentHandler`
-application/yaml                  :py:class:`.handlers.YamlContentHandler`
+application/yaml                  :py:class:`.handlers.YAMLContentHandler`
 ================================= ==========================================
 
 If you want to provide your own implementation of a
@@ -699,3 +699,7 @@ content_handler = ContentHandler
 json = JSONContentHandler
 xml = XMLContentHandler
 form = FormContentHandler
+
+# 'YamlContentHandler' was introduced in 0.6.1 and renamed for consistency to
+# 'YAMLContentHandler' in 0.6.2
+YamlContentHandler = YAMLContentHandler

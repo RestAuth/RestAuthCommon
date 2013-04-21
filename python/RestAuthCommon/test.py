@@ -25,7 +25,7 @@ from RestAuthCommon.handlers import FormContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthCommon.handlers import PickleContentHandler
 from RestAuthCommon.handlers import XMLContentHandler
-from RestAuthCommon.handlers import YamlContentHandler
+from RestAuthCommon.handlers import YAMLContentHandler
 
 
 class TestHandler(ContentHandler):
@@ -201,9 +201,9 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
         self.handler = PickleContentHandler()
 
 
-class TestYamlContentHandler(unittest.TestCase, TestContentHandler):
+class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
-        self.handler = YamlContentHandler()
+        self.handler = YAMLContentHandler()
 
 class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
