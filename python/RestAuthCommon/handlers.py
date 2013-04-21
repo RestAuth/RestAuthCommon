@@ -442,21 +442,23 @@ class PickleContentHandler(ContentHandler):
     mime = 'application/pickle'
     """The mime-type used by this content handler is 'application/pickle'."""
 
+    PROTOCOL = 2
+
     def marshal_str(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_dict(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_list(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
