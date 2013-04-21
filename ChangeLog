@@ -1,4 +1,6 @@
-restauth-common 0.6.2 (XX XXXXX 2013)
+restauth-common 0.6.2 (21 April 2013)
+
+  * Update installation instructions
 
   ContentHandlers
   * Implement the XMLContentHandler

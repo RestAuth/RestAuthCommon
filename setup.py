@@ -37,7 +37,7 @@ except ImportError:
     from setuptools import Command
     from setuptools import setup
 
-LATEST_RELEASE = '0.6.1'
+LATEST_RELEASE = '0.6.2'
 
 requires = ['pyyaml>=3.10', ]
 
