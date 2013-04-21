@@ -45,7 +45,7 @@ or download and add the key directly using:
 
 .. code-block:: bash
 
-   wget -O - http://packages.spectrum.im/keys/apt-repository@fsinf.at | apt-key add -
+   wget -O - http://apt.fsinf.at/keys/apt-repository@fsinf.at | apt-key add -
 
 Install RestAuthCommon
 ----------------------
