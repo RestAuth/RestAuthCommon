@@ -586,15 +586,11 @@ class XMLContentHandler(ContentHandler):
     """
 
     mime = 'application/xml'
+    """The mime-type used by this content handler is 'application/xml'."""
+
     librarypath = 'lxml.etree'
 
     def unmarshal_str(self, data):
-        """Unmarshal a string.
-
-        :param data: Data to unmarshal.
-        :type  data: bytes in python3, str in python2
-        :rtype: str
-        """
         text = self.library.fromstring(data).text
         if text is None:
             text = ''
@@ -620,21 +616,9 @@ class XMLContentHandler(ContentHandler):
         return d
 
     def unmarshal_dict(self, body):
-        """Unmarshal a dictionary.
-
-        :param data: Data to unmarshal.
-        :type  data: bytes in python3, str in python2
-        :rtype: dict
-        """
         return self._unmarshal_dict(self.library.fromstring(body))
 
     def unmarshal_list(self, body):
-        """Unmarshal a list.
-
-        :param data: Data to unmarshal.
-        :type  data: bytes in python3, str in python2
-        :rtype: list
-        """
         l = []
         for elem in self.library.fromstring(body).iterfind('str'):
             if elem.text is None:
@@ -644,12 +628,6 @@ class XMLContentHandler(ContentHandler):
         return l
 
     def marshal_str(self, obj):
-        """Marshal a string.
-
-        :param obj: Data to marshal.
-        :type  obj: str, bytes, unicode
-        :rtype: bytes in python3, str in python2
-        """
         root = self.library.Element('str')
         if IS_PYTHON3 and isinstance(obj, bytes):
             obj = obj.decode('utf-8')
@@ -657,12 +635,6 @@ class XMLContentHandler(ContentHandler):
         return self.library.tostring(root)
 
     def marshal_list(self, obj):
-        """Marshal a list.
-
-        :param obj: Data to marshal.
-        :type  obj: list
-        :rtype: bytes in python3, str in python2
-        """
         root = self.library.Element('list')
         for value in obj:
             elem = self.library.Element('str')
@@ -692,12 +664,6 @@ class XMLContentHandler(ContentHandler):
         return root
 
     def marshal_dict(self, obj):
-        """Marshal a dictionary.
-
-        :param obj: Data to marshal.
-        :type  obj: dict
-        :rtype: bytes in python3, str in python2
-        """
         return self.library.tostring(self._marshal_dict(obj))
 
 
