@@ -1,3 +1,11 @@
+restauth-common 0.6.2 (XX XXXXX 2013)
+
+  ContentHandlers
+  * Implement the XMLContentHandler
+  * The librarypath attribute may now refer to submodules
+    (i.e. 'lxml.etree' instead of just 'lxml')
+  * Update  documentation, add a few additional testcases
+
 restauth-common 0.6.1 (01 April 2013)
 
   * Various python3 compatability fixes
