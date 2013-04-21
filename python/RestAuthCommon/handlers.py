@@ -550,7 +550,10 @@ class XMLContentHandler(ContentHandler):
         text = self.library.fromstring(data).text
         if text is None:
             text = ''
-        return unicode(text)
+
+        if not IS_PYTHON3:
+            text = unicode(text)
+        return text
 
     def _unmarshal_dict(self, tree):
         d = {}
