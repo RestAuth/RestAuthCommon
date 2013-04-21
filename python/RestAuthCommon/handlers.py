@@ -603,6 +603,8 @@ class XMLContentHandler(ContentHandler):
         :rtype: bytes in python3, str in python2
         """
         root = self.library.Element('str')
+        if IS_PYTHON3 and isinstance(obj, bytes):
+            obj = obj.decode('utf-8')
         root.text = obj
         return self.library.tostring(root)
 
