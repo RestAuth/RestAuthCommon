@@ -38,6 +38,7 @@ else:
     IS_PYTHON3 = False
     IS_PYTHON2 = True
 
+
 class ContentHandler(object):
     """
     This class is a common base class for all content handlers. If you
@@ -496,42 +497,59 @@ class YAMLContentHandler(ContentHandler):
 
     librarypath = 'yaml'
 
+    def _marshal_str3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_str2(self, obj):
+        return self.library.dump(obj)
+
     def marshal_str(self, obj):
         try:
-            if IS_PYTHON3:
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_str(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
+
+    def _marshal_dict3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_dict2(self, obj):
+        return self.library.dump(obj)
 
     def marshal_dict(self, obj):
         try:
-            if IS_PYTHON3:
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_dict(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
+    def _marshal_list3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_list2(self, obj):
+        return self.library.dump(obj)
+
     def marshal_list(self, obj):
         try:
-            if IS_PYTHON3:
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_list(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
+
+    def _unmarshal_str3(self, unmarshalled):
+        if unmarshalled is None:
+            return ''
+        if isinstance(unmarshalled, bytes):
+            return unmarshalled.decode('utf-8')
+        else:
+            return unmarshalled
+
+    def _unmarshal_str2(self, unmarshalled):
+        if unmarshalled is None:
+            return unicode('')
+        return unmarshalled
 
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
-            if unmarshalled is None:
-                return ''
-            if IS_PYTHON3 and isinstance(unmarshalled, bytes):
-                return unmarshalled.decode('utf-8')
-            else:
-                return unmarshalled
+            return self._unmarshal_str(unmarshalled)
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
@@ -547,6 +565,17 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
+    if IS_PYTHON3:
+        _marshal_str = _marshal_str3
+        _marshal_dict = _marshal_dict3
+        _marshal_list = _marshal_list3
+        _unmarshal_str = _unmarshal_str3
+    else:
+        _marshal_str = _marshal_str2
+        _marshal_dict = _marshal_dict2
+        _marshal_list = _marshal_list2
+        _unmarshal_str = _unmarshal_str2
+
 
 class XMLContentHandler(ContentHandler):
     """Future location of the XML content handler.
@@ -554,7 +583,7 @@ class XMLContentHandler(ContentHandler):
     .. WARNING:: This handler is not yet implemented!
     """
     mime = 'application/xml'
-    librarypath='lxml.etree'
+    librarypath = 'lxml.etree'
 
     def unmarshal_str(self, data):
         """Unmarshal a string.
