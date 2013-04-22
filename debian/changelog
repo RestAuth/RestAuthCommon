@@ -1,3 +1,9 @@
+restauth-common (0.6.2-1) unstable; urgency=low
+
+  * Bump from upstream.
+
+ -- Mathias Ertl <mati@restauth.net>  Mon, 22 Apr 2013 18:44:48 +0200
+
 restauth-common (0.6.1-2) unstable; urgency=low
 
   * Require python-sphinx (>= 1.0.7) and use dh_sphinxdoc substitution
