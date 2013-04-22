@@ -31,6 +31,13 @@ except ImportError:
 
 from RestAuthCommon import error
 
+if sys.version_info >= (3, 0):
+    IS_PYTHON3 = True
+    IS_PYTHON2 = False
+else:
+    IS_PYTHON3 = False
+    IS_PYTHON2 = True
+
 
 class ContentHandler(object):
     """
@@ -45,9 +52,20 @@ class ContentHandler(object):
     """Override this with the MIME type handled by your handler."""
 
     librarypath = None
-    """Override this with any 3rd-party library you do not want module-load
-    time imports. Use self.load_library() to load that library into your
-    namespace."""
+    """Override ``librarypath`` to lazily load named library upon first use.
+
+    This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.
+    ``"lxml.etree"``). The named library is accessable via ``self.library``.
+
+    Example::
+
+        class XMLContentHandler(ContentHandler):
+            librarypath = 'lxml.etree'
+
+            def unmarshal_str(self, data):
+                tree = self.library.Element(data)
+                # ...
+    """
 
     SUPPORT_NESTED_DICTS = True
     """Set to False if your content handler does not support nested
@@ -59,7 +77,12 @@ class ContentHandler(object):
     def library(self):
         """Library configured with the ``librarypath`` class variable."""
         if self._library is None:
-            self._library = __import__(self.librarypath)
+            if '.' in self.librarypath:
+                mod, lib = self.librarypath.rsplit('.', 1)
+                _temp = __import__(mod, fromlist=[lib])
+                self._library = getattr(_temp, lib)
+            else:
+                self._library = __import__(self.librarypath)
         return self._library
 
     def marshal(self, obj):
@@ -76,7 +99,7 @@ class ContentHandler(object):
         """
         if isinstance(obj, (bytes, str)):
             func_name = 'marshal_str'
-        if sys.version_info < (3, 0) and isinstance(obj, unicode):
+        if IS_PYTHON2 and isinstance(obj, unicode):
             func_name = 'marshal_str'
         else:
             func_name = 'marshal_%s' % (obj.__class__.__name__)
@@ -123,7 +146,7 @@ class ContentHandler(object):
 
         :param data: Data to unmarshal.
         :type  data: bytes in python3, str in python2
-        :rtype: str
+        :rtype: str in python3, unicode in python2
         """
         pass
 
@@ -191,7 +214,8 @@ class ContentHandler(object):
 class JSONContentHandler(ContentHandler):
     """Handler for JSON encoded content.
 
-    .. seealso:: http://www.json.org, http://en.wikipedia.org/wiki/JSON
+    .. seealso:: `Specification <http://www.json.org>`_, `WikiPedia
+        <http://en.wikipedia.org/wiki/JSON>`_
     """
 
     mime = 'application/json'
@@ -201,13 +225,13 @@ class JSONContentHandler(ContentHandler):
 
     class ByteEncoder(libjson.JSONEncoder):
         def default(self, obj):
-            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+            if IS_PYTHON3 and isinstance(obj, bytes):
                 return obj.decode('utf-8')
             return libjson.JSONEncoder.default(self, obj)
 
     class ByteDecoder(libjson.JSONDecoder):
         def decode(self, obj):
-            if sys.version_info >= (3, 0) and isinstance(obj, bytes):
+            if IS_PYTHON3 and isinstance(obj, bytes):
                 obj = obj.decode('utf-8')
             return libjson.JSONDecoder.decode(self, obj)
 
@@ -221,7 +245,7 @@ class JSONContentHandler(ContentHandler):
 
             # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
             # not unicode.
-            if sys.version_info <= (3, 0) and isinstance(string, str):
+            if IS_PYTHON2 and isinstance(string, str):
                 return unicode(string)
 
             return string
@@ -250,7 +274,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -261,7 +285,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -272,7 +296,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -283,7 +307,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if sys.version_info >= (3, 0):
+            if IS_PYTHON3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -318,7 +342,7 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         parsed_dict = parse_qs(body, True)
@@ -329,13 +353,13 @@ class FormContentHandler(ContentHandler):
             else:
                 ret_dict[key] = value
 
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         if body == '':
@@ -343,23 +367,23 @@ class FormContentHandler(ContentHandler):
 
         parsed = parse_qs(body, True)['list']
 
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             body = body.decode('utf-8')
 
         parsed = parse_qs(body, True)['str'][0]
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             parsed = parsed.decode('utf-8')
         return parsed
 
     def marshal_str(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = obj.encode('utf-8')
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode({'str': obj}).encode('utf-8')
         else:
             return urlencode({'str': obj})
@@ -384,7 +408,7 @@ class FormContentHandler(ContentHandler):
         return encoded
 
     def marshal_dict(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = self._encode_dict(obj)
 
         # verify that no value is a dictionary, because the unmarshalling for
@@ -393,15 +417,15 @@ class FormContentHandler(ContentHandler):
             if isinstance(v, dict):
                 raise error.MarshalError(
                     "FormContentHandler doesn't support nested dictionaries.")
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode(obj, doseq=True).encode('utf-8')
         else:
             return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
-        if sys.version_info < (3, 0):
+        if IS_PYTHON2:
             obj = [e.encode('utf-8') for e in obj]
-        if sys.version_info >= (3, 0):
+        if IS_PYTHON3:
             return urlencode({'list': obj}, doseq=True).encode('utf-8')
         else:
             return urlencode({'list': obj}, doseq=True)
@@ -410,28 +434,31 @@ class FormContentHandler(ContentHandler):
 class PickleContentHandler(ContentHandler):
     """Handler for pickle-encoded content.
 
-    .. seealso:: http://docs.python.org/2/library/pickle.html,
-       http://en.wikipedia.org/wiki/Pickle_(Python)
+    .. seealso:: `module documentation
+       <http://docs.python.org/2/library/pickle.html>`_,
+       `WikiPedia <http://en.wikipedia.org/wiki/Pickle_(Python)>`_
     """
 
     mime = 'application/pickle'
     """The mime-type used by this content handler is 'application/pickle'."""
 
+    PROTOCOL = 2
+
     def marshal_str(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_dict(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_list(self, obj):
         try:
-            return pickle.dumps(obj, protocol=2)
+            return pickle.dumps(obj, protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
@@ -439,7 +466,7 @@ class PickleContentHandler(ContentHandler):
         try:
             unpickled = pickle.loads(data)
 
-            if sys.version_info >= (3, 0) and isinstance(unpickled, bytes):
+            if IS_PYTHON3 and isinstance(unpickled, bytes):
                 # if bytes were pickled, we have to decode them
                 unpickled = unpickled.decode('utf-8')
             return unpickled
@@ -458,55 +485,90 @@ class PickleContentHandler(ContentHandler):
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
+class Pickle3ContentHandler(PickleContentHandler):
+    """Handler for pickle-encoded content, protocol level version 3.
 
-class YamlContentHandler(ContentHandler):
+    This version is only supported by the Python3 version the pickle module,
+    this ContentHandler is only usable in Python3.
+
+    .. seealso:: `module documentation
+       <http://docs.python.org/3/library/pickle.html>`_,
+       `WikiPedia <http://en.wikipedia.org/wiki/Pickle_(Python)>`_
+    """
+
+    mime = 'application/pickle3'
+    """The mime-type used by this content handler is 'application/pickle3'."""
+
+    PROTOCOL = 3
+
+
+class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
 
-    .. NOTE:: This handler requires the third-party py-yaml library.
+    .. NOTE:: This ContentHandler requires `PyYAML library
+       <http://pyyaml.org/>`_.
 
-    .. seealso:: http://www.yaml.org/, http://en.wikipedia.org/wiki/YAML
+    .. seealso:: `Specification <http://www.yaml.org/>`_,
+        `WikiPedia <http://en.wikipedia.org/wiki/YAML>`_
     """
     mime = 'application/yaml'
     """The mime-type used by this content handler is 'application/yaml'."""
 
     librarypath = 'yaml'
 
+    def _marshal_str3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_str2(self, obj):
+        return self.library.dump(obj)
+
     def marshal_str(self, obj):
         try:
-            if sys.version_info >= (3, 0):
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_str(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
+
+    def _marshal_dict3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_dict2(self, obj):
+        return self.library.dump(obj)
 
     def marshal_dict(self, obj):
         try:
-            if sys.version_info >= (3, 0):
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_dict(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
+    def _marshal_list3(self, obj):
+        return self.library.dump(obj).encode('utf-8')
+
+    def _marshal_list2(self, obj):
+        return self.library.dump(obj)
+
     def marshal_list(self, obj):
         try:
-            if sys.version_info >= (3, 0):
-                return self.library.dump(obj).encode('utf-8')
-            else:
-                return self.library.dump(obj)
+            return self._marshal_list(obj)
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
+
+    def _unmarshal_str3(self, unmarshalled):
+        if unmarshalled is None:
+            return ''
+        if isinstance(unmarshalled, bytes):
+            return unmarshalled.decode('utf-8')
+        else:
+            return unmarshalled
+
+    def _unmarshal_str2(self, unmarshalled):
+        if unmarshalled is None:
+            return unicode('')
+        return unmarshalled
 
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
-            if unmarshalled is None:
-                return ''
-            if sys.version_info >= (3, 0) and isinstance(unmarshalled, bytes):
-                return unmarshalled.decode('utf-8')
-            else:
-                return unmarshalled
+            return self._unmarshal_str(unmarshalled)
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
@@ -522,36 +584,130 @@ class YamlContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
+    if IS_PYTHON3:
+        _marshal_str = _marshal_str3
+        _marshal_dict = _marshal_dict3
+        _marshal_list = _marshal_list3
+        _unmarshal_str = _unmarshal_str3
+    else:
+        _marshal_str = _marshal_str2
+        _marshal_dict = _marshal_dict2
+        _marshal_list = _marshal_list2
+        _unmarshal_str = _unmarshal_str2
+
 
 class XMLContentHandler(ContentHandler):
     """Future location of the XML content handler.
 
-    .. WARNING:: This handler is not yet implemented!
+    .. NOTE:: This ContentHandler requires the `lxml library
+        <http://lxml.de/>`_.
     """
+
     mime = 'application/xml'
+    """The mime-type used by this content handler is 'application/xml'."""
+
+    librarypath = 'lxml.etree'
+
+    def unmarshal_str(self, data):
+        text = self.library.fromstring(data).text
+        if text is None:
+            text = ''
+
+        if not IS_PYTHON3:
+            text = unicode(text)
+        return text
+
+    def _unmarshal_dict(self, tree):
+        d = {}
+
+        # find all strings
+        for e in tree.iterfind('str'):
+            if e.text is None:
+                d[e.attrib['key']] = ''
+            else:
+                d[e.attrib['key']] = e.text
+
+        # parse subdictionaries
+        for subdict in tree.iterfind('dict'):
+            d[subdict.attrib['key']] = self._unmarshal_dict(subdict)
+
+        return d
+
+    def unmarshal_dict(self, body):
+        return self._unmarshal_dict(self.library.fromstring(body))
+
+    def unmarshal_list(self, body):
+        l = []
+        for elem in self.library.fromstring(body).iterfind('str'):
+            if elem.text is None:
+                l.append('')
+            else:
+                l.append(elem.text)
+        return l
+
+    def marshal_str(self, obj):
+        root = self.library.Element('str')
+        if IS_PYTHON3 and isinstance(obj, bytes):
+            obj = obj.decode('utf-8')
+        root.text = obj
+        return self.library.tostring(root)
+
+    def marshal_list(self, obj):
+        root = self.library.Element('list')
+        for value in obj:
+            elem = self.library.Element('str')
+            elem.text = value
+            root.append(elem)
+        return self.library.tostring(root)
+
+    def _marshal_dict(self, obj, key=None):
+        root = self.library.Element('dict')
+        if key is not None:
+            root.attrib['key'] = key
+
+        for key, value in obj.items():
+            if isinstance(value, str):
+                elem = self.library.Element('str', attrib={'key': key})
+                elem.text = value
+                root.append(elem)
+            elif not IS_PYTHON3 and isinstance(value, unicode):
+                elem = self.library.Element('str', attrib={'key': key})
+                elem.text = value
+                root.append(elem)
+            elif isinstance(value, dict):
+                root.append(self._marshal_dict(value, key=key))
+            else:
+                raise error.MarshalError('MarshalError (type %s): %s'
+                                         % (type(value), value))
+        return root
+
+    def marshal_dict(self, obj):
+        return self.library.tostring(self._marshal_dict(obj))
 
 
 CONTENT_HANDLERS = {
     'application/json': JSONContentHandler,
     'application/pickle': PickleContentHandler,
+    'application/pickle3': Pickle3ContentHandler,
     'application/x-www-form-urlencoded': FormContentHandler,
     'application/xml': XMLContentHandler,
-    'application/yaml': YamlContentHandler,
+    'application/yaml': YAMLContentHandler,
 }
 """
 Mapping of MIME types to their respective handler implemenation. You can use
 this dictionary to dynamically look up a content handler if you do not know the
 requested content type in advance.
 
-================================= ==========================================
+================================= ===========================================
 MIME type                         Handler
-================================= ==========================================
+================================= ===========================================
 application/json                  :py:class:`.handlers.JSONContentHandler`
 application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler`
 application/pickle                :py:class:`.handlers.PickleContentHandler`
+application/pickle3               :py:class:`.handlers.Pickle3ContentHandler`
 application/xml                   :py:class:`.handlers.XMLContentHandler`
-application/yaml                  :py:class:`.handlers.YamlContentHandler`
-================================= ==========================================
+application/yaml                  :py:class:`.handlers.YAMLContentHandler`
+================================= ===========================================
 
 If you want to provide your own implementation of a
 :py:class:`.ContentHandler`, you can add it to this dictionary with the
@@ -563,3 +719,7 @@ content_handler = ContentHandler
 json = JSONContentHandler
 xml = XMLContentHandler
 form = FormContentHandler
+
+# 'YamlContentHandler' was introduced in 0.6.1 and renamed for consistency to
+# 'YAMLContentHandler' in 0.6.2
+YamlContentHandler = YAMLContentHandler

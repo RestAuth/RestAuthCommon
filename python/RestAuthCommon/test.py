@@ -24,7 +24,9 @@ from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import FormContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
 from RestAuthCommon.handlers import PickleContentHandler
-from RestAuthCommon.handlers import YamlContentHandler
+from RestAuthCommon.handlers import Pickle3ContentHandler
+from RestAuthCommon.handlers import XMLContentHandler
+from RestAuthCommon.handlers import YAMLContentHandler
 
 
 class TestHandler(ContentHandler):
@@ -70,26 +72,31 @@ class TestContentHandler(object):
         [],
         ['abc'],
         ['abc', 'def'],
+        ['abc', ''],
     ]
 
     unicode_lists = [
         ['unicode1 \u6111'],
         ['unicode1 \u6111', 'unicode1 \u6155'],
+        ['unicode1 \u6111', ''],
     ]
 
     dicts = [
         {},
         {'a': '1'},
         {'a': '1', 'b': '2'},
+        {'a': '1', 'b': ''},
     ]
 
     unicode_dicts = [
         {'a': 'unicode1 \u6111'},
+        {'a': 'unicode1 \u6111', 'b': ''},
     ]
 
     nested_dicts = [
         {'a': {'foo': 'bar'}},
         {'a': {'foo': 'bar'}, 'b': '2'},
+        {'a': {'foo': ''}, 'b': '2'},
     ]
 
     if sys.version_info >= (3, 0):
@@ -107,7 +114,7 @@ class TestContentHandler(object):
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
             self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
-                            type(unmarshalled))
+                            '"%s" is %s, not %s' % (teststr, type(unmarshalled), self.unmarshal_type))
             self.assertEqual(teststr, unmarshalled)
 
         # convert strings to unicodes in python2
@@ -195,6 +202,16 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
         self.handler = PickleContentHandler()
 
 
-class TestYamlContentHandler(unittest.TestCase, TestContentHandler):
+if sys.version_info >= (3, 0):
+    class TestPickle3ContentHandler(unittest.TestCase, TestContentHandler):
+        def setUp(self):
+            self.handler = Pickle3ContentHandler()
+
+
+class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
-        self.handler = YamlContentHandler()
+        self.handler = YAMLContentHandler()
+
+class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
+    def setUp(self):
+        self.handler = XMLContentHandler()

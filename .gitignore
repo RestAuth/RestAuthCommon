@@ -16,3 +16,4 @@ py3/
 doc/coverage
 .coverage
 *.egg-info/
+/distribute-*
