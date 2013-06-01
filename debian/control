@@ -3,7 +3,8 @@ Section: python
 Priority: extra
 Maintainer: Mathias Ertl <mati@restauth.net>
 Build-Depends: debhelper (>= 8), python-all (>= 2.6), python3-all,
- python-sphinx (>= 1.0.7), python-yaml, python3-yaml
+ python-sphinx (>= 1.0.7), python-yaml, python3-yaml, python-setuptools
+ python3-setuptools
 Standards-Version: 3.9.3
 Homepage: https://common.restauth.net
 X-Python-Version: >= 2.6
