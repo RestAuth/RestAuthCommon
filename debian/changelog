@@ -1,3 +1,11 @@
+restauth-common (0.6.2-3) unstable; urgency=low
+
+  * Add python-lxml and python3-lxml as build-dependency.
+  * Add python-lxml to python-restauth-common dependencies.
+  * Add python3-lxml to python3-restauth-common dependencies.
+
+ -- Mathias Ertl <mati@restauth.net>  Tue, 27 Aug 2013 12:31:26 +0200
+
 restauth-common (0.6.2-2) unstable; urgency=low
 
   * Ready package for jessie

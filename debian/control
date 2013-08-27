@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Mathias Ertl <mati@restauth.net>
 Build-Depends: debhelper (>= 8), python-all (>= 2.6), python3-all,
  python-sphinx (>= 1.0.7), python-yaml, python3-yaml, python-setuptools,
- python3-setuptools
+ python3-setuptools, python-lxml, python3-lxml
 Standards-Version: 3.9.3
 Homepage: https://common.restauth.net
 X-Python-Version: >= 2.6
@@ -15,7 +15,7 @@ Vcs-Git: https://git.fsinf.at/apt/restauth-common.git
 Package: python-restauth-common
 Architecture: all
 Section: python
-Depends: ${misc:Depends}, ${python:Depends}, python-yaml
+Depends: ${misc:Depends}, ${python:Depends}, python-yaml, python-lxml
 Provides: ${python:Provides}
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
@@ -24,7 +24,7 @@ Description: common files for RestAuth reference implementations.
 Package: python3-restauth-common
 Architecture: all
 Section: python
-Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml
+Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, python3-lxml
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
  implementation.
