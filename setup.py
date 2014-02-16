@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of RestAuthCommon.
+# This file is part of RestAuthCommon (https://common.restauth.net).
 #
-#    RestAuthCommon is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    RestAuthCommon is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License along with RestAuthCommon. If
+# not, see <http://www.gnu.org/licenses/>.
 
 name = 'RestAuthCommon'
 url = 'https://common.restauth.net'
@@ -134,9 +132,9 @@ class test(Command):
         pass
 
     def run(self):
-        import RestAuthCommon
         from RestAuthCommon import test
-        unittest.main(RestAuthCommon)
+        suite = unittest.TestLoader().loadTestsFromModule(test)
+        unittest.TextTestRunner().run(suite)
 
 
 class coverage(Command):
@@ -167,9 +165,9 @@ class coverage(Command):
                                 branch=True, omit=omit)
         cov.start()
 
-        import RestAuthCommon
         from RestAuthCommon import test
-        unittest.main(RestAuthCommon, argv=['setup.py', 'test'], exit=False)
+        suite = unittest.TestLoader().loadTestsFromModule(test)
+        unittest.TextTestRunner().run(suite)
 
         cov.stop()
         cov.save()
@@ -217,8 +215,7 @@ setup(
         'version': version,
         'test': test,
     },
-    long_description="""RestAuthCommon is a small set of classes used by both
-    `RestAuth server <https://server.restauth.net>`_ and `RestAuthClient
-    <https://python.restauth.net>`_ (`PyPI
-    <http://pypi.python.org/pypi/RestAuthClient/>`_)."""
+    long_description="""RestAuthCommon is a small set of classes used by both `RestAuth server
+<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_ (`PyPI
+<http://pypi.python.org/pypi/RestAuthClient/>`_)."""
 )
