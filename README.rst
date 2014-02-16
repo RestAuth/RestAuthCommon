@@ -15,4 +15,5 @@ sharing preferences among those systems. Shared authorization allows
 administrators to manage permissions for users in a central and easy way.
 
 This project contains a few shared classes used by both `RestAuth server`_ and
-RestAuthClient_. For source code documentation please see restauth-common_.
+RestAuthClient_. For source code documentation please see
+`https://common.restauth.net <restauth-common>`_.
