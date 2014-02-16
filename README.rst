@@ -15,5 +15,4 @@ sharing preferences among those systems. Shared authorization allows
 administrators to manage permissions for users in a central and easy way.
 
 This project contains a few shared classes used by both `RestAuth server`_ and
-RestAuthClient_. This git repository is just used as a mirror, the master
-repository can be found at https://git.fsinf.at/restauth/restauth-common.
+RestAuthClient_. For source code documentation please see restauth-common_.
