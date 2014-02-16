@@ -1,13 +1,3 @@
-.. comment: This file is displayed on our github mirror.
-
-RestAuth
-========
-
-.. _RestAuth: https://restauth.net
-.. _RestAuth server: https://server.restauth.net
-.. _restauth-common: https://common.restauth.net
-.. _RestAuthClient: https://python.restauth.net
-
 RestAuth_ is a project providing shared authentication, authorization and
 preferences. Shared authentication and preferences allow users to use a single
 account on multiple services (such as websites, mail, system accounts, ...),
@@ -17,3 +7,8 @@ administrators to manage permissions for users in a central and easy way.
 This project contains a few shared classes used by both `RestAuth server`_ and
 RestAuthClient_. For source code documentation please see
 `https://common.restauth.net <restauth-common>`_.
+
+.. _RestAuth: https://restauth.net
+.. _RestAuth server: https://server.restauth.net
+.. _restauth-common: https://common.restauth.net
+.. _RestAuthClient: https://python.restauth.net
