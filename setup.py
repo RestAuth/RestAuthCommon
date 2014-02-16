@@ -102,26 +102,6 @@ class version(Command):
         print(get_version())
 
 
-class prepare_debian_changelog(Command):
-    description = "prepare debian/changelog file"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        if not os.path.exists('debian/changelog'):
-            sys.exit(0)
-
-        version = get_version()
-        cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog', ]
-        p = Popen(cmd)
-        p.communicate()
-
-
 class clean(_clean):
     def run(self):
         cmd = ['make', '-C', 'doc', 'clean', ]
@@ -236,7 +216,6 @@ setup(
         'coverage': coverage,
         'version': version,
         'test': test,
-        'prepare_debian_changelog': prepare_debian_changelog,
     },
     long_description="""RestAuthCommon is a small set of classes used by both
     `RestAuth server <https://server.restauth.net>`_ and `RestAuthClient
