@@ -20,17 +20,12 @@ Get source
 From git
 ++++++++
 
-This project is developed on `git.fsinf.at <https://git.fsinf.at/>`_. You can
-view the source code at `git.fsinf.at/restauth/restauth-common
-<https://git.fsinf.at/restauth/restauth-common>`_. To clone the repository to a
+This project is developed on `on GitHub <git_>`_. To clone the repository to a
 directory named "RestAuthCommon", simply do:
 
 .. code-block:: bash
 
-   git clone http://git.fsinf.at/restauth/restauth-common.git RestAuthCommon
-
-.. NOTE:: A mirror of this git-repository is available
-   `on github <https://github.com/matigit/restauth-common>`_.
+   git clone https://github.com/RestAuth/restauth-common.git RestAuthCommon
 
 Older versions are marked as tags. You can view available tags with
 :command:`git tag -l`. You can use any of those versions with :command:`git
@@ -51,7 +46,7 @@ Official releases
 +++++++++++++++++
 
 You can download official releases of RestAuthCommon `here
-<https://common.restauth.net/download>`_.  The latest release is version
+<download-releases_>`_.  The latest release is version
 |latest-release|.
 
 .. _install_from-source_installation:

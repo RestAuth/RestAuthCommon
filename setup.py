@@ -204,7 +204,7 @@ setup(
     author_email='mati@restauth.net',
     platforms='any',
     url=url,
-    download_url='http://git.fsinf.at/restauth/restauth-common',
+    download_url='https://common.restauth.net/download/',
     package_dir={'': 'python'},
     packages=['RestAuthCommon'],
     keywords=[],

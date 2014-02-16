@@ -221,4 +221,12 @@ man_pages = [
 intersphinx_mapping = {'http://docs.python.org/': None}
 
 LATEST_RELEASE = os.environ.get( 'LATEST_RELEASE' )
-rst_prolog = """.. |latest-release| replace:: %s\n"""%LATEST_RELEASE
+rst_epilog = """
+.. |latest-release| replace:: %s
+.. _chat: xmpp:rest@conference.jabber.at
+.. _download-releases: https://common.restauth.net/download/
+.. _git: https://github.com/RestAuth/restauth-common.git
+.. _git-web: https://github.com/RestAuth/restauth-common
+.. _issue-tracker: https://github.com/RestAuth/restauth-common/issues
+.. _issue-tracker-new: https://github.com/RestAuth/restauth-common/issues/new
+""" % LATEST_RELEASE
