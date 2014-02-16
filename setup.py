@@ -22,18 +22,14 @@ import shutil
 import sys
 import unittest
 
-from distutils.command.clean import clean as _clean
 from subprocess import PIPE
 from subprocess import Popen
 
-try:
-    from setuptools import Command
-    from setuptools import setup
-except ImportError:
-    import distribute_setup
-    distribute_setup.use_setuptools()
-    from setuptools import Command
-    from setuptools import setup
+from distutils.command.clean import clean as _clean
+
+from setuptools import Command
+from setuptools import find_packages
+from setuptools import setup
 
 LATEST_RELEASE = '0.6.2'
 
@@ -184,7 +180,7 @@ setup(
     url=url,
     download_url='https://common.restauth.net/download/',
     package_dir={'': 'python'},
-    packages=['RestAuthCommon'],
+    packages=find_packages('python', exclude='RestAuthCommon.tests'),
     keywords=[],
     install_requires=requires,
     license="GNU General Public License (GPL) v3",
