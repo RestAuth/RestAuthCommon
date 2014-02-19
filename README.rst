@@ -1,22 +1,23 @@
-== RestAuthCommon ==
+``RestAuthCommon`` provides a few shared libraries for `RestAuth
+<https://server.restauth.net>`_ (`git <https://github.com/RestAuth/server>`_)
+and `RestAuthClient <https://python.restauth.net>`_ (`git
+<https://github.com/RestAuth/RestAuthClient>`_), most prominently
+content handlers for JSON, YAML, Pickle and XML.
 
-``RestAuthCommon`` provides a few shared libraries for `RestAuth <RestAuth server>`_ (`git
-<RestAuth server git>`_ and
-RestAuthClient_, most prominently serialization/deserialization classes for
-JSON, YAML, Pickle and XML.
+For detailed source code documentation please see https://common.restauth.net.
 
-RestAuth_ is a project providing shared authentication, authorization and
-preferences. Shared authentication and preferences allow users to use a single
-account on multiple services (such as websites, mail, system accounts, ...),
-sharing preferences among those systems. Shared authorization allows
-administrators to manage permissions for users in a central and easy way.
+Installation
+____________
 
-This project contains a few shared classes used by both `RestAuth server`_ and
-RestAuthClient_. For source code documentation please see
-`https://common.restauth.net <restauth-common>`_.
+RestAuthCommon is usually installed automatically when a project depends on it.
+If you want to install it manually, you can always do::
 
-.. _RestAuth: https://restauth.net
-.. _RestAuth server: https://server.restauth.net
-.. _RestAuth server git: https://server.restauth.net
-.. _restauth-common: https://common.restauth.net
-.. _RestAuthClient: https://python.restauth.net
+   pip install RestAuthCommon
+
+If you want to use the XML and/or YAML content handler, you have to install
+pyyaml and/or lxml::
+
+   pip install lxml PyYAML
+
+You can also download releases as tarballs at
+https://common.restauth.net/download.
