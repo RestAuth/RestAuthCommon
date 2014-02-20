@@ -1,9 +1,9 @@
-``RestAuthCommon`` provides code shared between `RestAuth <https://server.restauth.net>`_ (`git
+**RestAuthCommon** provides code shared between `RestAuth <https://server.restauth.net>`_ (`git
 <https://github.com/RestAuth/server>`_) and `RestAuthClient <https://python.restauth.net>`_ (`git
 <https://github.com/RestAuth/RestAuthClient>`_), most prominently content handlers for JSON, YAML,
 Pickle and XML.
 
-For detailed source code documentation please see https://common.restauth.net.
+For detailed source code documentation please see `our homepage`_.
 
 Installation
 ____________
@@ -16,9 +16,11 @@ If you want to or have to install it manually, you can always do::
 This will automatically install six_, lxml_ and PyYAML_. Note that **RestAuthCommon** requires
 Python 2.6 or later or Python 3.2 or later.
 
-You can also download releases as tarballs at https://common.restauth.net/download. We also provide
-packages for other distributions, please see https://common.restauth.net for more information.
+You can also download `release tarballs`_. We also provide
+packages for other distributions, please see `our homepage`_ for more information.
 
+.. _our homepage: https://common.restauth.net
+.. _release tarballs: https://common.restauth.net/download
 .. _six: https://pypi.python.org/pypi/six
 .. _lxml: https://pypi.python.org/pypi/lxml
 .. _PyYAML: https://pypi.python.org/pypi/PyYAML
