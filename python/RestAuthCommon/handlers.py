@@ -77,7 +77,7 @@ class ContentHandler(object):
         if self._library is None:
             if '.' in self.librarypath:
                 mod, lib = self.librarypath.rsplit('.', 1)
-                _temp = __import__(mod, fromlist=[lib])
+                _temp = __import__(mod, fromlist=[str(lib)])
                 self._library = getattr(_temp, lib)
             else:
                 self._library = __import__(self.librarypath)
