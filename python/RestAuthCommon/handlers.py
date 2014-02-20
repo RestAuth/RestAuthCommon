@@ -1,22 +1,24 @@
-# This file is part of RestAuthCommon.
+# -*- coding: utf-8 -*-
 #
-#    RestAuthCommon is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# This file is part of RestAuthCommon (https://common.restauth.net).
 #
-#    RestAuthCommon is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
-"""
-Classes and methods related to content handling.
+# RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with RestAuthCommon. If
+# not, see <http://www.gnu.org/licenses/>.
+
+"""Classes and methods related to content handling.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
+
+from __future__ import unicode_literals
 
 import json as libjson
 import pickle
@@ -36,13 +38,13 @@ else:
 
 
 class ContentHandler(object):
-    """
-    This class is a common base class for all content handlers. If you
-    want to implement your own content handler, you must subclass this
-    class and implement all marshal_* and unmarshal_* methods.
+    """A common base class for all content handlers.
 
-    **Never use this class directly.** It does not marshal or unmarshal any
-    content itself.  """
+    If you want to implement your own content handler, you must subclass this class and implement
+    all marshal_* and unmarshal_* methods.
+
+    **Never use this class directly.** It does not marshal or unmarshal any content itself.
+    """
 
     mime = None
     """Override this with the MIME type handled by your handler."""
@@ -50,8 +52,8 @@ class ContentHandler(object):
     librarypath = None
     """Override ``librarypath`` to lazily load named library upon first use.
 
-    This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.
-    ``"lxml.etree"``). The named library is accessable via ``self.library``.
+    This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.  ``"lxml.etree"``). The
+    named library is accessable via ``self.library``.
 
     Example::
 
@@ -64,8 +66,8 @@ class ContentHandler(object):
     """
 
     SUPPORT_NESTED_DICTS = True
-    """Set to False if your content handler does not support nested
-    dictionaries as used i.e. during user-creation."""
+    """Set to False if your content handler does not support nested dictionaries as used i.e.
+    during user-creation."""
 
     _library = None
 
@@ -82,11 +84,10 @@ class ContentHandler(object):
         return self._library
 
     def marshal(self, obj):
-        """
-        Shortcut for marshalling just any object.
+        """Shortcut for marshalling just any object.
 
-        **Note:** If you know the type of **obj** in advance, you should
-        use the marshal_* methods directly for improved speed.
+        .. NOTE:: If you know the type of **obj** in advance, you should use the marshal_* methods
+        directly for improved speed.
 
         :param obj: The object to marshall.
         :return: The marshalled representation of the object.
@@ -108,11 +109,9 @@ class ContentHandler(object):
             raise error.MarshalError(e)
 
     def unmarshal(self, raw_data, typ):
-        """
-        Shortcut for unmarshalling a string to an object of type *typ*.
+        """Shortcut for unmarshalling a string to an object of type *typ*.
 
-        **Note:** You may want to use the unmarshal_* methods directly
-        for improved speed.
+        .. NOTE:: You may want to use the unmarshal_* methods directly for improved speed.
 
         :param raw_data: The string to unmarshall.
         :type  raw_data: str
@@ -131,9 +130,8 @@ class ContentHandler(object):
             raise error.UnmarshalError(e)
 
         if val.__class__ != typ:
-            raise error.UnmarshalError(
-                "Request body contained %s instead of %s" %
-                (val.__class__, typ)
+            raise error.UnmarshalError("Request body contained %s instead of %s" %
+                                       (val.__class__, typ)
             )
         return val
 
@@ -183,9 +181,7 @@ class ContentHandler(object):
         pass
 
     def marshal_bool(self, obj):
-        """
-        Marshal a boolean.
-        """
+        """Marshal a boolean."""
         pass
 
     def marshal_list(self, obj):
@@ -211,7 +207,7 @@ class JSONContentHandler(ContentHandler):
     """Handler for JSON encoded content.
 
     .. seealso:: `Specification <http://www.json.org>`_, `WikiPedia
-        <http://en.wikipedia.org/wiki/JSON>`_
+       <http://en.wikipedia.org/wiki/JSON>`_
     """
 
     mime = 'application/json'
@@ -268,8 +264,7 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            dumped = libjson.dumps([obj], separators=self.SEPARATORS,
-                                 cls=self.ByteEncoder)
+            dumped = libjson.dumps([obj], separators=self.SEPARATORS, cls=self.ByteEncoder)
             if PY3:
                 return dumped.encode('utf-8')
             else:
@@ -279,8 +274,7 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_bool(self, obj):
         try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
-                                 cls=self.ByteEncoder)
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             if PY3:
                 return dumped.encode('utf-8')
             else:
@@ -290,8 +284,7 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_list(self, obj):
         try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
-                                 cls=self.ByteEncoder)
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             if PY3:
                 return dumped.encode('utf-8')
             else:
@@ -301,8 +294,7 @@ class JSONContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS,
-                                 cls=self.ByteEncoder)
+            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             if PY3:
                 return dumped.encode('utf-8')
             else:
@@ -319,8 +311,7 @@ class FormContentHandler(ContentHandler):
     """
 
     mime = 'application/x-www-form-urlencoded'
-    """The mime-type used by this content handler is
-    'application/x-www-form-urlencoded'."""
+    """The mime-type used by this content handler is 'application/x-www-form-urlencoded'."""
 
     SUPPORT_NESTED_DICTS = False
 
@@ -484,11 +475,10 @@ class PickleContentHandler(ContentHandler):
 class Pickle3ContentHandler(PickleContentHandler):
     """Handler for pickle-encoded content, protocol level version 3.
 
-    This version is only supported by the Python3 version the pickle module,
-    this ContentHandler is only usable in Python3.
+    This version is only supported by the Python3 version the pickle module, this ContentHandler is
+    only usable in Python3.
 
-    .. seealso:: `module documentation
-       <http://docs.python.org/3/library/pickle.html>`_,
+    .. seealso:: `module documentation <http://docs.python.org/3/library/pickle.html>`_,
        `WikiPedia <http://en.wikipedia.org/wiki/Pickle_(Python)>`_
     """
 
@@ -501,11 +491,10 @@ class Pickle3ContentHandler(PickleContentHandler):
 class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
 
-    .. NOTE:: This ContentHandler requires `PyYAML library
-       <http://pyyaml.org/>`_.
+    .. NOTE:: This ContentHandler requires `PyYAML library <http://pyyaml.org/>`_.
 
-    .. seealso:: `Specification <http://www.yaml.org/>`_,
-        `WikiPedia <http://en.wikipedia.org/wiki/YAML>`_
+    .. seealso:: `Specification <http://www.yaml.org/>`_, `WikiPedia
+       <http://en.wikipedia.org/wiki/YAML>`_
     """
     mime = 'application/yaml'
     """The mime-type used by this content handler is 'application/yaml'."""
@@ -595,8 +584,7 @@ class YAMLContentHandler(ContentHandler):
 class XMLContentHandler(ContentHandler):
     """Future location of the XML content handler.
 
-    .. NOTE:: This ContentHandler requires the `lxml library
-        <http://lxml.de/>`_.
+    .. NOTE:: This ContentHandler requires the `lxml library <http://lxml.de/>`_.
     """
 
     mime = 'application/xml'
@@ -690,9 +678,8 @@ CONTENT_HANDLERS = {
     'application/yaml': YAMLContentHandler,
 }
 """
-Mapping of MIME types to their respective handler implemenation. You can use
-this dictionary to dynamically look up a content handler if you do not know the
-requested content type in advance.
+Mapping of MIME types to their respective handler implemenation. You can use this dictionary to
+dynamically look up a content handler if you do not know the requested content type in advance.
 
 ================================= ===========================================
 MIME type                         Handler
@@ -705,9 +692,8 @@ application/xml                   :py:class:`.handlers.XMLContentHandler`
 application/yaml                  :py:class:`.handlers.YAMLContentHandler`
 ================================= ===========================================
 
-If you want to provide your own implementation of a
-:py:class:`.ContentHandler`, you can add it to this dictionary with the
-appropriate MIME type as the key.
+If you want to provide your own implementation of a :py:class:`.ContentHandler`, you can add it to
+this dictionary with the appropriate MIME type as the key.
 """
 
 # old names, for compatability:
