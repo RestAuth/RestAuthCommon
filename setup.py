@@ -35,7 +35,7 @@ from setuptools import setup
 
 LATEST_RELEASE = '0.6.2'
 
-requires = ['pyyaml>=3.10', 'lxml>=3.3.1', 'six>=1.5.2', ]
+requires = ['pyyaml>=3.10', 'lxml>=3.3.1', ]
 
 if sys.version_info < (2, 6):
     print('ERROR: Sphinx requires at least Python 2.6 to run.')

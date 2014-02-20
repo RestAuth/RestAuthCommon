@@ -13,7 +13,7 @@ If you want to or have to install it manually, you can always do::
 
    pip install RestAuthCommon
 
-This will automatically install six_, lxml_ and PyYAML_. Note that **RestAuthCommon** requires
+This will automatically install lxml_ and PyYAML_. Note that **RestAuthCommon** requires
 Python 2.6 or later or Python 3.2 or later.
 
 You can also download `release tarballs`_. We also provide
@@ -21,6 +21,5 @@ packages for other distributions, please see `our homepage`_ for more informatio
 
 .. _our homepage: https://common.restauth.net
 .. _release tarballs: https://common.restauth.net/download
-.. _six: https://pypi.python.org/pypi/six
 .. _lxml: https://pypi.python.org/pypi/lxml
 .. _PyYAML: https://pypi.python.org/pypi/PyYAML
