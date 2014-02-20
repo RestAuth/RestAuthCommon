@@ -22,21 +22,17 @@ import json as libjson
 import pickle
 import sys
 
-try:
-    from urllib.parse import parse_qs  # python3
-    from urllib.parse import urlencode  # python3
-except ImportError:
-    from urlparse import parse_qs  # python2
-    from urllib import urlencode  # python2
-
 from RestAuthCommon import error
 
-if sys.version_info >= (3, 0):
-    IS_PYTHON3 = True
-    IS_PYTHON2 = False
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
+if PY2:
+    from urlparse import parse_qs
+    from urllib import urlencode
 else:
-    IS_PYTHON3 = False
-    IS_PYTHON2 = True
+    from urllib.parse import parse_qs
+    from urllib.parse import urlencode
 
 
 class ContentHandler(object):
@@ -99,7 +95,7 @@ class ContentHandler(object):
         """
         if isinstance(obj, (bytes, str)):
             func_name = 'marshal_str'
-        if IS_PYTHON2 and isinstance(obj, unicode):
+        if PY2 and isinstance(obj, unicode):
             func_name = 'marshal_str'
         else:
             func_name = 'marshal_%s' % (obj.__class__.__name__)
@@ -225,13 +221,13 @@ class JSONContentHandler(ContentHandler):
 
     class ByteEncoder(libjson.JSONEncoder):
         def default(self, obj):
-            if IS_PYTHON3 and isinstance(obj, bytes):
+            if PY3 and isinstance(obj, bytes):
                 return obj.decode('utf-8')
             return libjson.JSONEncoder.default(self, obj)
 
     class ByteDecoder(libjson.JSONDecoder):
         def decode(self, obj):
-            if IS_PYTHON3 and isinstance(obj, bytes):
+            if PY3 and isinstance(obj, bytes):
                 obj = obj.decode('utf-8')
             return libjson.JSONDecoder.decode(self, obj)
 
@@ -245,7 +241,7 @@ class JSONContentHandler(ContentHandler):
 
             # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
             # not unicode.
-            if IS_PYTHON2 and isinstance(string, str):
+            if PY2 and isinstance(string, str):
                 return unicode(string)
 
             return string
@@ -274,7 +270,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if IS_PYTHON3:
+            if PY3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -285,7 +281,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if IS_PYTHON3:
+            if PY3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -296,7 +292,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if IS_PYTHON3:
+            if PY3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -307,7 +303,7 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS,
                                  cls=self.ByteEncoder)
-            if IS_PYTHON3:
+            if PY3:
                 return dumped.encode('utf-8')
             else:
                 return dumped
@@ -342,7 +338,7 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if IS_PYTHON3:
+        if PY3:
             body = body.decode('utf-8')
 
         parsed_dict = parse_qs(body, True)
@@ -353,13 +349,13 @@ class FormContentHandler(ContentHandler):
             else:
                 ret_dict[key] = value
 
-        if IS_PYTHON2:
+        if PY2:
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if IS_PYTHON3:
+        if PY3:
             body = body.decode('utf-8')
 
         if body == '':
@@ -367,23 +363,23 @@ class FormContentHandler(ContentHandler):
 
         parsed = parse_qs(body, True)['list']
 
-        if IS_PYTHON2:
+        if PY2:
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if IS_PYTHON3:
+        if PY3:
             body = body.decode('utf-8')
 
         parsed = parse_qs(body, True)['str'][0]
-        if IS_PYTHON2:
+        if PY2:
             parsed = parsed.decode('utf-8')
         return parsed
 
     def marshal_str(self, obj):
-        if IS_PYTHON2:
+        if PY2:
             obj = obj.encode('utf-8')
-        if IS_PYTHON3:
+        if PY3:
             return urlencode({'str': obj}).encode('utf-8')
         else:
             return urlencode({'str': obj})
@@ -408,7 +404,7 @@ class FormContentHandler(ContentHandler):
         return encoded
 
     def marshal_dict(self, obj):
-        if IS_PYTHON2:
+        if PY2:
             obj = self._encode_dict(obj)
 
         # verify that no value is a dictionary, because the unmarshalling for
@@ -417,15 +413,15 @@ class FormContentHandler(ContentHandler):
             if isinstance(v, dict):
                 raise error.MarshalError(
                     "FormContentHandler doesn't support nested dictionaries.")
-        if IS_PYTHON3:
+        if PY3:
             return urlencode(obj, doseq=True).encode('utf-8')
         else:
             return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
-        if IS_PYTHON2:
+        if PY2:
             obj = [e.encode('utf-8') for e in obj]
-        if IS_PYTHON3:
+        if PY3:
             return urlencode({'list': obj}, doseq=True).encode('utf-8')
         else:
             return urlencode({'list': obj}, doseq=True)
@@ -466,7 +462,7 @@ class PickleContentHandler(ContentHandler):
         try:
             unpickled = pickle.loads(data)
 
-            if IS_PYTHON3 and isinstance(unpickled, bytes):
+            if PY3 and isinstance(unpickled, bytes):
                 # if bytes were pickled, we have to decode them
                 unpickled = unpickled.decode('utf-8')
             return unpickled
@@ -584,7 +580,7 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
-    if IS_PYTHON3:
+    if PY3:
         _marshal_str = _marshal_str3
         _marshal_dict = _marshal_dict3
         _marshal_list = _marshal_list3
@@ -613,7 +609,7 @@ class XMLContentHandler(ContentHandler):
         if text is None:
             text = ''
 
-        if not IS_PYTHON3:
+        if not PY3:
             text = unicode(text)
         return text
 
@@ -647,7 +643,7 @@ class XMLContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         root = self.library.Element('str')
-        if IS_PYTHON3 and isinstance(obj, bytes):
+        if PY3 and isinstance(obj, bytes):
             obj = obj.decode('utf-8')
         root.text = obj
         return self.library.tostring(root)
@@ -670,7 +666,7 @@ class XMLContentHandler(ContentHandler):
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
                 root.append(elem)
-            elif not IS_PYTHON3 and isinstance(value, unicode):
+            elif not PY3 and isinstance(value, unicode):
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
                 root.append(elem)
