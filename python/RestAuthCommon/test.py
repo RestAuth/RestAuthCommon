@@ -1,17 +1,17 @@
-# This file is part of RestAuthCommon.
+# -*- coding: utf-8 -*-
 #
-# RestAuthCommon is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of RestAuthCommon (https://common.restauth.net).
 #
-# RestAuthCommon is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-# You should have received a copy of the GNU General Public License
-# along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
+# RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+# the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with RestAuthCommon.  If
+# not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import unicode_literals
 
@@ -109,8 +109,7 @@ class TestContentHandler(object):
     def stringtest(self, strings):
         for teststr in strings:
             marshalled = self.handler.marshal_str(teststr)
-            self.assertTrue(isinstance(marshalled, self.marshal_type),
-                            type(marshalled))
+            self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
             self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
@@ -123,12 +122,10 @@ class TestContentHandler(object):
                 teststr = unicode(teststr)
 
                 marshalled = self.handler.marshal_str(teststr)
-                self.assertTrue(isinstance(marshalled, self.marshal_type),
-                                type(marshalled))
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
                 unmarshalled = self.handler.unmarshal_str(marshalled)
-                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
-                                type(unmarshalled))
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), type(unmarshalled))
                 self.assertEqual(teststr, unmarshalled)
 
         # convert strings to bytes in python3
@@ -137,11 +134,9 @@ class TestContentHandler(object):
                 bytestr = bytes(teststr, 'utf-8')
 
                 marshalled = self.handler.marshal_str(bytestr)
-                self.assertTrue(isinstance(marshalled, self.marshal_type),
-                                type(marshalled))
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_str(marshalled)
-                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
-                                type(unmarshalled))
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), type(unmarshalled))
                 self.assertEqual(teststr, unmarshalled)
 
     def test_str(self):
@@ -193,8 +188,7 @@ class TestFormContentHandler(unittest.TestCase, TestContentHandler):
 
     def test_nesteddicts(self):
         for testdict in self.nested_dicts:
-            self.assertRaises(MarshalError,
-                              self.handler.marshal_dict, (testdict))
+            self.assertRaises(MarshalError, self.handler.marshal_dict, (testdict))
 
 
 class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
