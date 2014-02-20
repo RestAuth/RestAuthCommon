@@ -225,8 +225,8 @@ rst_epilog = """
 .. |latest-release| replace:: %s
 .. _chat: xmpp:rest@conference.jabber.at
 .. _download-releases: https://common.restauth.net/download/
-.. _git: https://github.com/RestAuth/restauth-common.git
-.. _git-web: https://github.com/RestAuth/restauth-common
-.. _issue-tracker: https://github.com/RestAuth/restauth-common/issues
-.. _issue-tracker-new: https://github.com/RestAuth/restauth-common/issues/new
+.. _git: https://github.com/RestAuth/RestAuthCommon.git
+.. _git-web: https://github.com/RestAuth/RestAuthCommon
+.. _issue-tracker: https://github.com/RestAuth/RestAuthCommon/issues
+.. _issue-tracker-new: https://github.com/RestAuth/RestAuthCommon/issues/new
 """ % LATEST_RELEASE
