@@ -28,6 +28,9 @@ from RestAuthCommon.handlers import Pickle3ContentHandler
 from RestAuthCommon.handlers import XMLContentHandler
 from RestAuthCommon.handlers import YAMLContentHandler
 
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
 
 class TestHandler(ContentHandler):
     def __init__(self, librarypath):
@@ -99,14 +102,14 @@ class TestContentHandler(object):
         {'a': {'foo': ''}, 'b': '2'},
     ]
 
-    if sys.version_info >= (3, 0):
+    if PY3:
         marshal_type = bytes
         unmarshal_type = str
     else:
         marshal_type = str
         unmarshal_type = unicode
 
-    def stringtest(self, strings):
+    def stringtest(self, strings, ucode=True):
         for teststr in strings:
             marshalled = self.handler.marshal_str(teststr)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
@@ -117,7 +120,7 @@ class TestContentHandler(object):
             self.assertEqual(teststr, unmarshalled)
 
         # convert strings to unicodes in python2
-        if sys.version_info < (3, 0):
+        if PY2:
             for teststr in strings:
                 teststr = unicode(teststr)
 
@@ -129,7 +132,7 @@ class TestContentHandler(object):
                 self.assertEqual(teststr, unmarshalled)
 
         # convert strings to bytes in python3
-        if sys.version_info >= (3, 0):
+        if PY3:
             for teststr in strings:
                 bytestr = bytes(teststr, 'utf-8')
 
@@ -196,7 +199,7 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
         self.handler = PickleContentHandler()
 
 
-if sys.version_info >= (3, 0):
+if PY3:
     class TestPickle3ContentHandler(unittest.TestCase, TestContentHandler):
         def setUp(self):
             self.handler = Pickle3ContentHandler()
