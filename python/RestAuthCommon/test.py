@@ -149,23 +149,62 @@ class TestContentHandler(object):
         if self.SUPPORT_UNICODE:
             self.stringtest(self.unicode_strings)
 
-    def dicttest(self, dicts):
+    def strify_dict(self, d):
+        """Convert a dict of unicode objects to str objects, e.g.::
+
+            >>> strify_dict({u'foo': u'bar', u'bla': {u'foo': u'bar'}})
+            {'foo': 'bar', 'bla': {'foo': 'bar'}})
+
+        """
+        testdict = dict((k.encode('utf-8'),
+                         v.encode('utf8') if isinstance(v, unicode) else self.strify_dict(v))
+                        for k, v in d.iteritems())
+        return testdict
+
+    def assertUnicodeList(self, l):
+        """Assert that all items in a list are unicode objects."""
+        for e in l:
+            self.assertTrue(isinstance(e, unicode), (l))
+
+    def assertUnicodeDict(self, d):
+        """Assert that all keys/values are unicode"""
+        for k, v in d.iteritems():
+            self.assertTrue(isinstance(k, unicode), (type(k), d))
+
+            if isinstance(v, dict):
+                self.assertUnicodeDict(v)
+            else:
+                self.assertTrue(isinstance(k, unicode))
+
+    def dicttest(self, dicts, ucode=True):
         for testdict in dicts:
             marshalled = self.handler.marshal_dict(testdict)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
             unmarshalled = self.handler.unmarshal_dict(marshalled)
-            self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
+            self.assertTrue(isinstance(unmarshalled, dict), (type(unmarshalled), testdict))
             self.assertEqual(testdict, unmarshalled)
 
+        if PY2 and not ucode:
+            for testdict in dicts:
+                # convert dict keys/values to unicode
+                strdict = self.strify_dict(testdict)
+
+                marshalled = self.handler.marshal_dict(strdict)
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+                unmarshalled = self.handler.unmarshal_dict(marshalled)
+                self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
+                self.assertEqual(testdict, unmarshalled)
+                self.assertUnicodeDict(unmarshalled)
+
     def test_dict(self):
-        self.dicttest(self.dicts)
+        self.dicttest(self.dicts, ucode=False)
         if self.SUPPORT_NESTED_DICTS:
             self.dicttest(self.nested_dicts)
 
         if self.SUPPORT_UNICODE:
             self.dicttest(self.unicode_dicts)
 
-    def listtest(self, lists):
+    def listtest(self, lists, ucode=True):
         for testlist in lists:
             marshalled = self.handler.marshal_list(testlist)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
@@ -174,8 +213,20 @@ class TestContentHandler(object):
             self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
             self.assertEqual(testlist, unmarshalled)
 
+        if PY2 and not ucode:
+            for testlist in lists:
+                strlist = [e.encode('utf-8') for e in testlist]
+
+                marshalled = self.handler.marshal_list(strlist)
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+
+                unmarshalled = self.handler.unmarshal_list(marshalled)
+                self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
+                self.assertEqual(testlist, unmarshalled)
+                self.assertUnicodeList(unmarshalled)
+
     def test_list(self):
-        self.listtest(self.lists)
+        self.listtest(self.lists, ucode=False)
         if self.SUPPORT_UNICODE:
             self.listtest(self.unicode_lists)
 

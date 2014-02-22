@@ -83,6 +83,17 @@ class ContentHandler(object):
                 self._library = __import__(self.librarypath)
         return self._library
 
+    def _unicode_dict(self, d):
+        """Convert a (possibly nested) dict of utf-8/str keys/values to pure utf-8."""
+        def conv(v):
+            if isinstance(v, str):
+                return v.decode('utf-8')
+            elif isinstance(v, dict):
+                return self._unicode_dict(v)
+            return v
+
+        return dict((conv(k), conv(v)) for k, v in d.iteritems())
+
     def marshal(self, obj):
         """Shortcut for marshalling just any object.
 
@@ -455,17 +466,37 @@ class PickleContentHandler(ContentHandler):
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
+    def _unmarshal_list3(self, data):
+        return data
+
+    def _unmarshal_list2(self, data):
+        return [e.decode('utf-8') if isinstance(e, str) else e for e in data]
+
     def unmarshal_list(self, data):
         try:
-            return pickle.loads(data)
+            return self._unmarshal_list(pickle.loads(data))
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
+    def _unmarshal_dict3(self, data):
+        return data
+
+    def _unmarshal_dict2(self, data):
+        return self._unicode_dict(data)
+
     def unmarshal_dict(self, data):
         try:
-            return pickle.loads(data)
+            return self._unmarshal_dict(pickle.loads(data))
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
+
+    if PY3:
+        _unmarshal_list = _unmarshal_list3
+        _unmarshal_dict = _unmarshal_dict3
+    else:
+        _unmarshal_list = _unmarshal_list2
+        _unmarshal_dict = _unmarshal_dict2
+
 
 class Pickle3ContentHandler(PickleContentHandler):
     """Handler for pickle-encoded content, protocol level version 3.
@@ -554,15 +585,27 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
+    def _unmarshal_list3(self, data):
+        return data
+
+    def _unmarshal_list2(self, data):
+        return [e.decode('utf-8') if isinstance(e, str) else e for e in data]
+
     def unmarshal_list(self, data):
         try:
-            return self.library.load(data)
+            return self._unmarshal_list(self.library.load(data))
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
+    def _unmarshal_dict2(self, data):
+        return self._unicode_dict(data)
+
+    def _unmarshal_dict3(self, data):
+        return data
+
     def unmarshal_dict(self, data):
         try:
-            return self.library.load(data)
+            return self._unmarshal_dict(self.library.load(data))
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
@@ -571,11 +614,15 @@ class YAMLContentHandler(ContentHandler):
         _marshal_dict = _marshal_dict3
         _marshal_list = _marshal_list3
         _unmarshal_str = _unmarshal_str3
+        _unmarshal_list = _unmarshal_list3
+        _unmarshal_dict = _unmarshal_dict3
     else:
         _marshal_str = _marshal_str2
         _marshal_dict = _marshal_dict2
         _marshal_list = _marshal_list2
         _unmarshal_str = _unmarshal_str2
+        _unmarshal_list = _unmarshal_list2
+        _unmarshal_dict = _unmarshal_dict2
 
 
 class XMLContentHandler(ContentHandler):
@@ -598,7 +645,7 @@ class XMLContentHandler(ContentHandler):
             text = unicode(text)
         return text
 
-    def _unmarshal_dict(self, tree):
+    def _unmarshal_dict_real(self, tree):
         d = {}
 
         # find all strings
@@ -614,8 +661,20 @@ class XMLContentHandler(ContentHandler):
 
         return d
 
+    def _unmarshal_dict3(self, data):
+        return self._unmarshal_dict_real(data)
+
+    def _unmarshal_dict2(self, data):
+        return self._unicode_dict(self._unmarshal_dict_real(data))
+
     def unmarshal_dict(self, body):
         return self._unmarshal_dict(self.library.fromstring(body))
+
+    def _unmarshal_list3(self, data):
+        return data
+
+    def _unmarshal_list2(self, data):
+        return [e.decode('utf-8') if isinstance(e, str) else e for e in data]
 
     def unmarshal_list(self, body):
         l = []
@@ -624,7 +683,7 @@ class XMLContentHandler(ContentHandler):
                 l.append('')
             else:
                 l.append(elem.text)
-        return l
+        return self._unmarshal_list(l)
 
     def marshal_str(self, obj):
         root = self.library.Element('str')
@@ -664,6 +723,13 @@ class XMLContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         return self.library.tostring(self._marshal_dict(obj))
+
+    if PY3:
+        _unmarshal_dict = _unmarshal_dict3
+        _unmarshal_list = _unmarshal_list3
+    else:
+        _unmarshal_dict = _unmarshal_dict2
+        _unmarshal_list = _unmarshal_list2
 
 
 CONTENT_HANDLERS = {
