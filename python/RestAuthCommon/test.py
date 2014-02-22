@@ -115,20 +115,21 @@ class TestContentHandler(object):
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
-            self.assertTrue(isinstance(unmarshalled, self.unmarshal_type),
-                            '"%s" is %s, not %s' % (teststr, type(unmarshalled), self.unmarshal_type))
+            self.assertTrue(isinstance(unmarshalled, self.unmarshal_type))
             self.assertEqual(teststr, unmarshalled)
 
-        # convert strings to unicodes in python2
-        if PY2:
+        # convert unicode to str in python2
+        if PY2 and not ucode:
             for teststr in strings:
-                teststr = unicode(teststr)
+                teststr = teststr.encode('utf-8')
+                self.assertTrue(isinstance(teststr, str))
 
                 marshalled = self.handler.marshal_str(teststr)
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
                 unmarshalled = self.handler.unmarshal_str(marshalled)
-                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), type(unmarshalled))
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), (type(unmarshalled),
+                                                                               teststr))
                 self.assertEqual(teststr, unmarshalled)
 
         # convert strings to bytes in python3
@@ -143,7 +144,7 @@ class TestContentHandler(object):
                 self.assertEqual(teststr, unmarshalled)
 
     def test_str(self):
-        self.stringtest(self.strings)
+        self.stringtest(self.strings, ucode=False)
         if self.SUPPORT_UNICODE:
             self.stringtest(self.unicode_strings)
 
