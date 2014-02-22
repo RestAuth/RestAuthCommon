@@ -213,7 +213,7 @@ class JSONContentHandler(ContentHandler):
     mime = 'application/json'
     """The mime-type used by this content handler is 'application/json'."""
 
-    SEPARATORS = (',', ':')
+    SEPARATORS = (str(','), str(':'))
 
     class ByteEncoder(libjson.JSONEncoder):
         def default(self, obj):
@@ -275,20 +275,14 @@ class JSONContentHandler(ContentHandler):
     def marshal_bool(self, obj):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
-            if PY3:
-                return dumped.encode('utf-8')
-            else:
-                return dumped
+            return dumped.encode('utf-8')
         except ValueError as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
-            if PY3:
-                return dumped.encode('utf-8')
-            else:
-                return dumped
+            return dumped.encode('utf-8')
         except ValueError as e:
             raise error.MarshalError(e)
 
@@ -297,8 +291,7 @@ class JSONContentHandler(ContentHandler):
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             if PY3:
                 return dumped.encode('utf-8')
-            else:
-                return dumped
+            return dumped
         except ValueError as e:
             raise error.MarshalError(e)
 
@@ -455,7 +448,9 @@ class PickleContentHandler(ContentHandler):
 
             if PY3 and isinstance(unpickled, bytes):
                 # if bytes were pickled, we have to decode them
-                unpickled = unpickled.decode('utf-8')
+                return unpickled.decode('utf-8')
+            elif PY2 and isinstance(unpickled, str):
+                return unpickled.decode('utf-8')
             return unpickled
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
@@ -547,7 +542,9 @@ class YAMLContentHandler(ContentHandler):
 
     def _unmarshal_str2(self, unmarshalled):
         if unmarshalled is None:
-            return unicode('')
+            return ''
+        elif isinstance(unmarshalled, str):
+            return unmarshalled.decode('utf-8')
         return unmarshalled
 
     def unmarshal_str(self, data):
