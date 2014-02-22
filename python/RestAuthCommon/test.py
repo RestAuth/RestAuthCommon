@@ -136,6 +136,7 @@ class TestContentHandler(object):
         if PY3:
             for teststr in strings:
                 bytestr = bytes(teststr, 'utf-8')
+                self.assertTrue(isinstance(bytestr, bytes))
 
                 marshalled = self.handler.marshal_str(bytestr)
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
