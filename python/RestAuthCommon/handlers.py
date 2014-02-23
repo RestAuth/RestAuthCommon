@@ -84,13 +84,20 @@ class ContentHandler(object):
         return self._library
 
     def _normalize_list3(self, l):
-        return l
+        return [e.decode('utf-8') if isinstance(e, bytes) else e for e in l]
 
     def _normalize_list2(self, l):
         return [e.decode('utf-8') if isinstance(e, str) else e for e in l]
 
     def _normalize_dict3(self, d):
-        return d
+        def conv(v):
+            if isinstance(v, bytes):
+                return v.decode('utf-8')
+            elif isinstance(v, dict):
+                return self._normalize_dict3(v)
+            return v
+
+        return dict((conv(k), conv(v)) for k, v in d.items())
 
     def _unicode_dict(self, d):
         """Convert a (possibly nested) dict of utf-8/str keys/values to pure utf-8."""
@@ -246,10 +253,33 @@ class JSONContentHandler(ContentHandler):
     SEPARATORS = (str(','), str(':'))
 
     class ByteEncoder(libjson.JSONEncoder):
-        def default(self, obj):
-            if PY3 and isinstance(obj, bytes):
-                return obj.decode('utf-8')
-            return libjson.JSONEncoder.default(self, obj)
+        def decode_dict(self, d):
+            def conv(v):
+                if isinstance(v, bytes):
+                    return v.decode('utf-8')
+                elif isinstance(v, dict):
+                    return self.decode_dict(v)
+                return v
+
+            return {conv(k): conv(v) for k, v in d.items()}
+
+        if PY3:
+            def encode(self, obj):
+                if isinstance(obj, bytes):
+                    obj = obj.decode('utf-8')
+                elif isinstance(obj, dict):
+                    obj = self.decode_dict(obj)
+
+                try:
+                    return libjson.JSONEncoder.encode(self, obj)
+                except TypeError:
+                    print(obj)
+                    raise
+
+            def default(self, obj):
+                if isinstance(obj, bytes):
+                    return obj.decode('utf-8')
+                return libjson.JSONEncoder.default(self, obj)
 
     class ByteDecoder(libjson.JSONDecoder):
         def decode(self, obj):
@@ -666,6 +696,9 @@ class XMLContentHandler(ContentHandler):
         return self.library.tostring(root)
 
     def marshal_list(self, obj):
+        if PY3:  # decode any byte objects
+            obj = [e.decode('utf-8') if isinstance(e, bytes) else e for e in obj]
+
         root = self.library.Element('list')
         for value in obj:
             elem = self.library.Element('str')
@@ -677,6 +710,8 @@ class XMLContentHandler(ContentHandler):
         root = self.library.Element('dict')
         if key is not None:
             root.attrib['key'] = key
+
+        obj = self._normalize_dict(obj)
 
         for key, value in obj.items():
             if isinstance(value, str):
