@@ -68,19 +68,11 @@ class TestContentHandler(object):
     INVALID = []
     INVALID2 = []
     INVALID3 = []
-    EQUIVALENT = []
-    if PY2:
-        EQUIVALENT2 = {
-            'a': str,
-            ('a', 'b'): list,
-            (('a', 'b'), ('c', 'd')): dict,
-        }
-    if PY3:
-        EQUIVALENT3 = {
-            'a': str,
-            ('a', 'b'): list,
-            (('a', 'b'), ('c', 'd')): dict,
-        }
+    EQUIVALENT = {
+        'a': str,
+        ('a', 'b'): list,
+        (('a', 'b'), ('c', 'd')): dict,
+    }
 
     strings = [
         '',
@@ -318,19 +310,15 @@ class TestContentHandler(object):
             self.assertRaises(UnmarshalError, func, obj)
 
     def test_equivalent(self):
-        for typ, serialized, equiv in self.EQUIVALENT:
-            func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
-            self.assertEqual(func(serialized), equiv)
-
         if PY2 and hasattr(self, 'EQUIVALENT2_MAPPING'):
-            for equiv, typ in self.EQUIVALENT2.items():
+            for equiv, typ in self.EQUIVALENT.items():
                 func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
 
                 serialized = self.EQUIVALENT2_MAPPING[equiv]
                 self.assertEqual(func(serialized), typ(equiv))
 
         if PY3 and hasattr(self, 'EQUIVALENT3_MAPPING'):
-            for equiv, typ in self.EQUIVALENT3.items():
+            for equiv, typ in self.EQUIVALENT.items():
                 func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
 
                 serialized = self.EQUIVALENT3_MAPPING[equiv]
