@@ -20,6 +20,7 @@ import sys
 import unittest
 
 from RestAuthCommon.error import MarshalError
+from RestAuthCommon.error import UnmarshalError
 from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import FormContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
@@ -59,6 +60,9 @@ class TestLibraryImport(unittest.TestCase):
 class TestContentHandler(object):
     SUPPORT_UNICODE = True
     SUPPORT_NESTED_DICTS = True
+    INVALID = []
+    INVALID2 = []
+    INVALID3 = []
 
     strings = [
         '',
@@ -290,6 +294,10 @@ class TestContentHandler(object):
         if self.SUPPORT_UNICODE:
             self.listtest(self.unicode_lists)
 
+    def test_invalid(self):
+        for typ, obj in self.INVALID:
+            func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
+            self.assertRaises(UnmarshalError, func, obj)
 
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
@@ -308,6 +316,12 @@ class TestFormContentHandler(unittest.TestCase, TestContentHandler):
 
 
 class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
+    INVALID = [
+        (str, 'invalid'),
+        (list, 'invalid'),
+        (dict, 'invalid'),
+    ]
+
     def setUp(self):
         self.handler = PickleContentHandler()
 
@@ -319,6 +333,11 @@ if PY3:
 
 
 class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
+    INVALID = [
+        (str, '%invalid'),
+        (list, '%invalid'),
+        (dict, '%invalid'),
+    ]
     def setUp(self):
         self.handler = YAMLContentHandler()
 
