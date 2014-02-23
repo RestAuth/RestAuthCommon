@@ -33,6 +33,9 @@ from setuptools import Command
 from setuptools import find_packages
 from setuptools import setup
 
+
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 LATEST_RELEASE = '0.6.2'
 
 requires = []
@@ -161,6 +164,11 @@ class coverage(Command):
 
         cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
                                 branch=True, omit=omit)
+
+        if PY3:
+            cov.exclude('pragma: py2')
+        else:
+            cov.exclude('pragma: py3')
         cov.start()
 
         from RestAuthCommon import test
