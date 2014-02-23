@@ -16,8 +16,13 @@
 from __future__ import unicode_literals
 
 import json
+import pickle
 import sys
 import unittest
+
+import yaml
+
+from lxml import etree
 
 from RestAuthCommon.error import MarshalError
 from RestAuthCommon.error import UnmarshalError
@@ -63,6 +68,19 @@ class TestContentHandler(object):
     INVALID = []
     INVALID2 = []
     INVALID3 = []
+    EQUIVALENT = []
+    if PY2:
+        EQUIVALENT2 = {
+            'a': str,
+            ('a', 'b'): list,
+            (('a', 'b'), ('c', 'd')): dict,
+        }
+    if PY3:
+        EQUIVALENT3 = {
+            'a': str,
+            ('a', 'b'): list,
+            (('a', 'b'), ('c', 'd')): dict,
+        }
 
     strings = [
         '',
@@ -299,7 +317,48 @@ class TestContentHandler(object):
             func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
             self.assertRaises(UnmarshalError, func, obj)
 
+    def test_equivalent(self):
+        for typ, serialized, equiv in self.EQUIVALENT:
+            func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
+            self.assertEqual(func(serialized), equiv)
+
+        if PY2 and hasattr(self, 'EQUIVALENT2_MAPPING'):
+            for equiv, typ in self.EQUIVALENT2.items():
+                func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
+
+                serialized = self.EQUIVALENT2_MAPPING[equiv]
+                self.assertEqual(func(serialized), typ(equiv))
+
+        if PY3 and hasattr(self, 'EQUIVALENT3_MAPPING'):
+            for equiv, typ in self.EQUIVALENT3.items():
+                func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
+
+                serialized = self.EQUIVALENT3_MAPPING[equiv]
+                self.assertEqual(func(serialized), typ(equiv))
+
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
+    INVALID = [
+        (str, '["foo"'),
+        (str, '"rawstr"'),
+        (list, '["foo"'),
+        (dict, '["foo"'),
+    ]
+    if PY2:
+        EQUIVALENT2_MAPPING = {
+            'a': json.dumps([str('a')]),
+            ('a', 'b'): json.dumps([str('a'), str('b')]),
+            (('a', 'b'), ('c', 'd')): json.dumps({str('a'): str('b'), str('c'): str('d')}),
+        }
+    else:
+        EQUIVALENT3_MAPPING = {
+            'a': json.dumps([bytes('a', 'utf-8')], cls=JSONContentHandler.ByteEncoder),
+            ('a', 'b'): json.dumps([bytes('a', 'utf-8'), bytes('b', 'utf-8')],
+                                   cls=JSONContentHandler.ByteEncoder),
+            (('a', 'b'), ('c', 'd')): json.dumps({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
+                                                  bytes('c', 'utf-8'): bytes('d', 'utf-8')},
+                                                 cls=JSONContentHandler.ByteEncoder),
+        }
+
     def setUp(self):
         self.handler = JSONContentHandler()
 
@@ -321,6 +380,19 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
         (list, 'invalid'),
         (dict, 'invalid'),
     ]
+    if PY2:
+        EQUIVALENT2_MAPPING = {
+            'a': pickle.dumps(str('a')),
+            ('a', 'b'): pickle.dumps([str('a'), str('b')]),
+            (('a', 'b'), ('c', 'd')): pickle.dumps({str('a'): str('b'), str('c'): str('d')}),
+        }
+    else:
+        EQUIVALENT3_MAPPING = {
+            'a': pickle.dumps(bytes('a', 'utf-8')),
+            ('a', 'b'): pickle.dumps([bytes('a', 'utf-8'), bytes('b', 'utf-8')]),
+            (('a', 'b'), ('c', 'd')): pickle.dumps({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
+                                                    bytes('c', 'utf-8'): bytes('d', 'utf-8')}),
+        }
 
     def setUp(self):
         self.handler = PickleContentHandler()
@@ -338,9 +410,24 @@ class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
         (list, '%invalid'),
         (dict, '%invalid'),
     ]
+    if PY2:
+        EQUIVALENT2_MAPPING = {
+            'a': yaml.dump(str('a')),
+            ('a', 'b'): yaml.dump([str('a'), str('b')]),
+            (('a', 'b'), ('c', 'd')): yaml.dump({str('a'): str('b'), str('c'): str('d')}),
+        }
+    else:
+        EQUIVALENT3_MAPPING = {
+            'a': yaml.dump(bytes('a', 'utf-8')),
+            ('a', 'b'): yaml.dump([bytes('a', 'utf-8'), bytes('b', 'utf-8')]),
+            (('a', 'b'), ('c', 'd')): yaml.dump({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
+                                                 bytes('c', 'utf-8'): bytes('d', 'utf-8')}),
+        }
+
     def setUp(self):
         self.handler = YAMLContentHandler()
 
 class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
+
     def setUp(self):
         self.handler = XMLContentHandler()
