@@ -29,10 +29,10 @@ from RestAuthCommon import error
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
-if PY2:
+if PY2:  # pragma: py2
     from urlparse import parse_qs
     from urllib import urlencode
-else:
+else:  # pragma: py3
     from urllib.parse import parse_qs
     from urllib.parse import urlencode
 
@@ -83,13 +83,13 @@ class ContentHandler(object):
                 self._library = __import__(self.librarypath)
         return self._library
 
-    def _normalize_list3(self, l):
+    def _normalize_list3(self, l):  # pragma: py3
         return [e.decode('utf-8') if isinstance(e, bytes) else e for e in l]
 
-    def _normalize_list2(self, l):
+    def _normalize_list2(self, l):  # pragma: py2
         return [e.decode('utf-8') if isinstance(e, str) else e for e in l]
 
-    def _normalize_dict3(self, d):
+    def _normalize_dict3(self, d):  # pragma: py3
         def conv(v):
             if isinstance(v, bytes):
                 return v.decode('utf-8')
@@ -99,7 +99,7 @@ class ContentHandler(object):
 
         return dict((conv(k), conv(v)) for k, v in d.items())
 
-    def _normalize_dict2(self, d):
+    def _normalize_dict2(self, d):  # pragma: py2
         """Convert a (possibly nested) dict of utf-8/str keys/values to pure utf-8."""
         def conv(v):
             if isinstance(v, str):
@@ -110,10 +110,10 @@ class ContentHandler(object):
 
         return dict((conv(k), conv(v)) for k, v in d.iteritems())
 
-    def _normalize_str3(self, s):
+    def _normalize_str3(self, s):  # pragma: py3
         return s.decode('utf-8') if isinstance(s, bytes) else s
 
-    def _normalize_str2(self, s):
+    def _normalize_str2(self, s):  # pragma: p2
         return s.decode('utf-8') if isinstance(s, str) else s
 
     def marshal(self, obj):
@@ -168,7 +168,7 @@ class ContentHandler(object):
             )
         return val
 
-    def unmarshal_str(self, data):
+    def unmarshal_str(self, data):  # pragma: no cover
         """Unmarshal a string.
 
         :param data: Data to unmarshal.
@@ -177,7 +177,7 @@ class ContentHandler(object):
         """
         pass
 
-    def unmarshal_dict(self, body):
+    def unmarshal_dict(self, body):  # pragma: no cover
         """Unmarshal a dictionary.
 
         :param data: Data to unmarshal.
@@ -186,7 +186,7 @@ class ContentHandler(object):
         """
         pass
 
-    def unmarshal_list(self, body):
+    def unmarshal_list(self, body):  # pragma: no cover
         """Unmarshal a list.
 
         :param data: Data to unmarshal.
@@ -195,7 +195,7 @@ class ContentHandler(object):
         """
         pass
 
-    def unmarshal_bool(self, body):
+    def unmarshal_bool(self, body):  # pragma: no cover
         """Unmarshal a boolean.
 
         :param data: Data to unmarshal.
@@ -204,7 +204,7 @@ class ContentHandler(object):
         """
         pass
 
-    def marshal_str(self, obj):
+    def marshal_str(self, obj):  # pragma: no cover
         """Marshal a string.
 
         :param obj: Data to marshal.
@@ -213,11 +213,11 @@ class ContentHandler(object):
         """
         pass
 
-    def marshal_bool(self, obj):
+    def marshal_bool(self, obj):  # pragma: no cover
         """Marshal a boolean."""
         pass
 
-    def marshal_list(self, obj):
+    def marshal_list(self, obj):  # pragma: no cover
         """Marshal a list.
 
         :param obj: Data to marshal.
@@ -226,7 +226,7 @@ class ContentHandler(object):
         """
         pass
 
-    def marshal_dict(self, obj):
+    def marshal_dict(self, obj):  # pragma: no cover
         """Marshal a dictionary.
 
         :param obj: Data to marshal.
@@ -235,11 +235,11 @@ class ContentHandler(object):
         """
         pass
 
-    if PY3:
+    if PY3:  # pragma: py3
         normalize_str = _normalize_str3
         normalize_list = _normalize_list3
         normalize_dict = _normalize_dict3
-    else:
+    else:  # pragma: py2
         normalize_str = _normalize_str2
         normalize_list = _normalize_list2
         normalize_dict = _normalize_dict2
@@ -258,17 +258,17 @@ class JSONContentHandler(ContentHandler):
     SEPARATORS = (str(','), str(':'))
 
     class ByteEncoder(libjson.JSONEncoder):
-        def decode_dict(self, d):
-            def conv(v):
-                if isinstance(v, bytes):
-                    return v.decode('utf-8')
-                elif isinstance(v, dict):
-                    return self.decode_dict(v)
-                return v
+        if PY3:  # pragma: py3
+            def decode_dict(self, d):
+                def conv(v):
+                    if isinstance(v, bytes):
+                        return v.decode('utf-8')
+                    elif isinstance(v, dict):
+                        return self.decode_dict(v)
+                    return v
 
-            return {conv(k): conv(v) for k, v in d.items()}
+                return {conv(k): conv(v) for k, v in d.items()}
 
-        if PY3:
             def encode(self, obj):
                 if isinstance(obj, bytes):
                     obj = obj.decode('utf-8')
@@ -287,7 +287,7 @@ class JSONContentHandler(ContentHandler):
 
     class ByteDecoder(libjson.JSONDecoder):
         def decode(self, obj):
-            if PY3 and isinstance(obj, bytes):
+            if PY3 and isinstance(obj, bytes):  # pragma: py3
                 obj = obj.decode('utf-8')
             return libjson.JSONDecoder.decode(self, obj)
 
@@ -301,10 +301,7 @@ class JSONContentHandler(ContentHandler):
 
             # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
             # not unicode.
-            if PY2 and isinstance(string, str):
-                return unicode(string)
-
-            return string
+            return self.normalize_str(string)
         except ValueError as e:
             raise error.UnmarshalError(e)
 
@@ -320,7 +317,7 @@ class JSONContentHandler(ContentHandler):
         except ValueError as e:
             raise error.UnmarshalError(e)
 
-    def unmarshal_bool(self, body):
+    def unmarshal_bool(self, body):  # pragma: no cover
         try:
             return libjson.loads(body)
         except ValueError as e:
@@ -329,14 +326,11 @@ class JSONContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS, cls=self.ByteEncoder)
-            if PY3:
-                return dumped.encode('utf-8')
-            else:
-                return dumped
+            return dumped.encode('utf-8')
         except ValueError as e:
             raise error.MarshalError(e)
 
-    def marshal_bool(self, obj):
+    def marshal_bool(self, obj):  # pragma: no cover
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
@@ -353,9 +347,7 @@ class JSONContentHandler(ContentHandler):
     def marshal_dict(self, obj):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
-            if PY3:
-                return dumped.encode('utf-8')
-            return dumped
+            return dumped.encode('utf-8')
         except ValueError as e:
             raise error.MarshalError(e)
 
@@ -420,9 +412,7 @@ class FormContentHandler(ContentHandler):
             body = body.decode('utf-8')
 
         parsed = parse_qs(body, True)['str'][0]
-        if PY2:
-            parsed = parsed.decode('utf-8')
-        return parsed
+        return self.normalize_str(parsed)
 
     def marshal_str(self, obj):
         if PY2:
@@ -432,7 +422,7 @@ class FormContentHandler(ContentHandler):
         else:
             return urlencode({'str': obj})
 
-    def marshal_bool(self, obj):
+    def marshal_bool(self, obj):  # pragma: no cover
         if obj:
             return "1"
         else:
@@ -508,14 +498,7 @@ class PickleContentHandler(ContentHandler):
 
     def unmarshal_str(self, data):
         try:
-            unpickled = pickle.loads(data)
-
-            if PY3 and isinstance(unpickled, bytes):
-                # if bytes were pickled, we have to decode them
-                return unpickled.decode('utf-8')
-            elif PY2 and isinstance(unpickled, str):
-                return unpickled.decode('utf-8')
-            return unpickled
+            return self.normalize_str(pickle.loads(data))
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
@@ -561,10 +544,10 @@ class YAMLContentHandler(ContentHandler):
 
     librarypath = 'yaml'
 
-    def _marshal_str3(self, obj):
+    def _marshal_str3(self, obj):  # pragma: py3
         return self.library.dump(obj).encode('utf-8')
 
-    def _marshal_str2(self, obj):
+    def _marshal_str2(self, obj):  # pragma: py2
         return self.library.dump(obj)
 
     def marshal_str(self, obj):
@@ -573,10 +556,10 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
-    def _marshal_dict3(self, obj):
+    def _marshal_dict3(self, obj):  # pragma: py3
         return self.library.dump(obj).encode('utf-8')
 
-    def _marshal_dict2(self, obj):
+    def _marshal_dict2(self, obj):  # pragma: py2
         return self.library.dump(obj)
 
     def marshal_dict(self, obj):
@@ -585,10 +568,10 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
-    def _marshal_list3(self, obj):
+    def _marshal_list3(self, obj):  # pragma: py3
         return self.library.dump(obj).encode('utf-8')
 
-    def _marshal_list2(self, obj):
+    def _marshal_list2(self, obj):  # pragma: py2
         return self.library.dump(obj)
 
     def marshal_list(self, obj):
@@ -597,7 +580,7 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
-    def _unmarshal_str3(self, unmarshalled):
+    def _unmarshal_str3(self, unmarshalled):  # pragma: py3
         if unmarshalled is None:
             return ''
         if isinstance(unmarshalled, bytes):
@@ -605,7 +588,7 @@ class YAMLContentHandler(ContentHandler):
         else:
             return unmarshalled
 
-    def _unmarshal_str2(self, unmarshalled):
+    def _unmarshal_str2(self, unmarshalled):  # pragma: py2
         if unmarshalled is None:
             return ''
         elif isinstance(unmarshalled, str):
@@ -631,12 +614,12 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
-    if PY3:
+    if PY3:  # pragma: py3
         _marshal_str = _marshal_str3
         _marshal_dict = _marshal_dict3
         _marshal_list = _marshal_list3
         _unmarshal_str = _unmarshal_str3
-    else:
+    else:  # pragma: py2
         _marshal_str = _marshal_str2
         _marshal_dict = _marshal_dict2
         _marshal_list = _marshal_list2
@@ -659,9 +642,7 @@ class XMLContentHandler(ContentHandler):
         if text is None:
             text = ''
 
-        if not PY3:
-            text = unicode(text)
-        return text
+        return self.normalize_str(text)
 
     def _unmarshal_dict(self, tree):
         d = {}
@@ -693,15 +674,13 @@ class XMLContentHandler(ContentHandler):
         return self.normalize_list(l)
 
     def marshal_str(self, obj):
+        obj = self.normalize_str(obj)
         root = self.library.Element('str')
-        if PY3 and isinstance(obj, bytes):
-            obj = obj.decode('utf-8')
         root.text = obj
         return self.library.tostring(root)
 
     def marshal_list(self, obj):
-        if PY3:  # decode any byte objects
-            obj = [e.decode('utf-8') if isinstance(e, bytes) else e for e in obj]
+        obj = self.normalize_list(obj)
 
         root = self.library.Element('list')
         for value in obj:
@@ -718,19 +697,12 @@ class XMLContentHandler(ContentHandler):
         obj = self.normalize_dict(obj)
 
         for key, value in obj.items():
-            if isinstance(value, str):
-                elem = self.library.Element('str', attrib={'key': key})
-                elem.text = value
-                root.append(elem)
-            elif not PY3 and isinstance(value, unicode):
-                elem = self.library.Element('str', attrib={'key': key})
-                elem.text = value
-                root.append(elem)
-            elif isinstance(value, dict):
+            if isinstance(value, dict):
                 root.append(self._marshal_dict(value, key=key))
             else:
-                raise error.MarshalError('MarshalError (type %s): %s'
-                                         % (type(value), value))
+                elem = self.library.Element('str', attrib={'key': key})
+                elem.text = value
+                root.append(elem)
         return root
 
     def marshal_dict(self, obj):
