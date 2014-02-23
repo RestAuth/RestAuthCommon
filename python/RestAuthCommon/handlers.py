@@ -110,6 +110,11 @@ class ContentHandler(object):
 
         return dict((conv(k), conv(v)) for k, v in d.iteritems())
 
+    def _normalize_str3(self, s):
+        return s.decode('utf-8') if isinstance(s, bytes) else s
+
+    def _normalize_str2(self, s):
+        return s.decode('utf-8') if isinstance(s, str) else s
 
     def marshal(self, obj):
         """Shortcut for marshalling just any object.
@@ -231,9 +236,11 @@ class ContentHandler(object):
         pass
 
     if PY3:
+        normalize_str = _normalize_str3
         normalize_list = _normalize_list3
         normalize_dict = _normalize_dict3
     else:
+        normalize_str = _normalize_str2
         normalize_list = _normalize_list2
         normalize_dict = _normalize_dict2
 
