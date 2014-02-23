@@ -121,15 +121,16 @@ class TestContentHandler(object):
         # convert unicode to str in python2
         if PY2 and not ucode:
             for teststr in strings:
-                teststr = teststr.encode('utf-8')
-                self.assertTrue(isinstance(teststr, str))
+                rawstr = teststr.encode('utf-8')
+                self.assertTrue(isinstance(rawstr, str))
+                marshalled = self.handler.marshal_str(rawstr)
 
-                marshalled = self.handler.marshal_str(teststr)
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_str(teststr))
+
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
-
                 unmarshalled = self.handler.unmarshal_str(marshalled)
-                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), (type(unmarshalled),
-                                                                               teststr))
+                self.assertTrue(isinstance(unmarshalled, self.unmarshal_type))
                 self.assertEqual(teststr, unmarshalled)
 
         # convert strings to bytes in python3
@@ -137,8 +138,11 @@ class TestContentHandler(object):
             for teststr in strings:
                 bytestr = bytes(teststr, 'utf-8')
                 self.assertTrue(isinstance(bytestr, bytes))
-
                 marshalled = self.handler.marshal_str(bytestr)
+
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_str(teststr))
+
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_str(marshalled)
                 self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), type(unmarshalled))
@@ -209,8 +213,11 @@ class TestContentHandler(object):
             for testdict in dicts:
                 # convert dict keys/values to unicode
                 strdict = self.strify_dict(testdict)
-
                 marshalled = self.handler.marshal_dict(strdict)
+
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_dict(testdict))
+
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_dict(marshalled)
                 self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
@@ -222,6 +229,10 @@ class TestContentHandler(object):
             for testdict in dicts:
                 bytedict = self.byteify_dict(testdict)
                 marshalled = self.handler.marshal_dict(bytedict)
+
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_dict(testdict))
+
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_dict(marshalled)
                 self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
@@ -249,10 +260,12 @@ class TestContentHandler(object):
         if PY2 and not ucode:
             for testlist in lists:
                 strlist = [e.encode('utf-8') for e in testlist]
-
                 marshalled = self.handler.marshal_list(strlist)
-                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_list(testlist))
+
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_list(marshalled)
                 self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
                 self.assertEqual(testlist, unmarshalled)
@@ -261,10 +274,12 @@ class TestContentHandler(object):
         if PY3:
             for testlist in lists:
                 bytelist = [e.encode('utf-8') for e in testlist]
-
                 marshalled = self.handler.marshal_list(bytelist)
-                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
+                # assert that serialization returns the same strings:
+                self.assertEqual(marshalled, self.handler.marshal_list(testlist))
+
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_list(marshalled)
                 self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
                 self.assertEqual(testlist, unmarshalled)

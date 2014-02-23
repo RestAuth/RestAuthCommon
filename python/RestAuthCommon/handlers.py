@@ -105,7 +105,7 @@ class ContentHandler(object):
             if isinstance(v, str):
                 return v.decode('utf-8')
             elif isinstance(v, dict):
-                return self.normalize_dict(v)
+                return self._normalize_dict2(v)
             return v
 
         return dict((conv(k), conv(v)) for k, v in d.iteritems())
@@ -278,7 +278,6 @@ class JSONContentHandler(ContentHandler):
                 try:
                     return libjson.JSONEncoder.encode(self, obj)
                 except TypeError:
-                    print(obj)
                     raise
 
             def default(self, obj):
@@ -491,19 +490,19 @@ class PickleContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            return pickle.dumps(obj, protocol=self.PROTOCOL)
+            return pickle.dumps(self.normalize_str(obj), protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_dict(self, obj):
         try:
-            return pickle.dumps(obj, protocol=self.PROTOCOL)
+            return pickle.dumps(self.normalize_dict(obj), protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
     def marshal_list(self, obj):
         try:
-            return pickle.dumps(obj, protocol=self.PROTOCOL)
+            return pickle.dumps(self.normalize_list(obj), protocol=self.PROTOCOL)
         except pickle.PickleError as e:
             raise error.MarshalError(str(e))
 
@@ -570,7 +569,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_str(self, obj):
         try:
-            return self._marshal_str(obj)
+            return self._marshal_str(self.normalize_str(obj))
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
@@ -582,7 +581,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            return self._marshal_dict(obj)
+            return self._marshal_dict(self.normalize_dict(obj))
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
@@ -594,7 +593,7 @@ class YAMLContentHandler(ContentHandler):
 
     def marshal_list(self, obj):
         try:
-            return self._marshal_list(obj)
+            return self._marshal_list(self.normalize_list(obj))
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
