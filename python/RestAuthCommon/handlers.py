@@ -286,10 +286,11 @@ class JSONContentHandler(ContentHandler):
                 return libjson.JSONEncoder.default(self, obj)
 
     class ByteDecoder(libjson.JSONDecoder):
-        def decode(self, obj):
-            if PY3 and isinstance(obj, bytes):  # pragma: py3
-                obj = obj.decode('utf-8')
-            return libjson.JSONDecoder.decode(self, obj)
+        if PY3:  # pragma: py3
+            def decode(self, obj):
+                if isinstance(obj, bytes):  # pragma: py3
+                    obj = obj.decode('utf-8')
+                return libjson.JSONDecoder.decode(self, obj)
 
     def unmarshal_str(self, body):
         try:
@@ -499,19 +500,19 @@ class PickleContentHandler(ContentHandler):
     def unmarshal_str(self, data):
         try:
             return self.normalize_str(pickle.loads(data))
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_list(self, data):
         try:
             return self.normalize_list(pickle.loads(data))
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_dict(self, data):
         try:
             return self.normalize_dict(pickle.loads(data))
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.UnmarshalError(str(e))
 
 
@@ -580,25 +581,12 @@ class YAMLContentHandler(ContentHandler):
         except self.library.YAMLError as e:
             raise error.MarshalError(str(e))
 
-    def _unmarshal_str3(self, unmarshalled):  # pragma: py3
-        if unmarshalled is None:
-            return ''
-        if isinstance(unmarshalled, bytes):
-            return unmarshalled.decode('utf-8')
-        else:
-            return unmarshalled
-
-    def _unmarshal_str2(self, unmarshalled):  # pragma: py2
-        if unmarshalled is None:
-            return ''
-        elif isinstance(unmarshalled, str):
-            return unmarshalled.decode('utf-8')
-        return unmarshalled
-
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
-            return self._unmarshal_str(unmarshalled)
+            if unmarshalled is None:
+                return ''
+            return self.normalize_str(unmarshalled)
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
@@ -618,12 +606,10 @@ class YAMLContentHandler(ContentHandler):
         _marshal_str = _marshal_str3
         _marshal_dict = _marshal_dict3
         _marshal_list = _marshal_list3
-        _unmarshal_str = _unmarshal_str3
     else:  # pragma: py2
         _marshal_str = _marshal_str2
         _marshal_dict = _marshal_dict2
         _marshal_list = _marshal_list2
-        _unmarshal_str = _unmarshal_str2
 
 
 class XMLContentHandler(ContentHandler):
