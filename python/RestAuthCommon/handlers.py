@@ -99,19 +99,17 @@ class ContentHandler(object):
 
         return dict((conv(k), conv(v)) for k, v in d.items())
 
-    def _unicode_dict(self, d):
+    def _normalize_dict2(self, d):
         """Convert a (possibly nested) dict of utf-8/str keys/values to pure utf-8."""
         def conv(v):
             if isinstance(v, str):
                 return v.decode('utf-8')
             elif isinstance(v, dict):
-                return self._unicode_dict(v)
+                return self.normalize_dict(v)
             return v
 
         return dict((conv(k), conv(v)) for k, v in d.iteritems())
 
-    def _normalize_dict2(self, d):
-        return self._unicode_dict(d)
 
     def marshal(self, obj):
         """Shortcut for marshalling just any object.
@@ -233,11 +231,11 @@ class ContentHandler(object):
         pass
 
     if PY3:
-        _normalize_list = _normalize_list3
-        _normalize_dict = _normalize_dict3
+        normalize_list = _normalize_list3
+        normalize_dict = _normalize_dict3
     else:
-        _normalize_list = _normalize_list2
-        _normalize_dict = _normalize_dict2
+        normalize_list = _normalize_list2
+        normalize_dict = _normalize_dict2
 
 
 class JSONContentHandler(ContentHandler):
@@ -517,13 +515,13 @@ class PickleContentHandler(ContentHandler):
 
     def unmarshal_list(self, data):
         try:
-            return self._normalize_list(pickle.loads(data))
+            return self.normalize_list(pickle.loads(data))
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_dict(self, data):
         try:
-            return self._normalize_dict(pickle.loads(data))
+            return self.normalize_dict(pickle.loads(data))
         except pickle.PickleError as e:
             raise error.UnmarshalError(str(e))
 
@@ -617,13 +615,13 @@ class YAMLContentHandler(ContentHandler):
 
     def unmarshal_list(self, data):
         try:
-            return self._normalize_list(self.library.load(data))
+            return self.normalize_list(self.library.load(data))
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_dict(self, data):
         try:
-            return self._normalize_dict(self.library.load(data))
+            return self.normalize_dict(self.library.load(data))
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))
 
@@ -677,7 +675,7 @@ class XMLContentHandler(ContentHandler):
 
     def unmarshal_dict(self, body):
         d = self._unmarshal_dict(self.library.fromstring(body))
-        return self._normalize_dict(d)
+        return self.normalize_dict(d)
 
     def unmarshal_list(self, body):
         l = []
@@ -686,7 +684,7 @@ class XMLContentHandler(ContentHandler):
                 l.append('')
             else:
                 l.append(elem.text)
-        return self._normalize_list(l)
+        return self.normalize_list(l)
 
     def marshal_str(self, obj):
         root = self.library.Element('str')
@@ -711,7 +709,7 @@ class XMLContentHandler(ContentHandler):
         if key is not None:
             root.attrib['key'] = key
 
-        obj = self._normalize_dict(obj)
+        obj = self.normalize_dict(obj)
 
         for key, value in obj.items():
             if isinstance(value, str):
