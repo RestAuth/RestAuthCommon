@@ -161,6 +161,13 @@ class TestContentHandler(object):
                         for k, v in d.iteritems())
         return testdict
 
+    def byteify_dict(self, d):
+        """Convert a dict of str objects to bytes, only useful in python3."""
+        testdict = dict((k.encode('utf-8'),
+                         v.encode('utf8') if isinstance(v, str) else self.byteify_dict(v))
+                        for k, v in d.items())
+        return testdict
+
     def assertUnicodeList(self, l):
         """Assert that all items in a list are unicode objects."""
         for e in l:
@@ -175,6 +182,20 @@ class TestContentHandler(object):
                 self.assertUnicodeDict(v)
             else:
                 self.assertTrue(isinstance(k, unicode))
+
+    def assertStrDict(self, d):
+        """Assert that all keys/values are str"""
+        for k, v in d.items():
+            self.assertTrue(isinstance(k, str), (type(k), d))
+
+            if isinstance(v, dict):
+                self.assertStrDict(v)
+            else:
+                self.assertTrue(isinstance(k, str))
+
+    def assertStrList(self, l):
+        for e in l:
+            self.assertTrue(isinstance(e, str))
 
     def dicttest(self, dicts, ucode=True):
         for testdict in dicts:
@@ -195,6 +216,18 @@ class TestContentHandler(object):
                 self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
                 self.assertEqual(testdict, unmarshalled)
                 self.assertUnicodeDict(unmarshalled)
+
+        # convert strings to bytes in python3
+        if PY3:
+            for testdict in dicts:
+                bytedict = self.byteify_dict(testdict)
+                marshalled = self.handler.marshal_dict(bytedict)
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+                unmarshalled = self.handler.unmarshal_dict(marshalled)
+                self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
+                self.assertEqual(testdict, unmarshalled)
+                self.assertStrDict(unmarshalled)
+
 
     def test_dict(self):
         self.dicttest(self.dicts, ucode=False)
@@ -224,6 +257,18 @@ class TestContentHandler(object):
                 self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
                 self.assertEqual(testlist, unmarshalled)
                 self.assertUnicodeList(unmarshalled)
+
+        if PY3:
+            for testlist in lists:
+                bytelist = [e.encode('utf-8') for e in testlist]
+
+                marshalled = self.handler.marshal_list(bytelist)
+                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+
+                unmarshalled = self.handler.unmarshal_list(marshalled)
+                self.assertTrue(isinstance(unmarshalled, list), type(unmarshalled))
+                self.assertEqual(testlist, unmarshalled)
+                self.assertStrList(unmarshalled)
 
     def test_list(self):
         self.listtest(self.lists, ucode=False)
