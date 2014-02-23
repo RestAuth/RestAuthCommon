@@ -98,6 +98,6 @@ and the same goes for composite types (e.g. ``[b'foo', ]`` and ``['foo', ]`` in 
 
       Like :py:func:`~normalize_dict`, but for lists.
 
-      .. method:: normalize_str(s):
+   .. method:: normalize_str(s):
 
       Like :py:func:`~normalize_dict`, but for strings.
