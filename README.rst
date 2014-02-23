@@ -13,8 +13,12 @@ If you want to or have to install it manually, you can always do::
 
    pip install RestAuthCommon
 
-This will automatically install lxml_ and PyYAML_. Note that **RestAuthCommon** requires
-Python 2.6 or later or Python 3.2 or later.
+If you want to use the YAML and/or XML content handlers, you have to install the appropriate
+libraries, e.g.::
+
+   pip install lxml PyYAML
+
+Note that **RestAuthCommon** requires Python 2.6 or later or Python 3.2 or later.
 
 You can also download `release tarballs`_. We also provide
 packages for other distributions, please see `our homepage`_ for more information.
