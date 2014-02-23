@@ -328,28 +328,28 @@ class JSONContentHandler(ContentHandler):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
-        except ValueError as e:
+        except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_bool(self, obj):  # pragma: no cover
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
-        except ValueError as e:
+        except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
-        except ValueError as e:
+        except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
             dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
-        except ValueError as e:
+        except Exception as e:
             raise error.MarshalError(e)
 
 
@@ -482,19 +482,19 @@ class PickleContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             return pickle.dumps(self.normalize_str(obj), protocol=self.PROTOCOL)
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.MarshalError(str(e))
 
     def marshal_dict(self, obj):
         try:
             return pickle.dumps(self.normalize_dict(obj), protocol=self.PROTOCOL)
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.MarshalError(str(e))
 
     def marshal_list(self, obj):
         try:
             return pickle.dumps(self.normalize_list(obj), protocol=self.PROTOCOL)
-        except pickle.PickleError as e:
+        except Exception as e:
             raise error.MarshalError(str(e))
 
     def unmarshal_str(self, data):
@@ -584,8 +584,6 @@ class YAMLContentHandler(ContentHandler):
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
-            if unmarshalled is None:
-                return ''
             return self.normalize_str(unmarshalled)
         except self.library.YAMLError as e:
             raise error.UnmarshalError(str(e))

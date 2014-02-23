@@ -324,6 +324,7 @@ class TestContentHandler(object):
                 serialized = self.EQUIVALENT3_MAPPING[equiv]
                 self.assertEqual(func(serialized), typ(equiv))
 
+
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     INVALID = [
         (str, '["foo"'),
@@ -349,6 +350,11 @@ class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
 
     def setUp(self):
         self.handler = JSONContentHandler()
+
+    def test_unserializable(self):
+        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
 
 
 class TestFormContentHandler(unittest.TestCase, TestContentHandler):
@@ -384,6 +390,11 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
 
     def setUp(self):
         self.handler = PickleContentHandler()
+
+    def test_unserializable(self):
+        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
 
 
 if PY3:
