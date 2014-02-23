@@ -53,7 +53,7 @@ class ContentHandler(object):
     """Override ``librarypath`` to lazily load named library upon first use.
 
     This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.  ``"lxml.etree"``). The
-    :cc
+    named library is accessable via ``self.library``.
 
     Example::
 
