@@ -554,7 +554,7 @@ class YAMLContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             return self._marshal_str(self.normalize_str(obj))
-        except self.library.YAMLError as e:
+        except Exception as e:  # pragma: no cover
             raise error.MarshalError(str(e))
 
     def _marshal_dict3(self, obj):  # pragma: py3
@@ -566,7 +566,7 @@ class YAMLContentHandler(ContentHandler):
     def marshal_dict(self, obj):
         try:
             return self._marshal_dict(self.normalize_dict(obj))
-        except self.library.YAMLError as e:
+        except self.library.YAMLError as e:  # pragma: no cover
             raise error.MarshalError(str(e))
 
     def _marshal_list3(self, obj):  # pragma: py3
@@ -578,14 +578,14 @@ class YAMLContentHandler(ContentHandler):
     def marshal_list(self, obj):
         try:
             return self._marshal_list(self.normalize_list(obj))
-        except self.library.YAMLError as e:
+        except self.library.YAMLError as e:  # pragma: no cover
             raise error.MarshalError(str(e))
 
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
             return self.normalize_str(unmarshalled)
-        except self.library.YAMLError as e:
+        except self.library.YAMLError as e:  # pragma: no cover
             raise error.UnmarshalError(str(e))
 
     def unmarshal_list(self, data):

@@ -351,11 +351,6 @@ class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
         self.handler = JSONContentHandler()
 
-    def test_unserializable(self):
-        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
-
 
 class TestFormContentHandler(unittest.TestCase, TestContentHandler):
     SUPPORT_NESTED_DICTS = False
