@@ -123,9 +123,11 @@ class TestContentHandler(object):
         marshal_type = str
         unmarshal_type = unicode
 
-    def stringtest(self, strings, ucode=True):
+    def stringtest(self, strings, ucode=True, handler_func='marshal_str'):
+        marshal = getattr(self.handler, handler_func)
+
         for teststr in strings:
-            marshalled = self.handler.marshal_str(teststr)
+            marshalled = marshal(teststr)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
@@ -137,10 +139,10 @@ class TestContentHandler(object):
             for teststr in strings:
                 rawstr = teststr.encode('utf-8')
                 self.assertTrue(isinstance(rawstr, str))
-                marshalled = self.handler.marshal_str(rawstr)
+                marshalled = marshal(rawstr)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_str(teststr))
+                self.assertEqual(marshalled, marshal(teststr))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_str(marshalled)
@@ -152,20 +154,20 @@ class TestContentHandler(object):
             for teststr in strings:
                 bytestr = bytes(teststr, 'utf-8')
                 self.assertTrue(isinstance(bytestr, bytes))
-                marshalled = self.handler.marshal_str(bytestr)
+                marshalled = marshal(bytestr)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_str(teststr))
+                self.assertEqual(marshalled, marshal(teststr))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_str(marshalled)
                 self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), type(unmarshalled))
                 self.assertEqual(teststr, unmarshalled)
 
-    def test_str(self):
-        self.stringtest(self.strings, ucode=False)
+    def test_str(self, handler_func='marshal_str'):
+        self.stringtest(self.strings, ucode=False, handler_func=handler_func)
         if self.SUPPORT_UNICODE:
-            self.stringtest(self.unicode_strings)
+            self.stringtest(self.unicode_strings, handler_func=handler_func)
 
     def strify_dict(self, d):
         """Convert a dict of unicode objects to str objects, e.g.::
@@ -215,9 +217,11 @@ class TestContentHandler(object):
         for e in l:
             self.assertTrue(isinstance(e, str))
 
-    def dicttest(self, dicts, ucode=True):
+    def dicttest(self, dicts, ucode=True, handler_func='marshal_dict'):
+        marshal = getattr(self.handler, handler_func)
+
         for testdict in dicts:
-            marshalled = self.handler.marshal_dict(testdict)
+            marshalled = marshal(testdict)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
             unmarshalled = self.handler.unmarshal_dict(marshalled)
             self.assertTrue(isinstance(unmarshalled, dict), (type(unmarshalled), testdict))
@@ -227,10 +231,10 @@ class TestContentHandler(object):
             for testdict in dicts:
                 # convert dict keys/values to unicode
                 strdict = self.strify_dict(testdict)
-                marshalled = self.handler.marshal_dict(strdict)
+                marshalled = marshal(strdict)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_dict(testdict))
+                self.assertEqual(marshalled, marshal(testdict))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_dict(marshalled)
@@ -242,10 +246,10 @@ class TestContentHandler(object):
         if PY3:
             for testdict in dicts:
                 bytedict = self.byteify_dict(testdict)
-                marshalled = self.handler.marshal_dict(bytedict)
+                marshalled = marshal(bytedict)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_dict(testdict))
+                self.assertEqual(marshalled, marshal(testdict))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_dict(marshalled)
@@ -254,17 +258,19 @@ class TestContentHandler(object):
                 self.assertStrDict(unmarshalled)
 
 
-    def test_dict(self):
-        self.dicttest(self.dicts, ucode=False)
+    def test_dict(self, handler_func='marshal_dict'):
+        self.dicttest(self.dicts, ucode=False, handler_func=handler_func)
         if self.SUPPORT_NESTED_DICTS:
-            self.dicttest(self.nested_dicts)
+            self.dicttest(self.nested_dicts, handler_func=handler_func)
 
         if self.SUPPORT_UNICODE:
             self.dicttest(self.unicode_dicts)
 
-    def listtest(self, lists, ucode=True):
+    def listtest(self, lists, ucode=True, handler_func='marshal_list'):
+        marshal = getattr(self.handler, handler_func)
+
         for testlist in lists:
-            marshalled = self.handler.marshal_list(testlist)
+            marshalled = marshal(testlist)
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_list(marshalled)
@@ -274,10 +280,10 @@ class TestContentHandler(object):
         if PY2 and not ucode:
             for testlist in lists:
                 strlist = [e.encode('utf-8') for e in testlist]
-                marshalled = self.handler.marshal_list(strlist)
+                marshalled = marshal(strlist)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_list(testlist))
+                self.assertEqual(marshalled, marshal(testlist))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_list(marshalled)
@@ -288,10 +294,10 @@ class TestContentHandler(object):
         if PY3:
             for testlist in lists:
                 bytelist = [e.encode('utf-8') for e in testlist]
-                marshalled = self.handler.marshal_list(bytelist)
+                marshalled = marshal(bytelist)
 
                 # assert that serialization returns the same strings:
-                self.assertEqual(marshalled, self.handler.marshal_list(testlist))
+                self.assertEqual(marshalled, marshal(testlist))
 
                 self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
                 unmarshalled = self.handler.unmarshal_list(marshalled)
@@ -299,10 +305,21 @@ class TestContentHandler(object):
                 self.assertEqual(testlist, unmarshalled)
                 self.assertStrList(unmarshalled)
 
-    def test_list(self):
-        self.listtest(self.lists, ucode=False)
+    def test_list(self, handler_func='marshal_list'):
+        self.listtest(self.lists, ucode=False, handler_func=handler_func)
         if self.SUPPORT_UNICODE:
-            self.listtest(self.unicode_lists)
+            self.listtest(self.unicode_lists, handler_func=handler_func)
+
+    def test_marshal(self):
+        """Test the generic marshal function, used by RestAuth server."""
+        self.test_str(handler_func='marshal')
+        self.test_dict(handler_func='marshal')
+        self.test_list(handler_func='marshal')
+
+        # test some unserializeable stuff:
+        self.assertRaises(MarshalError, self.handler.marshal, (pickle, ))
+        if not isinstance(self.handler, YAMLContentHandler):  # yaml encodes everything
+            self.assertRaises(MarshalError, self.handler.marshal, [[pickle, ], ])
 
     def test_invalid(self):
         for typ, obj in self.INVALID:
