@@ -352,6 +352,33 @@ class MessagePackContentHandler(ContentHandler):
 
     librarypath = 'msgpack'
 
+    def marshal_dict(self, obj):
+        try:
+            return self.library.packb(self.normalize_dict(obj))
+        except Exception as e:
+            raise error.MarshalError(e)
+
+    def marshal_list(self, obj):
+        try:
+            return self.library.packb(self.normalize_list(obj))
+        except Exception as e:
+            raise error.MarshalError(e)
+
+    def marshal_str(self, obj):
+        try:
+            return self.library.packb(self.normalize_str(obj))
+        except Exception as e:
+            raise error.MarshalError(e)
+
+    def unmarshal_dict(self, body):
+        return self.normalize_dict(self.library.unpackb(body))
+
+    def unmarshal_list(self, body):
+        return self.normalize_list(self.library.unpackb(body))
+
+    def unmarshal_str(self, body):
+        return self.normalize_str(self.library.unpackb(body))
+
 
 class FormContentHandler(ContentHandler):
     """Handler for HTML Form urlencoded content.

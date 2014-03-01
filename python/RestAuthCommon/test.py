@@ -143,7 +143,8 @@ class TestContentHandler(object):
             self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
 
             unmarshalled = self.handler.unmarshal_str(marshalled)
-            self.assertTrue(isinstance(unmarshalled, self.unmarshal_type))
+            self.assertTrue(isinstance(unmarshalled, self.unmarshal_type), (type(unmarshalled),
+                                                                            unmarshalled, teststr))
             self.assertEqual(teststr, unmarshalled)
 
         # convert unicode to str in python2
@@ -472,6 +473,6 @@ if PY2:  # bson doesn't work with Python3
             self.test_dict(handler_func='marshal')
             self.test_list(handler_func='marshal')
 
-#class TestMessagePackContentHandler(unittest.TestCase, TestContentHandler):
-#    def setUp(self):
-#        self.handler = MessagePackContentHandler()
+class TestMessagePackContentHandler(unittest.TestCase, TestContentHandler):
+    def setUp(self):
+        self.handler = MessagePackContentHandler()

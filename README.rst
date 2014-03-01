@@ -1,7 +1,7 @@
 **RestAuthCommon** provides code shared between `RestAuth <https://server.restauth.net>`_ (`git
 <https://github.com/RestAuth/server>`_) and `RestAuthClient <https://python.restauth.net>`_ (`git
 <https://github.com/RestAuth/RestAuthClient>`_), most prominently content handlers for JSON, YAML,
-Pickle, BSON and XML.
+Pickle, BSON, MessagePack and XML.
 
 For detailed source code documentation please see `our homepage`_.
 
@@ -16,16 +16,16 @@ If you want to or have to install it manually, you can always do::
 If you want to use the YAML and/or XML content handlers, you have to install the appropriate
 libraries, e.g.::
 
-   pip install lxml PyYAML bson
+   pip install lxml PyYAML bson msgpack-python
 
-You can also download `release tarballs`_. We also provide
-packages for other distributions, please see `our homepage`_ for more information.
+You can also download `release tarballs`_. We also provide packages for other distributions, please
+see `our homepage`_ for more information.
 
 Requirements
 ____________
 
 * **RestAuthCommon** requires Python 2.6 or later or Python 3.2 or later.
-* The ``bson`` content handler does not work with python3, because bson_ is not compatible.
+* The ``bson`` content handler does not work with Python 3, because bson_ is not compatible.
 
 .. _our homepage: https://common.restauth.net
 .. _release tarballs: https://common.restauth.net/download
