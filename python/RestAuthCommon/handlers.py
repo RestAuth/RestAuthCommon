@@ -344,12 +344,18 @@ class BSONContentHandler(ContentHandler):
         return self.library.dumps({'s': self.normalize_str(obj), })
 
     def unmarshal_dict(self, body):
+        if isinstance(body, unicode):
+            body = body.encode('utf-8')
         return self.library.loads(body)['d']
 
     def unmarshal_list(self, body):
+        if isinstance(body, unicode):
+            body = body.encode('utf-8')
         return self.library.loads(body)['l']
 
     def unmarshal_str(self, body):
+        if isinstance(body, unicode):
+            body = body.encode('utf-8')
         return self.library.loads(body)['s']
 
 
