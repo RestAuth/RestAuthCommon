@@ -189,15 +189,6 @@ class ContentHandler(object):
         """
         pass
 
-    def unmarshal_bool(self, body):  # pragma: no cover
-        """Unmarshal a boolean.
-
-        :param data: Data to unmarshal.
-        :type  data: bytes in python3, str in python2
-        :rtype: str
-        """
-        pass
-
     def marshal_str(self, obj):  # pragma: no cover
         """Marshal a string.
 
@@ -205,10 +196,6 @@ class ContentHandler(object):
         :type  obj: str, bytes, unicode
         :rtype: bytes in python3, str in python2
         """
-        pass
-
-    def marshal_bool(self, obj):  # pragma: no cover
-        """Marshal a boolean."""
         pass
 
     def marshal_list(self, obj):  # pragma: no cover
@@ -312,22 +299,9 @@ class JSONContentHandler(ContentHandler):
         except ValueError as e:
             raise error.UnmarshalError(e)
 
-    def unmarshal_bool(self, body):  # pragma: no cover
-        try:
-            return libjson.loads(body)
-        except ValueError as e:
-            raise error.UnmarshalError(e)
-
     def marshal_str(self, obj):
         try:
             dumped = libjson.dumps([obj], separators=self.SEPARATORS, cls=self.ByteEncoder)
-            return dumped.encode('utf-8')
-        except Exception as e:
-            raise error.MarshalError(e)
-
-    def marshal_bool(self, obj):  # pragma: no cover
-        try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
             return dumped.encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
@@ -420,12 +394,6 @@ class FormContentHandler(ContentHandler):
                 return urlencode({'str': obj}).encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
-
-    def marshal_bool(self, obj):  # pragma: no cover
-        if obj:
-            return "1"
-        else:
-            return "0"
 
     def _encode_dict(self, d):  # pragma: py2
         encoded = {}
