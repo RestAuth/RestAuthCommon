@@ -65,7 +65,7 @@ class ContentHandler(object):
     librarypath = None
     """Override ``librarypath`` to lazily load named library upon first use.
 
-    This may be a toplevel module (i.e. ``"json"``) or a submodule (i.e.  ``"lxml.etree"``). The
+    This may be a toplevel module (e.g. ``"json"``) or a submodule (e.g.  ``"lxml.etree"``). The
     named library is accessable via ``self.library``.
 
     Example::
@@ -79,7 +79,7 @@ class ContentHandler(object):
     """
 
     SUPPORT_NESTED_DICTS = True
-    """Set to False if your content handler does not support nested dictionaries as used i.e.
+    """Set to False if your content handler does not support nested dictionaries as used e.g.
     during user-creation."""
 
     _library = None
@@ -322,6 +322,13 @@ class JSONContentHandler(ContentHandler):
 
 
 class BSONContentHandler(ContentHandler):
+    """Handler for BSON ("Binary JSON") encoded content.
+
+    .. NOTE:: This contant handler requires the ``bson`` library to be installed.
+
+    .. seealso:: `Specification <http://bsonspec.org/>`_, `WikiPedia
+       <http://en.wikipedia.org/wiki/BSON>`_, `bson <https://pypi.python.org/pypi/bson>` on PyPi
+    """
     mime = 'application/bson'
     """The mime-type used by this content handler is 'application/json'."""
 
@@ -347,6 +354,14 @@ class BSONContentHandler(ContentHandler):
 
 
 class MessagePackContentHandler(ContentHandler):
+    """Handler for MessagePack encoded content.
+
+    .. NOTE:: This content handler requires the ``msgpack-python`` library to be installed.
+
+    .. seealso:: `Specification <http://msgpack.org/>`_, `WikiPedia
+       <http://en.wikipedia.org/wiki/MessagePack>`_, `msgpack-python
+       <https://pypi.python.org/pypi/msgpack-python/>`_ on PyPI.
+    """
     mime = 'application/messagepack'
     """The mime-type used by this content handler is 'application/messagepack'."""
 
@@ -565,10 +580,11 @@ class Pickle3ContentHandler(PickleContentHandler):
 class YAMLContentHandler(ContentHandler):
     """Handler for YAML encoded content.
 
-    .. NOTE:: This ContentHandler requires `PyYAML library <http://pyyaml.org/>`_.
+    .. NOTE:: This ContentHandler requires the ``PyYAML`` library to be installed.
 
     .. seealso:: `Specification <http://www.yaml.org/>`_, `WikiPedia
-       <http://en.wikipedia.org/wiki/YAML>`_
+      <http://en.wikipedia.org/wiki/YAML>`_, `PyYAML <https://pypi.python.org/pypi/PyYAML>`_ on
+      PyPI
     """
     mime = 'application/yaml'
     """The mime-type used by this content handler is 'application/yaml'."""
@@ -643,7 +659,9 @@ class YAMLContentHandler(ContentHandler):
 class XMLContentHandler(ContentHandler):
     """Future location of the XML content handler.
 
-    .. NOTE:: This ContentHandler requires the `lxml library <http://lxml.de/>`_.
+    .. NOTE:: This ContentHandler requires the ``lxml`` library to be installed.
+
+    .. seealso:: `lxml <https://pypi.python.org/pypi/lxml>`_ on PyPI
     """
 
     mime = 'application/xml'
@@ -733,7 +751,9 @@ class XMLContentHandler(ContentHandler):
 
 
 CONTENT_HANDLERS = {
+    'application/bson': BSONContentHandler,
     'application/json': JSONContentHandler,
+    'application/messagepack': MessagePackContentHandler,
     'application/pickle': PickleContentHandler,
     'application/pickle3': Pickle3ContentHandler,
     'application/x-www-form-urlencoded': FormContentHandler,
@@ -744,16 +764,18 @@ CONTENT_HANDLERS = {
 Mapping of MIME types to their respective handler implemenation. You can use this dictionary to
 dynamically look up a content handler if you do not know the requested content type in advance.
 
-================================= ===========================================
+================================= ===============================================
 MIME type                         Handler
-================================= ===========================================
+================================= ===============================================
 application/json                  :py:class:`.handlers.JSONContentHandler`
 application/x-www-form-urlencoded :py:class:`.handlers.FormContentHandler`
 application/pickle                :py:class:`.handlers.PickleContentHandler`
 application/pickle3               :py:class:`.handlers.Pickle3ContentHandler`
 application/xml                   :py:class:`.handlers.XMLContentHandler`
 application/yaml                  :py:class:`.handlers.YAMLContentHandler`
-================================= ===========================================
+application/bson                  :py:class:`.handlers.BSONContentHandler`
+application/messagepack           :py:class:`.handlers.MessagePackContentHandler`
+================================= ===============================================
 
 If you want to provide your own implementation of a :py:class:`.ContentHandler`, you can add it to
 this dictionary with the appropriate MIME type as the key.
