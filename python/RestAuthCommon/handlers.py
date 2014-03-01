@@ -101,12 +101,15 @@ class ContentHandler(object):
             setattr(self, k, w)
 
     def _normalize_list3(self, l):  # pragma: py3
+        """Converts any byte objects of l to str objects."""
         return [e.decode('utf-8') if isinstance(e, bytes) else e for e in l]
 
     def _normalize_list2(self, l):  # pragma: py2
+        """Converts any str objects of l to unicode objects."""
         return [e.decode('utf-8') if isinstance(e, str) else e for e in l]
 
     def _normalize_dict3(self, d):  # pragma: py3
+        """Converts any keys or values of d that are bytes to str."""
         def conv(v):
             if isinstance(v, bytes):
                 return v.decode('utf-8')
@@ -117,7 +120,7 @@ class ContentHandler(object):
         return dict((conv(k), conv(v)) for k, v in d.items())
 
     def _normalize_dict2(self, d):  # pragma: py2
-        """Convert a (possibly nested) dict of utf-8/str keys/values to pure utf-8."""
+        """Converts any keys or values of d that are str to unicode."""
         def conv(v):
             if isinstance(v, str):
                 return v.decode('utf-8')
@@ -128,9 +131,11 @@ class ContentHandler(object):
         return dict((conv(k), conv(v)) for k, v in d.iteritems())
 
     def _normalize_str3(self, s):  # pragma: py3
+        """Converts byte objects to str."""
         return s.decode('utf-8') if isinstance(s, bytes) else s
 
     def _normalize_str2(self, s):  # pragma: py2
+        """Converts str objects to unicode."""
         return s.decode('utf-8') if isinstance(s, str) else s
 
     def marshal(self, obj):
