@@ -1,6 +1,9 @@
 restauth-common 0.6.3 (XX XXXXX XXXX)
 
   * Move to github.
+  * Remove the unmarshal() function. It's not used anywhere and since you have
+    to pass the type anyway, it offers nothing over using the functions
+	directly.
 
 restauth-common 0.6.2 (21 April 2013)
 
