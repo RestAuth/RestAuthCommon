@@ -235,9 +235,9 @@ class TestContentHandler(object):
 
         for testdict in dicts:
             marshalled = marshal(testdict)
-            self.assertTrue(isinstance(marshalled, self.marshal_type), (type(marshalled), testdict))
+            self.assertTrue(isinstance(marshalled, self.marshal_type))
             unmarshalled = self.handler.unmarshal_dict(marshalled)
-            self.assertTrue(isinstance(unmarshalled, dict), (type(unmarshalled)))
+            self.assertTrue(isinstance(unmarshalled, dict))
             self.assertEqual(testdict, unmarshalled)
 
         if PY2 and not ucode:
@@ -249,9 +249,9 @@ class TestContentHandler(object):
                 # assert that serialization returns the same strings:
                 self.assertEqual(marshalled, marshal(testdict))
 
-                self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+                self.assertTrue(isinstance(marshalled, self.marshal_type))
                 unmarshalled = self.handler.unmarshal_dict(marshalled)
-                self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
+                self.assertTrue(isinstance(unmarshalled, dict))
                 self.assertEqual(testdict, unmarshalled)
                 self.assertUnicodeDict(unmarshalled)
 
@@ -269,7 +269,6 @@ class TestContentHandler(object):
                 self.assertTrue(isinstance(unmarshalled, dict), type(unmarshalled))
                 self.assertEqual(testdict, unmarshalled)
                 self.assertStrDict(unmarshalled)
-
 
     def test_dict(self, handler_func='marshal_dict'):
         self.dicttest(self.dicts, ucode=False, handler_func=handler_func)
@@ -472,6 +471,7 @@ if PY2:  # bson doesn't work with Python3
             self.test_str(handler_func='marshal')
             self.test_dict(handler_func='marshal')
             self.test_list(handler_func='marshal')
+
 
 class TestMessagePackContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
