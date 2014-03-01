@@ -392,11 +392,14 @@ class FormContentHandler(ContentHandler):
         return self.normalize_str(parsed)
 
     def marshal_str(self, obj):
-        if PY2:  # pragma: py2
-            obj = obj.encode('utf-8')
-            return urlencode({'str': obj})
-        else:  # pragma: py3
-            return urlencode({'str': obj}).encode('utf-8')
+        try:
+            if PY2:  # pragma: py2
+                obj = obj.encode('utf-8')
+                return urlencode({'str': obj})
+            else:  # pragma: py3
+                return urlencode({'str': obj}).encode('utf-8')
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_bool(self, obj):  # pragma: no cover
         if obj:
@@ -418,26 +421,32 @@ class FormContentHandler(ContentHandler):
         return encoded
 
     def marshal_dict(self, obj):
-        if PY2:  # pragma: py2
-            obj = self._encode_dict(obj)
+        try:
+            if PY2:  # pragma: py2
+                obj = self._encode_dict(obj)
 
-        # verify that no value is a dictionary, because the unmarshalling for
-        # that doesn't work:
-        for v in obj.values():
-            if isinstance(v, dict):
-                raise error.MarshalError(
-                    "FormContentHandler doesn't support nested dictionaries.")
-        if PY3:  # pragma: py3
-            return urlencode(obj, doseq=True).encode('utf-8')
-        else:  # pragma: py2
-            return urlencode(obj, doseq=True)
+            # verify that no value is a dictionary, because the unmarshalling for
+            # that doesn't work:
+            for v in obj.values():
+                if isinstance(v, dict):
+                    raise error.MarshalError(
+                        "FormContentHandler doesn't support nested dictionaries.")
+            if PY3:  # pragma: py3
+                return urlencode(obj, doseq=True).encode('utf-8')
+            else:  # pragma: py2
+                return urlencode(obj, doseq=True)
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_list(self, obj):
-        if PY2:  # pragma: py2
-            obj = [e.encode('utf-8') for e in obj]
-            return urlencode({'list': obj}, doseq=True)
-        else:  # pragma: py3
-            return urlencode({'list': obj}, doseq=True).encode('utf-8')
+        try:
+            if PY2:  # pragma: py2
+                obj = [e.encode('utf-8') for e in obj]
+                return urlencode({'list': obj}, doseq=True)
+            else:  # pragma: py3
+                return urlencode({'list': obj}, doseq=True).encode('utf-8')
+        except Exception as e:
+            raise error.MarshalError(e)
 
 
 class PickleContentHandler(ContentHandler):
@@ -632,20 +641,26 @@ class XMLContentHandler(ContentHandler):
         return self.normalize_list(l)
 
     def marshal_str(self, obj):
-        obj = self.normalize_str(obj)
-        root = self.library.Element('str')
-        root.text = obj
-        return self.library.tostring(root)
+        try:
+            obj = self.normalize_str(obj)
+            root = self.library.Element('str')
+            root.text = obj
+            return self.library.tostring(root)
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_list(self, obj):
-        obj = self.normalize_list(obj)
+        try:
+            obj = self.normalize_list(obj)
 
-        root = self.library.Element('list')
-        for value in obj:
-            elem = self.library.Element('str')
-            elem.text = value
-            root.append(elem)
-        return self.library.tostring(root)
+            root = self.library.Element('list')
+            for value in obj:
+                elem = self.library.Element('str')
+                elem.text = value
+                root.append(elem)
+            return self.library.tostring(root)
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def _marshal_dict(self, obj, key=None):
         root = self.library.Element('dict')
@@ -664,7 +679,10 @@ class XMLContentHandler(ContentHandler):
         return root
 
     def marshal_dict(self, obj):
-        return self.library.tostring(self._marshal_dict(obj))
+        try:
+            return self.library.tostring(self._marshal_dict(obj))
+        except Exception as e:
+            raise error.MarshalError(e)
 
 
 CONTENT_HANDLERS = {

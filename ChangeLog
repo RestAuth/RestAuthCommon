@@ -4,6 +4,11 @@ restauth-common 0.6.3 (XX XXXXX XXXX)
   * Remove the unmarshal() function. It's not used anywhere and since you have
     to pass the type anyway, it offers nothing over using the functions
 	directly.
+  * Make sure functions always raise MarshalError/UnmarshalError and wrap any
+    exceptions thrown by libraries they use.
+  * bytes, str and unicode can now all be handed to marshal_ functions, the
+    marshalled output will be identical.
+  * Unmarshalled strings will always be unicode in py2 and str in py3.
 
 restauth-common 0.6.2 (21 April 2013)
 

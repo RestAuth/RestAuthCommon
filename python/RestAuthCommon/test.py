@@ -324,6 +324,11 @@ class TestContentHandler(object):
                 serialized = self.EQUIVALENT3_MAPPING[equiv]
                 self.assertEqual(func(serialized), typ(equiv))
 
+    def test_unserializable(self):
+        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
+
 
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     INVALID = [
@@ -386,11 +391,6 @@ class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
     def setUp(self):
         self.handler = PickleContentHandler()
 
-    def test_unserializable(self):
-        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
-
 
 if PY3:
     class TestPickle3ContentHandler(unittest.TestCase, TestContentHandler):
@@ -420,6 +420,10 @@ class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
 
     def setUp(self):
         self.handler = YAMLContentHandler()
+
+    def test_unserializable(self):
+        pass  # yaml never raises any errors. it encodes *everything*, even modules.
+
 
 class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
 
