@@ -6,7 +6,7 @@ PY3VERS=$(shell py3versions -rv)
 PY2DIR = $(CURDIR)/debian/python-restauth-common
 PY3DIR = $(CURDIR)/debian/python3-restauth-common
 
-DH_ARGS=--with python3,python2
+DH_ARGS=--with python3,python2 --buildsystem=python_distutils
 
 %:
 	dh $@ ${DH_ARGS}
