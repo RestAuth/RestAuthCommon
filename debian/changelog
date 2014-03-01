@@ -1,3 +1,9 @@
+restauth-common (0.6.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Mathias Ertl <mati@restauth.net>  Sat, 01 Mar 2014 22:30:21 +0100
+
 restauth-common (0.6.2-3) unstable; urgency=low
 
   * Add python-lxml and python3-lxml as build-dependency.
