@@ -22,13 +22,13 @@ import unittest
 
 import yaml
 
-from lxml import etree
-
 from RestAuthCommon.error import MarshalError
 from RestAuthCommon.error import UnmarshalError
+from RestAuthCommon.handlers import BSONContentHandler
 from RestAuthCommon.handlers import ContentHandler
 from RestAuthCommon.handlers import FormContentHandler
 from RestAuthCommon.handlers import JSONContentHandler
+from RestAuthCommon.handlers import MessagePackContentHandler
 from RestAuthCommon.handlers import PickleContentHandler
 from RestAuthCommon.handlers import Pickle3ContentHandler
 from RestAuthCommon.handlers import XMLContentHandler
@@ -234,9 +234,9 @@ class TestContentHandler(object):
 
         for testdict in dicts:
             marshalled = marshal(testdict)
-            self.assertTrue(isinstance(marshalled, self.marshal_type), type(marshalled))
+            self.assertTrue(isinstance(marshalled, self.marshal_type), (type(marshalled), testdict))
             unmarshalled = self.handler.unmarshal_dict(marshalled)
-            self.assertTrue(isinstance(unmarshalled, dict), (type(unmarshalled), testdict))
+            self.assertTrue(isinstance(unmarshalled, dict), (type(unmarshalled)))
             self.assertEqual(testdict, unmarshalled)
 
         if PY2 and not ucode:
@@ -455,6 +455,23 @@ class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
 
 
 class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
-
     def setUp(self):
         self.handler = XMLContentHandler()
+
+
+if PY2:  # bson doesn't work with Python3
+    class TestBSONContentHandler(unittest.TestCase, TestContentHandler):
+        def setUp(self):
+            self.handler = BSONContentHandler()
+
+        def test_unserializable(self):  # bson just silently discards unserializeable objects
+            pass
+
+        def test_marshal(self):  # same as parent function, but doesn't test unserializeable data
+            self.test_str(handler_func='marshal')
+            self.test_dict(handler_func='marshal')
+            self.test_list(handler_func='marshal')
+
+#class TestMessagePackContentHandler(unittest.TestCase, TestContentHandler):
+#    def setUp(self):
+#        self.handler = MessagePackContentHandler()

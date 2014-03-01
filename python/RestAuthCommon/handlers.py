@@ -321,6 +321,38 @@ class JSONContentHandler(ContentHandler):
             raise error.MarshalError(e)
 
 
+class BSONContentHandler(ContentHandler):
+    mime = 'application/bson'
+    """The mime-type used by this content handler is 'application/json'."""
+
+    librarypath = 'bson'
+
+    def marshal_dict(self, obj):
+        return self.library.dumps({'d': self.normalize_dict(obj), })
+
+    def marshal_list(self, obj):
+        return self.library.dumps({'l': self.normalize_list(obj), })
+
+    def marshal_str(self, obj):
+        return self.library.dumps({'s': self.normalize_str(obj), })
+
+    def unmarshal_dict(self, body):
+        return self.library.loads(body)['d']
+
+    def unmarshal_list(self, body):
+        return self.library.loads(body)['l']
+
+    def unmarshal_str(self, body):
+        return self.library.loads(body)['s']
+
+
+class MessagePackContentHandler(ContentHandler):
+    mime = 'application/messagepack'
+    """The mime-type used by this content handler is 'application/messagepack'."""
+
+    librarypath = 'msgpack'
+
+
 class FormContentHandler(ContentHandler):
     """Handler for HTML Form urlencoded content.
 

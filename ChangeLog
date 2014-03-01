@@ -11,6 +11,7 @@ restauth-common 0.6.3 (XX XXXXX XXXX)
   * Unmarshalled strings will always be unicode in py2 and str in py3.
   * The constructor now sets any keyword arguments as instance attributes.
   * Remove the boolean type, since its not used anywhere anyway.
+  * Add support for BSON ("Binary JSON").
 
 restauth-common 0.6.2 (21 April 2013)
 
