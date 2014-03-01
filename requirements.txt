@@ -1,3 +1,4 @@
-Sphinx
-PyYAML
-coverage
+PyYAML>=3.10
+bson>=0.3.3
+lxml>=3.3.1
+msgpack-python>=0.4.1

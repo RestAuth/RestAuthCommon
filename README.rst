@@ -1,19 +1,34 @@
-.. comment: This file is displayed on our github mirror.
+**RestAuthCommon** provides code shared between `RestAuth <https://server.restauth.net>`_ (`git
+<https://github.com/RestAuth/server>`_) and `RestAuthClient <https://python.restauth.net>`_ (`git
+<https://github.com/RestAuth/RestAuthClient>`_), most prominently content handlers for JSON, YAML,
+Pickle, BSON, MessagePack and XML.
 
-RestAuth
-========
+For detailed source code documentation please see `our homepage`_.
 
-.. _RestAuth: https://restauth.net
-.. _RestAuth server: https://server.restauth.net
-.. _restauth-common: https://common.restauth.net
-.. _RestAuthClient: https://python.restauth.net
+Installation
+____________
 
-RestAuth_ is a project providing shared authentication, authorization and
-preferences. Shared authentication and preferences allow users to use a single
-account on multiple services (such as websites, mail, system accounts, ...),
-sharing preferences among those systems. Shared authorization allows
-administrators to manage permissions for users in a central and easy way.
+RestAuthCommon is usually installed automatically when a project depends on it.
+If you want to or have to install it manually, you can always do::
 
-This project contains a few shared classes used by both `RestAuth server`_ and
-RestAuthClient_. This git repository is just used as a mirror, the master
-repository can be found at https://git.fsinf.at/restauth/restauth-common.
+   pip install RestAuthCommon
+
+If you want to use the YAML and/or XML content handlers, you have to install the appropriate
+libraries, e.g.::
+
+   pip install lxml PyYAML bson msgpack-python
+
+You can also download `release tarballs`_. We also provide packages for other distributions, please
+see `our homepage`_ for more information.
+
+Requirements
+____________
+
+* **RestAuthCommon** requires Python 2.6 or later or Python 3.2 or later.
+* The ``bson`` content handler does not work with Python 3, because bson_ is not compatible.
+
+.. _our homepage: https://common.restauth.net
+.. _release tarballs: https://common.restauth.net/download
+.. _lxml: https://pypi.python.org/pypi/lxml
+.. _PyYAML: https://pypi.python.org/pypi/PyYAML
+.. _bson: https://pypi.python.org/pypi/bson

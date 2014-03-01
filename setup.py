@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of RestAuthCommon.
+# This file is part of RestAuthCommon (https://common.restauth.net).
 #
-#    RestAuthCommon is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    RestAuthCommon is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+# the GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License along with RestAuthCommon. If
+# not, see <http://www.gnu.org/licenses/>.
+
+from __future__ import unicode_literals
 
 name = 'RestAuthCommon'
 url = 'https://common.restauth.net'
@@ -24,22 +24,21 @@ import shutil
 import sys
 import unittest
 
-from distutils.command.clean import clean as _clean
 from subprocess import PIPE
 from subprocess import Popen
 
-try:
-    from setuptools import Command
-    from setuptools import setup
-except ImportError:
-    import distribute_setup
-    distribute_setup.use_setuptools()
-    from setuptools import Command
-    from setuptools import setup
+from distutils.command.clean import clean as _clean
 
+from setuptools import Command
+from setuptools import find_packages
+from setuptools import setup
+
+
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
 LATEST_RELEASE = '0.6.2'
 
-requires = ['pyyaml>=3.10', ]
+requires = []
 
 if sys.version_info < (2, 6):
     print('ERROR: Sphinx requires at least Python 2.6 to run.')
@@ -102,26 +101,6 @@ class version(Command):
         print(get_version())
 
 
-class prepare_debian_changelog(Command):
-    description = "prepare debian/changelog file"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        if not os.path.exists('debian/changelog'):
-            sys.exit(0)
-
-        version = get_version()
-        cmd = ['sed', '-i', '1s/(.*)/(%s-1)/' % version, 'debian/changelog', ]
-        p = Popen(cmd)
-        p.communicate()
-
-
 class clean(_clean):
     def run(self):
         cmd = ['make', '-C', 'doc', 'clean', ]
@@ -154,9 +133,9 @@ class test(Command):
         pass
 
     def run(self):
-        import RestAuthCommon
         from RestAuthCommon import test
-        unittest.main(RestAuthCommon)
+        suite = unittest.TestLoader().loadTestsFromModule(test)
+        unittest.TextTestRunner().run(suite)
 
 
 class coverage(Command):
@@ -185,11 +164,16 @@ class coverage(Command):
 
         cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
                                 branch=True, omit=omit)
+
+        if PY3:
+            cov.exclude('pragma: py2')
+        else:
+            cov.exclude('pragma: py3')
         cov.start()
 
-        import RestAuthCommon
         from RestAuthCommon import test
-        unittest.main(RestAuthCommon, argv=['setup.py', 'test'], exit=False)
+        suite = unittest.TestLoader().loadTestsFromModule(test)
+        unittest.TextTestRunner().run(suite)
 
         cov.stop()
         cov.save()
@@ -204,9 +188,9 @@ setup(
     author_email='mati@restauth.net',
     platforms='any',
     url=url,
-    download_url='http://git.fsinf.at/restauth/restauth-common',
-    package_dir={'': 'python'},
-    packages=['RestAuthCommon'],
+    download_url='https://common.restauth.net/download/',
+    package_dir={str(''): str('python')},
+    packages=find_packages(str('python'), exclude='RestAuthCommon.tests'),
     keywords=[],
     install_requires=requires,
     license="GNU General Public License (GPL) v3",
@@ -236,10 +220,8 @@ setup(
         'coverage': coverage,
         'version': version,
         'test': test,
-        'prepare_debian_changelog': prepare_debian_changelog,
     },
-    long_description="""RestAuthCommon is a small set of classes used by both
-    `RestAuth server <https://server.restauth.net>`_ and `RestAuthClient
-    <https://python.restauth.net>`_ (`PyPI
-    <http://pypi.python.org/pypi/RestAuthClient/>`_)."""
+    long_description="""RestAuthCommon is a small set of classes used by both `RestAuth server
+<https://server.restauth.net>`_ and `RestAuthClient <https://python.restauth.net>`_ (`PyPI
+<http://pypi.python.org/pypi/RestAuthClient/>`_)."""
 )

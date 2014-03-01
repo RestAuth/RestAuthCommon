@@ -1,3 +1,23 @@
+restauth-common 0.6.3 (01 March 2014)
+
+  Distribution:
+  * Move code to github: https://github.com/RestAuth/RestAuthCommon
+  * No longer use bootstrap distribute installation but plain distutils.
+  * Don't include the test.py file and generated documentation with pip.
+
+  Features:
+  * Add support for BSON ("Binary JSON") and MessagePack.
+  * Remove the unmarshal() function. It's not used anywhere and since you have
+    to pass the type anyway, it offers nothing over using the functions
+    directly.
+  * Make sure functions always raise MarshalError/UnmarshalError and wrap any
+    exceptions thrown by libraries they use.
+  * bytes, str and unicode can now all be handed to marshal_ functions, the
+    marshalled output will be identical.
+  * Unmarshalled strings will always be unicode in py2 and str in py3.
+  * The constructor now sets any keyword arguments as instance attributes.
+  * Remove the boolean type, since its not used anywhere anyway.
+
 restauth-common 0.6.2 (21 April 2013)
 
   * Update installation instructions
