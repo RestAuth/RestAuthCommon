@@ -1,6 +1,8 @@
 restauth-common (0.6.3-1) unstable; urgency=low
 
   * New upstream release.
+  * python-restauth-common: Add python-msgpack and python-bson as recommended
+  * python3-restauth-common: Add python3-msgpack as recommended
 
  -- Mathias Ertl <mati@restauth.net>  Sat, 01 Mar 2014 22:30:21 +0100
 

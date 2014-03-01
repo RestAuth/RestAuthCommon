@@ -16,6 +16,7 @@ Package: python-restauth-common
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python:Depends}, python-yaml, python-lxml
+Recommends: python-msgpack, python-bson
 Provides: ${python:Provides}
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
@@ -25,6 +26,7 @@ Package: python3-restauth-common
 Architecture: all
 Section: python
 Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, python3-lxml
+Recommends: python3-msgpack
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
  implementation.
