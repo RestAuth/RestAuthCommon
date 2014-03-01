@@ -15,8 +15,8 @@ Vcs-Git: https://git.fsinf.at/apt/restauth-common.git
 Package: python-restauth-common
 Architecture: all
 Section: python
-Depends: ${misc:Depends}, ${python:Depends}, python-yaml, python-lxml
-Recommends: python-msgpack, python-bson
+Depends: ${misc:Depends}, ${python:Depends}
+Recommends: python-msgpack, python-bson, python-yaml, python-lxml
 Provides: ${python:Provides}
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
@@ -25,8 +25,8 @@ Description: common files for RestAuth reference implementations.
 Package: python3-restauth-common
 Architecture: all
 Section: python
-Depends: ${misc:Depends}, ${python3:Depends}, python3-yaml, python3-lxml
-Recommends: python3-msgpack
+Depends: ${misc:Depends}, ${python3:Depends}
+Recommends: python3-msgpack, python3-yaml, python3-lxml
 Description: common files for RestAuth reference implementations.
  This package provides some file used by both the client and server reference
  implementation.
