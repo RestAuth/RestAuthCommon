@@ -41,7 +41,19 @@ PY3 = sys.version_info[0] == 3
 class TestHandler(ContentHandler):
     def __init__(self, librarypath):
         self.librarypath = librarypath
-    pass
+
+
+class Unserializeable(object):
+    """A class whose instances are completely unserializable."""
+
+    def __repr__(self):  # breaks Form handlers in Python3
+        raise Exception("Don't serialize!")
+
+    def __str__(self):  # breaks most serialization
+        raise Exception("Don't serialize!")
+
+    def __getstate__(self):  # brakes Pickle
+        raise Exception("Don't serialize!")
 
 
 class TestLibraryImport(unittest.TestCase):
@@ -317,9 +329,8 @@ class TestContentHandler(object):
         self.test_list(handler_func='marshal')
 
         # test some unserializeable stuff:
-        self.assertRaises(MarshalError, self.handler.marshal, (pickle, ))
-        if not isinstance(self.handler, YAMLContentHandler):  # yaml encodes everything
-            self.assertRaises(MarshalError, self.handler.marshal, [[pickle, ], ])
+        self.assertRaises(MarshalError, self.handler.marshal, (Unserializeable(), ))
+        self.assertRaises(MarshalError, self.handler.marshal, [[Unserializeable(), ], ])
 
     def test_invalid(self):
         for typ, obj in self.INVALID:
@@ -342,9 +353,9 @@ class TestContentHandler(object):
                 self.assertEqual(func(serialized), typ(equiv))
 
     def test_unserializable(self):
-        self.assertRaises(MarshalError, self.handler.marshal_str, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_list, (pickle, ))
-        self.assertRaises(MarshalError, self.handler.marshal_dict, (pickle, ))
+        self.assertRaises(MarshalError, self.handler.marshal_str, (Unserializeable(), ))
+        self.assertRaises(MarshalError, self.handler.marshal_list, (Unserializeable(), ))
+        self.assertRaises(MarshalError, self.handler.marshal_dict, (Unserializeable(), ))
 
 
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
@@ -437,9 +448,6 @@ class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
 
     def setUp(self):
         self.handler = YAMLContentHandler()
-
-    def test_unserializable(self):
-        pass  # yaml never raises any errors. it encodes *everything*, even modules.
 
 
 class TestXMLContentHandler(unittest.TestCase, TestContentHandler):

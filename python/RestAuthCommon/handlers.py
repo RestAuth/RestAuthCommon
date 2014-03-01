@@ -537,8 +537,8 @@ class YAMLContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             return self._marshal_str(self.normalize_str(obj))
-        except Exception as e:  # pragma: no cover
-            raise error.MarshalError(str(e))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def _marshal_dict3(self, obj):  # pragma: py3
         return self.library.dump(obj).encode('utf-8')
@@ -549,8 +549,8 @@ class YAMLContentHandler(ContentHandler):
     def marshal_dict(self, obj):
         try:
             return self._marshal_dict(self.normalize_dict(obj))
-        except self.library.YAMLError as e:  # pragma: no cover
-            raise error.MarshalError(str(e))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def _marshal_list3(self, obj):  # pragma: py3
         return self.library.dump(obj).encode('utf-8')
@@ -561,27 +561,27 @@ class YAMLContentHandler(ContentHandler):
     def marshal_list(self, obj):
         try:
             return self._marshal_list(self.normalize_list(obj))
-        except self.library.YAMLError as e:  # pragma: no cover
-            raise error.MarshalError(str(e))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def unmarshal_str(self, data):
         try:
             unmarshalled = self.library.load(data)
             return self.normalize_str(unmarshalled)
         except self.library.YAMLError as e:  # pragma: no cover
-            raise error.UnmarshalError(str(e))
+            raise error.UnmarshalError(e)
 
     def unmarshal_list(self, data):
         try:
             return self.normalize_list(self.library.load(data))
         except self.library.YAMLError as e:
-            raise error.UnmarshalError(str(e))
+            raise error.UnmarshalError(e)
 
     def unmarshal_dict(self, data):
         try:
             return self.normalize_dict(self.library.load(data))
         except self.library.YAMLError as e:
-            raise error.UnmarshalError(str(e))
+            raise error.UnmarshalError(e)
 
     if PY3:  # pragma: py3
         _marshal_str = _marshal_str3
