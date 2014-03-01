@@ -38,5 +38,5 @@ test-python%:
 	python$* setup.py test
 
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
-override_dh_auto_test: ${PY2VERS:%=test-python%} ${PY3VERS:%=install-python%}
+override_dh_auto_test: ${PY2VERS:%=test-python%} ${PY3VERS:%=test-python%}
 endif
