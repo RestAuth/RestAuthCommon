@@ -32,9 +32,13 @@ PY3 = sys.version_info[0] == 3
 if PY2:  # pragma: py2
     from urlparse import parse_qs
     from urllib import urlencode
+
+    string_types = basestring
 else:  # pragma: py3
     from urllib.parse import parse_qs
     from urllib.parse import urlencode
+
+    string_types = str,
 
 
 class ContentHandler(object):
@@ -127,12 +131,11 @@ class ContentHandler(object):
         :rtype: str
         :raise error.MarshalError: If marshalling goes wrong in any way.
         """
-        if isinstance(obj, (bytes, str)):
-            func_name = 'marshal_str'
-        if PY2 and isinstance(obj, unicode):
+        if isinstance(obj, string_types):
             func_name = 'marshal_str'
         else:
             func_name = 'marshal_%s' % (obj.__class__.__name__)
+
         try:
             func = getattr(self, func_name)
             return func(obj)
@@ -352,7 +355,7 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if PY3:
+        if PY3:  # pragma: py3
             body = body.decode('utf-8')
 
         parsed_dict = parse_qs(body, True)
@@ -363,13 +366,13 @@ class FormContentHandler(ContentHandler):
             else:
                 ret_dict[key] = value
 
-        if PY2:
+        if PY2:  # pragma: py2
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if PY3:
+        if PY3:  # pragma: py3
             body = body.decode('utf-8')
 
         if body == '':
@@ -377,24 +380,23 @@ class FormContentHandler(ContentHandler):
 
         parsed = parse_qs(body, True)['list']
 
-        if PY2:
+        if PY2:  # pragma: py2
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if PY3:
+        if PY3:  # pragma: py3
             body = body.decode('utf-8')
 
         parsed = parse_qs(body, True)['str'][0]
         return self.normalize_str(parsed)
 
     def marshal_str(self, obj):
-        if PY2:
+        if PY2:  # pragma: py2
             obj = obj.encode('utf-8')
-        if PY3:
-            return urlencode({'str': obj}).encode('utf-8')
-        else:
             return urlencode({'str': obj})
+        else:  # pragma: py3
+            return urlencode({'str': obj}).encode('utf-8')
 
     def marshal_bool(self, obj):  # pragma: no cover
         if obj:
@@ -416,7 +418,7 @@ class FormContentHandler(ContentHandler):
         return encoded
 
     def marshal_dict(self, obj):
-        if PY2:
+        if PY2:  # pragma: py2
             obj = self._encode_dict(obj)
 
         # verify that no value is a dictionary, because the unmarshalling for
@@ -425,18 +427,17 @@ class FormContentHandler(ContentHandler):
             if isinstance(v, dict):
                 raise error.MarshalError(
                     "FormContentHandler doesn't support nested dictionaries.")
-        if PY3:
+        if PY3:  # pragma: py3
             return urlencode(obj, doseq=True).encode('utf-8')
-        else:
+        else:  # pragma: py2
             return urlencode(obj, doseq=True)
 
     def marshal_list(self, obj):
-        if PY2:
+        if PY2:  # pragma: py2
             obj = [e.encode('utf-8') for e in obj]
-        if PY3:
-            return urlencode({'list': obj}, doseq=True).encode('utf-8')
-        else:
             return urlencode({'list': obj}, doseq=True)
+        else:  # pragma: py3
+            return urlencode({'list': obj}, doseq=True).encode('utf-8')
 
 
 class PickleContentHandler(ContentHandler):
