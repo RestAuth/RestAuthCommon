@@ -48,6 +48,15 @@ class ContentHandler(object):
     all marshal_* and unmarshal_* methods.
 
     **Never use this class directly.** It does not marshal or unmarshal any content itself.
+
+    Any keyword arguments will be set as instance attributes. This means that you can instantiate
+    a handler with different settings, for example, this would instantiate a
+    :py:class:`PickleContentHandler`, that uses pickle protocol version 1:
+
+        >>> h = PickleContentHandler().PROTOCOL
+        2
+        >>> PickleContentHandler(PROTOCOL=1).PROTOCOL
+        1
     """
 
     mime = None
@@ -86,6 +95,10 @@ class ContentHandler(object):
             else:
                 self._library = __import__(self.librarypath)
         return self._library
+
+    def __init__(self, **kwargs):
+        for k, w in kwargs.items():
+            setattr(self, k, w)
 
     def _normalize_list3(self, l):  # pragma: py3
         return [e.decode('utf-8') if isinstance(e, bytes) else e for e in l]

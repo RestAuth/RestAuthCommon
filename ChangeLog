@@ -9,6 +9,7 @@ restauth-common 0.6.3 (XX XXXXX XXXX)
   * bytes, str and unicode can now all be handed to marshal_ functions, the
     marshalled output will be identical.
   * Unmarshalled strings will always be unicode in py2 and str in py3.
+  * The constructor now sets any keyword arguments as instance attributes.
 
 restauth-common 0.6.2 (21 April 2013)
 

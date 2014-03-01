@@ -357,6 +357,10 @@ class TestContentHandler(object):
         self.assertRaises(MarshalError, self.handler.marshal_list, (Unserializeable(), ))
         self.assertRaises(MarshalError, self.handler.marshal_dict, (Unserializeable(), ))
 
+    def test_constructor(self):
+        handler = self.handler.__class__(foo='bar')
+        self.assertEqual(handler.foo, 'bar')
+
 
 class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
     INVALID = [
