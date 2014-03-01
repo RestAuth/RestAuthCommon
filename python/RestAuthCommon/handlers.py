@@ -141,33 +141,6 @@ class ContentHandler(object):
         except Exception as e:
             raise error.MarshalError(e)
 
-    def unmarshal(self, raw_data, typ):
-        """Shortcut for unmarshalling a string to an object of type *typ*.
-
-        .. NOTE:: You may want to use the unmarshal_* methods directly for improved speed.
-
-        :param raw_data: The string to unmarshall.
-        :type  raw_data: str
-        :param typ: The typ of the unmarshalled object.
-        :type  typ: type
-        :return: The unmarshalled object.
-        :rtype: typ
-        :raise error.UnmarshalError: If unmarshalling goes wrong in any way.
-        """
-        try:
-            func = getattr(self, 'unmarshal_%s' % (typ.__name__))
-            val = func(raw_data)
-        except error.UnmarshalError as e:
-            raise e
-        except Exception as e:
-            raise error.UnmarshalError(e)
-
-        if val.__class__ != typ:
-            raise error.UnmarshalError("Request body contained %s instead of %s" %
-                                       (val.__class__, typ)
-            )
-        return val
-
     def unmarshal_str(self, data):  # pragma: no cover
         """Unmarshal a string.
 
