@@ -350,8 +350,10 @@ class JSONContentHandler(ContentHandler):
 class FormContentHandler(ContentHandler):
     """Handler for HTML Form urlencoded content.
 
-    .. WARNING:: Because of the limitations of urlencoded forms, this handler
-       does not support nested dictionaries.
+    .. WARNING:: Because of the limitations of urlencoded forms, this handler does not support
+       nested dictionaries. The primary use of this content handler is to enable you to manually
+       add data with e.g. the curl command line utility, where you don't want to serialize posted
+       data manually. Do not use this class in production.
     """
 
     mime = 'application/x-www-form-urlencoded'
