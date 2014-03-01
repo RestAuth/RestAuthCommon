@@ -663,7 +663,7 @@ class YAMLContentHandler(ContentHandler):
 
 
 class XMLContentHandler(ContentHandler):
-    """Future location of the XML content handler.
+    """Handler for XML encoded data.
 
     .. NOTE:: This ContentHandler requires the ``lxml`` library to be installed.
 
