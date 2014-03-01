@@ -38,7 +38,7 @@ else:  # pragma: py3
     from urllib.parse import parse_qs
     from urllib.parse import urlencode
 
-    string_types = str,
+    string_types = (str, bytes, )
 
 
 class ContentHandler(object):
