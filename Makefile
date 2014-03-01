@@ -22,19 +22,16 @@ test-python%: ${VENVDIR}/python%
 	${VENVDIR}/python$*/bin/python setup.py test
 
 test: ${PYVERS:%=test-python%}
-	# test
 
 build-python%: ${VENVDIR}/python%
 	${VENVDIR}/python$*/bin/python setup.py build
 
 build: ${PYVERS:%=build-python%}
-	# build
 
 sdist-python%: ${VENVDIR}/python%
 	${VENVDIR}/python$*/bin/python setup.py sdist -d dist/python$*
 
 sdist: ${PYVERS:%=sdist-python%}
-	# sdist
 
 sdist-test-python%: ${VENVDIR}/python%
 	${VENVDIR}/python$*/bin/pip install dist/python$*/RestAuthCommon-$(VERSION).tar.gz
@@ -42,7 +39,6 @@ sdist-test-python%: ${VENVDIR}/python%
 	${VENVDIR}/python$*/bin/python -c 'from RestAuthCommon.handlers import JSONContentHandler'
 
 sdist-test: ${PYVERS:%=sdist-test-python%}
-	# sdist-test
 
 homepage:
 	${PY2} setup.py build_doc
