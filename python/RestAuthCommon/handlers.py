@@ -347,9 +347,9 @@ class FormContentHandler(ContentHandler):
             key = key.decode('utf-8')
             if isinstance(value, (str, unicode)):
                 decoded[key] = value.decode('utf-8')
-            elif isinstance(value, list):
+            elif isinstance(value, list):  # pragma: no cover
                 decoded[key] = [e.decode('utf-8') for e in value]
-            elif isinstance(value, dict):
+            elif isinstance(value, dict):  # pragma: no cover
                 decoded[key] = self._decode_dict(value)
 
         return decoded
@@ -413,9 +413,9 @@ class FormContentHandler(ContentHandler):
             key = key.encode('utf-8')
             if isinstance(value, (str, unicode)):
                 encoded[key] = value.encode('utf-8')
-            elif isinstance(value, list):
+            elif isinstance(value, list):  # pragma: no cover
                 encoded[key] = [e.encode('utf-8') for e in value]
-            elif isinstance(value, dict):
+            elif isinstance(value, dict):  # pragma: no branch
                 encoded[key] = self._encode_dict(value)
 
         return encoded
