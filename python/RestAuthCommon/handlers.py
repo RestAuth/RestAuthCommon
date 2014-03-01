@@ -117,7 +117,7 @@ class ContentHandler(object):
     def _normalize_str3(self, s):  # pragma: py3
         return s.decode('utf-8') if isinstance(s, bytes) else s
 
-    def _normalize_str2(self, s):  # pragma: p2
+    def _normalize_str2(self, s):  # pragma: py2
         return s.decode('utf-8') if isinstance(s, str) else s
 
     def marshal(self, obj):
@@ -341,7 +341,7 @@ class FormContentHandler(ContentHandler):
 
     SUPPORT_NESTED_DICTS = False
 
-    def _decode_dict(self, d):
+    def _decode_dict(self, d):  # pragma: py2
         decoded = {}
         for key, value in d.items():
             key = key.decode('utf-8')
@@ -407,7 +407,7 @@ class FormContentHandler(ContentHandler):
         else:
             return "0"
 
-    def _encode_dict(self, d):
+    def _encode_dict(self, d):  # pragma: py2
         encoded = {}
         for key, value in d.items():
             key = key.encode('utf-8')
