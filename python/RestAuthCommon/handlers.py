@@ -353,20 +353,38 @@ class BSONContentHandler(ContentHandler):
     def marshal_str(self, obj):
         return self.dumps({'s': self.normalize_str(obj), })
 
-    def unmarshal_dict(self, body):
+    def _unmarshal_dict2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
         return self.loads(body)['d']
 
-    def unmarshal_list(self, body):
+    def _unmarshal_list2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
         return self.loads(body)['l']
 
-    def unmarshal_str(self, body):
+    def _unmarshal_str2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
         return self.loads(body)['s']
+
+    def _unmarshal_dict3(self, body):
+        return self.loads(body)['d']
+
+    def _unmarshal_list3(self, body):
+        return self.loads(body)['l']
+
+    def _unmarshal_str3(self, body):
+        return self.loads(body)['s']
+
+    if PY3:
+        unmarshal_dict = _unmarshal_dict3
+        unmarshal_list = _unmarshal_list3
+        unmarshal_str = _unmarshal_str3
+    else:
+        unmarshal_dict = _unmarshal_dict2
+        unmarshal_list = _unmarshal_list2
+        unmarshal_str = _unmarshal_str2
 
 
 class MessagePackContentHandler(ContentHandler):
