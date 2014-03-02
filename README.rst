@@ -16,7 +16,10 @@ If you want to or have to install it manually, you can always do::
 If you want to use the YAML and/or XML content handlers, you have to install the appropriate
 libraries, e.g.::
 
-   pip install lxml PyYAML bson msgpack-python
+   pip install lxml PyYAML pymongo msgpack-python
+
+.. NOTE:: The pymongo_ package provides BSON support, but you can also use the bson_ package
+   instaed, if you use Python 2 and want a library written in pure Python.
 
 You can also download `release tarballs`_. We also provide packages for other distributions, please
 see `our homepage`_ for more information.

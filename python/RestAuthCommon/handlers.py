@@ -334,29 +334,39 @@ class BSONContentHandler(ContentHandler):
 
     librarypath = 'bson'
 
+    def __init__(self, **kwargs):
+        super(BSONContentHandler, self).__init__(**kwargs)
+
+        if hasattr(self.library, 'BSON'):
+            self.dumps = self.library.BSON.encode
+            self.loads = self.library.BSON.decode
+        else:
+            self.dumps = self.library.dumps
+            self.loads = self.library.loads
+
     def marshal_dict(self, obj):
-        return self.library.dumps({'d': self.normalize_dict(obj), })
+        return self.dumps({'d': self.normalize_dict(obj), })
 
     def marshal_list(self, obj):
-        return self.library.dumps({'l': self.normalize_list(obj), })
+        return self.dumps({'l': self.normalize_list(obj), })
 
     def marshal_str(self, obj):
-        return self.library.dumps({'s': self.normalize_str(obj), })
+        return self.dumps({'s': self.normalize_str(obj), })
 
     def unmarshal_dict(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['d']
+        return self.loads(body)['d']
 
     def unmarshal_list(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['l']
+        return self.loads(body)['l']
 
     def unmarshal_str(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['s']
+        return self.loads(body)['s']
 
 
 class MessagePackContentHandler(ContentHandler):
