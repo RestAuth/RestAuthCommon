@@ -248,7 +248,7 @@ class JSONContentHandler(ContentHandler):
                         return self.decode_dict(v)
                     return v
 
-                return {conv(k): conv(v) for k, v in d.items()}
+                return dict((conv(k), conv(v)) for k, v in d.items())
 
             def encode(self, obj):
                 if isinstance(obj, bytes):
