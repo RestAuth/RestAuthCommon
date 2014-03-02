@@ -269,7 +269,7 @@ class JSONContentHandler(ContentHandler):
     class ByteDecoder(libjson.JSONDecoder):
         if PY3:  # pragma: py3
             def decode(self, obj):
-                if isinstance(obj, bytes):  # pragma: py3
+                if isinstance(obj, bytes):
                     obj = obj.decode('utf-8')
                 return libjson.JSONDecoder.decode(self, obj)
 
