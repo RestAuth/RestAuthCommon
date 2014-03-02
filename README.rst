@@ -35,4 +35,4 @@ ____________
 .. _lxml: https://pypi.python.org/pypi/lxml
 .. _PyYAML: https://pypi.python.org/pypi/PyYAML
 .. _bson: https://pypi.python.org/pypi/bson
-.. _pymango: https://pypi.python.org/pypi/pymango
+.. _pymongo: https://pypi.python.org/pypi/pymango
