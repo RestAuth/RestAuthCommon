@@ -18,8 +18,8 @@ libraries, e.g.::
 
    pip install lxml PyYAML pymongo msgpack-python
 
-.. NOTE:: The pymongo_ package provides BSON support, but you can also use the bson_ package
-   instaed, if you use Python 2 and want a library written in pure Python.
+**Note:** The pymongo_ package provides BSON support, but you can also use the bson_ package
+instaed, if you use Python 2 and want a library written in pure Python.
 
 You can also download `release tarballs`_. We also provide packages for other distributions, please
 see `our homepage`_ for more information.
