@@ -1,6 +1,7 @@
 restauth-common (0.6.3-6-g23b4ded-1) unstable; urgency=low
 
   * Preperations for bugfix release.
+  * Depend on debhelper >= 9.
 
  -- Mathias Ertl <mati@restauth.net>  Sun, 02 Mar 2014 16:32:48 +0100
 
