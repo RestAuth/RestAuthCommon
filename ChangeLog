@@ -1,3 +1,10 @@
+restauth-common 0.6.4 (02 March 2014)
+
+  * Support pymongo as BSON implementation, the pure python implementation is
+    still supported as well.
+  * Fix Python 3.4 incompatablities in the JSON handler.
+  * Update Debian/Ubuntu documentation.
+
 restauth-common 0.6.3 (01 March 2014)
 
   Distribution:

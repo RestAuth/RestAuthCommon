@@ -317,10 +317,13 @@ class JSONContentHandler(ContentHandler):
 class BSONContentHandler(ContentHandler):
     """Handler for BSON ("Binary JSON") encoded content.
 
-    .. NOTE:: This contant handler requires the ``bson`` library to be installed.
+    .. NOTE:: This contant handler requires either the ``pymongo`` or the ``bson`` library to be
+       installed.
 
     .. seealso:: `Specification <http://bsonspec.org/>`_, `WikiPedia
-       <http://en.wikipedia.org/wiki/BSON>`_, `bson <https://pypi.python.org/pypi/bson>` on PyPi
+       <http://en.wikipedia.org/wiki/BSON>`_,
+       `pymongo <https://pypi.python.org/pypi/pymongo>` on PyPi,
+       `bson <https://pypi.python.org/pypi/bson>` on PyPi
     """
     mime = 'application/bson'
     """The mime-type used by this content handler is 'application/json'."""

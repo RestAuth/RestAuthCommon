@@ -42,17 +42,12 @@ sdist-test: ${PYVERS:%=sdist-test-python%}
 
 homepage:
 	${PY2} setup.py build_doc
-	# not uploading homepage yet
 
 tarball:
 	git archive --prefix=${TARPREFIX} master | gzip > ${TARBALL}
 	md5sum ${TARBALL} > ${TARBALL}.md5
 	sha1sum ${TARBALL} > ${TARBALL}.sha1
 	sha512sum ${TARBALL} > ${TARBALL}.sha512
-	# not uploading yet
 
-pypi:
-	# not uploading to pypi yet
-
-release: clean test build sdist sdist-test homepage tarball pypi
+release: clean test build sdist sdist-test homepage tarball
 	# done
