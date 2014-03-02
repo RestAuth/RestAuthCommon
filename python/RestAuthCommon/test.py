@@ -20,6 +20,7 @@ import pickle
 import sys
 import unittest
 
+import bson
 import yaml
 
 from RestAuthCommon.error import MarshalError
@@ -459,7 +460,7 @@ class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
         self.handler = XMLContentHandler()
 
 
-if PY2:  # bson doesn't work with Python3
+if PY2 or hasattr(bson, 'BSON'):  # the pure BSON module bson doesn't work with Python3
     class TestBSONContentHandler(unittest.TestCase, TestContentHandler):
         def setUp(self):
             self.handler = BSONContentHandler()

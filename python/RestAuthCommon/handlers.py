@@ -266,16 +266,9 @@ class JSONContentHandler(ContentHandler):
                     return obj.decode('utf-8')
                 return libjson.JSONEncoder.default(self, obj)
 
-    class ByteDecoder(libjson.JSONDecoder):
-        if PY3:  # pragma: py3
-            def decode(self, obj):
-                if isinstance(obj, bytes):  # pragma: py3
-                    obj = obj.decode('utf-8')
-                return libjson.JSONDecoder.decode(self, obj)
-
     def unmarshal_str(self, body):
         try:
-            pure = libjson.loads(body, cls=self.ByteDecoder)
+            pure = libjson.loads(self.normalize_str(body))
             if not isinstance(pure, list) or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
@@ -289,13 +282,13 @@ class JSONContentHandler(ContentHandler):
 
     def unmarshal_dict(self, body):
         try:
-            return libjson.loads(body, cls=self.ByteDecoder)
+            return libjson.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_list(self, body):
         try:
-            return libjson.loads(body, cls=self.ByteDecoder)
+            return libjson.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
@@ -334,29 +327,57 @@ class BSONContentHandler(ContentHandler):
 
     librarypath = 'bson'
 
+    def __init__(self, **kwargs):
+        super(BSONContentHandler, self).__init__(**kwargs)
+
+        if hasattr(self.library, 'BSON'):
+            self.dumps = self.library.BSON.encode
+            self.loads = self.library.BSON.decode
+        else:
+            self.dumps = self.library.dumps
+            self.loads = self.library.loads
+
     def marshal_dict(self, obj):
-        return self.library.dumps({'d': self.normalize_dict(obj), })
+        return self.dumps({'d': self.normalize_dict(obj), })
 
     def marshal_list(self, obj):
-        return self.library.dumps({'l': self.normalize_list(obj), })
+        return self.dumps({'l': self.normalize_list(obj), })
 
     def marshal_str(self, obj):
-        return self.library.dumps({'s': self.normalize_str(obj), })
+        return self.dumps({'s': self.normalize_str(obj), })
 
-    def unmarshal_dict(self, body):
+    def _unmarshal_dict2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['d']
+        return self.loads(body)['d']
 
-    def unmarshal_list(self, body):
+    def _unmarshal_list2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['l']
+        return self.loads(body)['l']
 
-    def unmarshal_str(self, body):
+    def _unmarshal_str2(self, body):
         if isinstance(body, unicode):
             body = body.encode('utf-8')
-        return self.library.loads(body)['s']
+        return self.loads(body)['s']
+
+    def _unmarshal_dict3(self, body):
+        return self.loads(body)['d']
+
+    def _unmarshal_list3(self, body):
+        return self.loads(body)['l']
+
+    def _unmarshal_str3(self, body):
+        return self.loads(body)['s']
+
+    if PY3:
+        unmarshal_dict = _unmarshal_dict3
+        unmarshal_list = _unmarshal_list3
+        unmarshal_str = _unmarshal_str3
+    else:
+        unmarshal_dict = _unmarshal_dict2
+        unmarshal_list = _unmarshal_list2
+        unmarshal_str = _unmarshal_str2
 
 
 class MessagePackContentHandler(ContentHandler):
