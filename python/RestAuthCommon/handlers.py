@@ -266,16 +266,9 @@ class JSONContentHandler(ContentHandler):
                     return obj.decode('utf-8')
                 return libjson.JSONEncoder.default(self, obj)
 
-    class ByteDecoder(libjson.JSONDecoder):
-        if PY3:  # pragma: py3
-            def decode(self, obj):
-                if isinstance(obj, bytes):
-                    obj = obj.decode('utf-8')
-                return libjson.JSONDecoder.decode(self, obj)
-
     def unmarshal_str(self, body):
         try:
-            pure = libjson.loads(body, cls=self.ByteDecoder)
+            pure = libjson.loads(self.normalize_str(body))
             if not isinstance(pure, list) or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
@@ -289,13 +282,13 @@ class JSONContentHandler(ContentHandler):
 
     def unmarshal_dict(self, body):
         try:
-            return libjson.loads(body, cls=self.ByteDecoder)
+            return libjson.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_list(self, body):
         try:
-            return libjson.loads(body, cls=self.ByteDecoder)
+            return libjson.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
