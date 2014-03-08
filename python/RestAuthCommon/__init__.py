@@ -41,25 +41,25 @@ def resource_validator(name):
 
     # filter various dangerous characters
     for enc_char in name:
-        if PY2 and isinstance(enc_char, str):
+        if PY2 and isinstance(enc_char, str):  # pragma: py2
             enc_char = enc_char.decode('utf-8')
 
-        if stringprep.in_table_c21_c22(enc_char):
+        if stringprep.in_table_c21_c22(enc_char):  # C.2 Control characters
             # control characters
             return False
-        if stringprep.in_table_c3(enc_char):
+        if stringprep.in_table_c3(enc_char):  # C.3 Private use
             return False
-        if stringprep.in_table_c4(enc_char):
+        if stringprep.in_table_c4(enc_char):  # C.4 Non-character code points
             return False
-        if stringprep.in_table_c5(enc_char):
+        if stringprep.in_table_c5(enc_char):  # C.5 Surrogate codes
             return False
-        if stringprep.in_table_c6(enc_char):
+        if stringprep.in_table_c6(enc_char):  # C.6 Inappropriate for plain text
             return False
-        if stringprep.in_table_c7(enc_char):
+        if stringprep.in_table_c7(enc_char):  # C.7 Inappropriate for canonical representation
             return False
-        if stringprep.in_table_c8(enc_char):
+        if stringprep.in_table_c8(enc_char):  # C.8 Change display properties or are deprecated
             return False
-        if stringprep.in_table_c9(enc_char):
+        if stringprep.in_table_c9(enc_char):  # C.9 Tagging characters
             return False
 
     return True
