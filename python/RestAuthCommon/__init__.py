@@ -16,6 +16,8 @@
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
+from __future__ import unicode_literals
+
 import sys
 import stringprep
 
