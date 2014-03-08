@@ -168,6 +168,13 @@ class coverage(Command):
             cov.exclude('pragma: py2')
         else:
             cov.exclude('pragma: py3')
+
+        import bson
+        if hasattr(bson, 'BSON'):
+            cov.exclude('pragma: libbson')
+        else:
+            cov.exclude('pragma: mariadb')
+
         cov.start()
 
         suite = unittest.TestLoader().discover('python')
