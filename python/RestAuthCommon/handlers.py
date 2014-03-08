@@ -333,10 +333,10 @@ class BSONContentHandler(ContentHandler):
     def __init__(self, **kwargs):
         super(BSONContentHandler, self).__init__(**kwargs)
 
-        if hasattr(self.library, 'BSON'):
+        if hasattr(self.library, 'BSON'):  # pragma: mariadb
             self.dumps = self.library.BSON.encode
             self.loads = self.library.BSON.decode
-        else:
+        else:  # pragma: libbson
             self.dumps = self.library.dumps
             self.loads = self.library.loads
 
@@ -349,35 +349,37 @@ class BSONContentHandler(ContentHandler):
     def marshal_str(self, obj):
         return self.dumps({'s': self.normalize_str(obj), })
 
-    def _unmarshal_dict2(self, body):
-        if isinstance(body, unicode):
+    def _unmarshal_dict2(self, body):  # pragma: py2
+        # NOTE: We convert unicode because some old versions of RestAuthClient
+        #       pass unicode and bson can't handle it.
+        if isinstance(body, unicode):  # pragma: no cover
             body = body.encode('utf-8')
         return self.loads(body)['d']
 
-    def _unmarshal_list2(self, body):
-        if isinstance(body, unicode):
+    def _unmarshal_list2(self, body):  # pragma: py2
+        if isinstance(body, unicode):  # pragma: no cover
             body = body.encode('utf-8')
         return self.loads(body)['l']
 
-    def _unmarshal_str2(self, body):
-        if isinstance(body, unicode):
+    def _unmarshal_str2(self, body):  # pragma: py2
+        if isinstance(body, unicode):  # pragma: no cover
             body = body.encode('utf-8')
         return self.loads(body)['s']
 
-    def _unmarshal_dict3(self, body):
+    def _unmarshal_dict3(self, body):  # pragma: py3
         return self.loads(body)['d']
 
-    def _unmarshal_list3(self, body):
+    def _unmarshal_list3(self, body):  # pragma: py3
         return self.loads(body)['l']
 
-    def _unmarshal_str3(self, body):
+    def _unmarshal_str3(self, body):  # pragma: py3
         return self.loads(body)['s']
 
-    if PY3:
+    if PY3:  # pragma: py3
         unmarshal_dict = _unmarshal_dict3
         unmarshal_list = _unmarshal_list3
         unmarshal_str = _unmarshal_str3
-    else:
+    else:  # pragma: py2
         unmarshal_dict = _unmarshal_dict2
         unmarshal_list = _unmarshal_list2
         unmarshal_str = _unmarshal_str2
