@@ -335,19 +335,19 @@ class BSONContentHandler(ContentHandler):
 
         if hasattr(self.library, 'BSON'):  # pragma: pymongo
             self.dumps = self.library.BSON.encode
-            self.loads = self.library.BSON.decode
+            self.loads = lambda d: self.library.BSON(d).decode()
         else:  # pragma: libbson
             self.dumps = self.library.dumps
             self.loads = self.library.loads
 
     def marshal_dict(self, obj):
-        return self.dumps({'d': self.normalize_dict(obj), })
+        return self.marshal_cast(self.dumps({'d': self.normalize_dict(obj), }))
 
     def marshal_list(self, obj):
-        return self.dumps({'l': self.normalize_list(obj), })
+        return self.marshal_cast(self.dumps({'l': self.normalize_list(obj), }))
 
     def marshal_str(self, obj):
-        return self.dumps({'s': self.normalize_str(obj), })
+        return self.marshal_cast(self.dumps({'s': self.normalize_str(obj), }))
 
     def _unmarshal_dict2(self, body):  # pragma: py2
         # NOTE: We convert unicode because some old versions of RestAuthClient
@@ -379,10 +379,12 @@ class BSONContentHandler(ContentHandler):
         unmarshal_dict = _unmarshal_dict3
         unmarshal_list = _unmarshal_list3
         unmarshal_str = _unmarshal_str3
+        marshal_cast = bytes
     else:  # pragma: py2
         unmarshal_dict = _unmarshal_dict2
         unmarshal_list = _unmarshal_list2
         unmarshal_str = _unmarshal_str2
+        marshal_cast = str
 
 
 class MessagePackContentHandler(ContentHandler):
