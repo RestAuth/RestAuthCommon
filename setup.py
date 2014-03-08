@@ -133,8 +133,7 @@ class test(Command):
         pass
 
     def run(self):
-        from RestAuthCommon import test
-        suite = unittest.TestLoader().loadTestsFromModule(test)
+        suite = unittest.TestLoader().discover('python')
         unittest.TextTestRunner().run(suite)
 
 
@@ -159,7 +158,7 @@ class coverage(Command):
             os.makedirs(self.dir)
 
         omit = [
-            'python/RestAuthCommon/test.py',
+            'python/RestAuthCommon/test/*',
         ]
 
         cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
@@ -171,8 +170,7 @@ class coverage(Command):
             cov.exclude('pragma: py3')
         cov.start()
 
-        from RestAuthCommon import test
-        suite = unittest.TestLoader().loadTestsFromModule(test)
+        suite = unittest.TestLoader().discover('python')
         unittest.TextTestRunner().run(suite)
 
         cov.stop()
@@ -190,7 +188,7 @@ setup(
     url=url,
     download_url='https://common.restauth.net/download/',
     package_dir={str(''): str('python')},
-    packages=find_packages(str('python'), exclude='RestAuthCommon.tests'),
+    packages=find_packages(str('python'), exclude=['RestAuthCommon.test', ]),
     keywords=[],
     install_requires=requires,
     license="GNU General Public License (GPL) v3",

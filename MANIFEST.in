@@ -2,4 +2,3 @@ include COPYING
 include ChangeLog
 include AUTHORS
 include COPYRIGHT
-exclude python/RestAuthCommon/test.py
