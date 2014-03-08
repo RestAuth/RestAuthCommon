@@ -1,6 +1,7 @@
 restauth-common 0.6.5 (XX XXXX 2014)
 
-  * Wrap eratic behaviour of the Python2 version of PyYAML.
+  * PyYAML: Wrap eratic behaviour of the Python2 version of PyYAML.
+  * BSON: Cast marshalled data to str.
 
 restauth-common 0.6.4.1 (08 March 2014)
 
