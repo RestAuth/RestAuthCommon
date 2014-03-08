@@ -1,3 +1,7 @@
+restauth-common 0.6.5 (XX XXXX 2014)
+
+  * Wrap eratic behaviour of the Python2 version of PyYAML.
+
 restauth-common 0.6.4.1 (08 March 2014)
 
   * This release does not contain any functional changes. If you already have
