@@ -173,7 +173,7 @@ class coverage(Command):
         if hasattr(bson, 'BSON'):
             cov.exclude('pragma: libbson')
         else:
-            cov.exclude('pragma: mariadb')
+            cov.exclude('pragma: pymongo')
 
         cov.start()
 

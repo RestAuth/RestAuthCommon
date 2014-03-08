@@ -333,7 +333,7 @@ class BSONContentHandler(ContentHandler):
     def __init__(self, **kwargs):
         super(BSONContentHandler, self).__init__(**kwargs)
 
-        if hasattr(self.library, 'BSON'):  # pragma: mariadb
+        if hasattr(self.library, 'BSON'):  # pragma: pymongo
             self.dumps = self.library.BSON.encode
             self.loads = self.library.BSON.decode
         else:  # pragma: libbson
