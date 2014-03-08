@@ -1,3 +1,8 @@
+restauth-common 0.6.4.1 (02 March 2014)
+
+  * This release only brings minor packaging fixes. If you have 0.6.4 already
+    on your system, you do not have to update anything.
+
 restauth-common 0.6.4 (02 March 2014)
 
   * Support pymongo as BSON implementation, the pure python implementation is
