@@ -36,7 +36,7 @@ from setuptools import setup
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
-LATEST_RELEASE = '0.6.4'
+LATEST_RELEASE = '0.6.4.1'
 
 requires = []
 

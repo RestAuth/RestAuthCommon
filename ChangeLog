@@ -1,7 +1,9 @@
-restauth-common 0.6.4.1 (02 March 2014)
+restauth-common 0.6.4.1 (08 March 2014)
 
-  * This release only brings minor packaging fixes. If you have 0.6.4 already
-    on your system, you do not have to update anything.
+  * This release does not contain any functional changes. If you already have
+    0.6.4, there is no need to update.
+  * Minor packaging fixes.
+  * Test resource_validator function
 
 restauth-common 0.6.4 (02 March 2014)
 
