@@ -626,38 +626,91 @@ class YAMLContentHandler(ContentHandler):
     librarypath = 'yaml'
 
     def _marshal_str3(self, obj):  # pragma: py3
-        return self.library.dump(obj, encoding='utf-8')
+        return self.library.dump(self.normalize_str(obj), encoding='utf-8')
+
+    def _py2_str_helper(self, s):
+        """Wrap eratic behaviour of the Python2 YAML implementation.
+
+        In Python2, the YAML implentation is unfortunately very eratic. Here is what the
+        documentation says:
+
+        * str objects are converted into !!str, !!python/str or !binary nodes depending on whether
+          the object is an ASCII, UTF-8 or binary string.
+        * unicode objects are converted into !!python/unicode or !!str nodes depending on whether the
+          object is an ASCII string or not.
+
+        This is unfortunately unreproduceable::
+
+            >>> import yaml
+            >>> yaml.dump('a')  # (a) this result is correct
+            'a\n...\n'
+            >>> yaml.dump(u'a')  # (b) unicode object returns non-portable !!python/unicode
+            "!!python/unicode 'a'\n"
+            >>> yaml.dump(u'a'.encode('utf-8'))  # same as yaml.dump('a')
+            'a\n...\n'
+            >>> yaml.dump(u'foo愑')  # (c) non-ascii unicode returns portable str
+            '"foo\\u6111"\n'
+            >>> yaml.dump(u'foo愑'.encode('utf-8'))  # (d) str returns non-portable !!python/str
+            '!!python/str "foo\\u6111"\n'
+
+        So to summarize, this method does::
+
+        * cast unicode to str if it is ASCII, so (b) is converted to (a)
+        * cast a str object to unicode if it non-ASCII: (d) is converted (c)
+        """
+        if type(s) == unicode:
+            try:
+                s.decode('utf-8')
+                return s.encode('utf-8')
+            except UnicodeEncodeError:
+                pass
+        elif type(s) == str:
+            try:
+                s.encode('utf-8')
+            except UnicodeDecodeError:
+                return s.decode('utf-8')
+        return s
 
     def _marshal_str2(self, obj):  # pragma: py2
-        return self.library.dump(obj)
+        return self.library.dump(self._py2_str_helper(obj))
 
     def marshal_str(self, obj):
         try:
-            return self._marshal_str(self.normalize_str(obj))
+            return self._marshal_str(obj)
         except Exception as e:
             raise error.MarshalError(e)
 
     def _marshal_dict3(self, obj):  # pragma: py3
-        return self.library.dump(obj, encoding='utf-8')
+        return self.library.dump(self.normalize_dict(obj), encoding='utf-8')
+
+    def _py2_dict_helper(self, d):
+        def conv(v):
+            if isinstance(v, unicode):
+                return self._py2_str_helper(v)
+            elif isinstance(v, dict):
+                return self._py2_dict_helper(v)
+            return v
+
+        return dict((conv(k), conv(v)) for k, v in d.iteritems())
 
     def _marshal_dict2(self, obj):  # pragma: py2
-        return self.library.dump(obj)
+        return self.library.dump(self._py2_dict_helper(obj))
 
     def marshal_dict(self, obj):
         try:
-            return self._marshal_dict(self.normalize_dict(obj))
+            return self._marshal_dict(obj)
         except Exception as e:
             raise error.MarshalError(e)
 
     def _marshal_list3(self, obj):  # pragma: py3
-        return self.library.dump(obj, encoding='utf-8')
+        return self.library.dump(self.normalize_list(obj), encoding='utf-8')
 
     def _marshal_list2(self, obj):  # pragma: py2
-        return self.library.dump(obj)
+        return self.library.dump([self._py2_str_helper(s) for s in obj])
 
     def marshal_list(self, obj):
         try:
-            return self._marshal_list(self.normalize_list(obj))
+            return self._marshal_list(obj)
         except Exception as e:
             raise error.MarshalError(e)
 
