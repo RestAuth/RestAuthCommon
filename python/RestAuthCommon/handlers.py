@@ -626,7 +626,7 @@ class YAMLContentHandler(ContentHandler):
     librarypath = 'yaml'
 
     def _marshal_str3(self, obj):  # pragma: py3
-        return self.library.dump(obj).encode('utf-8')
+        return self.library.dump(obj, encoding='utf-8')
 
     def _marshal_str2(self, obj):  # pragma: py2
         return self.library.dump(obj)
@@ -638,7 +638,7 @@ class YAMLContentHandler(ContentHandler):
             raise error.MarshalError(e)
 
     def _marshal_dict3(self, obj):  # pragma: py3
-        return self.library.dump(obj).encode('utf-8')
+        return self.library.dump(obj, encoding='utf-8')
 
     def _marshal_dict2(self, obj):  # pragma: py2
         return self.library.dump(obj)
@@ -650,7 +650,7 @@ class YAMLContentHandler(ContentHandler):
             raise error.MarshalError(e)
 
     def _marshal_list3(self, obj):  # pragma: py3
-        return self.library.dump(obj).encode('utf-8')
+        return self.library.dump(obj, encoding='utf-8')
 
     def _marshal_list2(self, obj):  # pragma: py2
         return self.library.dump(obj)
