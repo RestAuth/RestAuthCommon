@@ -20,8 +20,6 @@
 
 from __future__ import unicode_literals
 
-import json as libjson
-import pickle
 import sys
 
 from RestAuthCommon import error
@@ -30,14 +28,8 @@ PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
 if PY2:  # pragma: py2
-    from urlparse import parse_qs
-    from urllib import urlencode
-
     string_types = basestring
 else:  # pragma: py3
-    from urllib.parse import parse_qs
-    from urllib.parse import urlencode
-
     string_types = (str, bytes, )
 
 
@@ -233,42 +225,50 @@ class JSONContentHandler(ContentHandler):
        <http://en.wikipedia.org/wiki/JSON>`_
     """
 
+    librarypath = 'json'
     mime = 'application/json'
     """The mime-type used by this content handler is 'application/json'."""
 
     SEPARATORS = (str(','), str(':'))
 
-    class ByteEncoder(libjson.JSONEncoder):
+    def __init__(self, **kwargs):
+        super(JSONContentHandler, self).__init__(**kwargs)
+
         if PY3:  # pragma: py3
-            def decode_dict(self, d):
-                def conv(v):
-                    if isinstance(v, bytes):
-                        return v.decode('utf-8')
-                    elif isinstance(v, dict):
-                        return self.decode_dict(v)
-                    return v
+            class ByteEncoder(self.library.JSONEncoder):
+                def decode_dict(self, d):
+                    def conv(v):
+                        if isinstance(v, bytes):
+                            return v.decode('utf-8')
+                        elif isinstance(v, dict):
+                            return self.decode_dict(v)
+                        return v
 
-                return dict((conv(k), conv(v)) for k, v in d.items())
+                    return dict((conv(k), conv(v)) for k, v in d.items())
 
-            def encode(self, obj):
-                if isinstance(obj, bytes):
-                    obj = obj.decode('utf-8')
-                elif isinstance(obj, dict):
-                    obj = self.decode_dict(obj)
+                def encode(self, obj):
+                    if isinstance(obj, bytes):
+                        obj = obj.decode('utf-8')
+                    elif isinstance(obj, dict):
+                        obj = self.decode_dict(obj)
 
-                try:
-                    return libjson.JSONEncoder.encode(self, obj)
-                except TypeError:
-                    raise
+                    try:
+                        return self.library.JSONEncoder.encode(self, obj)
+                    except TypeError:
+                        raise
 
-            def default(self, obj):
-                if isinstance(obj, bytes):
-                    return obj.decode('utf-8')
-                return libjson.JSONEncoder.default(self, obj)
+                def default(self, obj):
+                    if isinstance(obj, bytes):
+                        return obj.decode('utf-8')
+                    return self.library.JSONEncoder.default(self, obj)
+
+            self.encoder = ByteEncoder
+        else:
+            self.encoder = self.library.JSONEncoder
 
     def unmarshal_str(self, body):
         try:
-            pure = libjson.loads(self.normalize_str(body))
+            pure = self.library.loads(self.normalize_str(body))
             if not isinstance(pure, list) or len(pure) != 1:
                 raise error.UnmarshalError("Could not parse body as string")
 
@@ -282,33 +282,33 @@ class JSONContentHandler(ContentHandler):
 
     def unmarshal_dict(self, body):
         try:
-            return libjson.loads(self.normalize_str(body))
+            return self.library.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def unmarshal_list(self, body):
         try:
-            return libjson.loads(self.normalize_str(body))
+            return self.library.loads(self.normalize_str(body))
         except ValueError as e:
             raise error.UnmarshalError(e)
 
     def marshal_str(self, obj):
         try:
-            dumped = libjson.dumps([obj], separators=self.SEPARATORS, cls=self.ByteEncoder)
+            dumped = self.library.dumps([obj], separators=self.SEPARATORS, cls=self.encoder)
             return dumped.encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
+            dumped = self.library.dumps(obj, separators=self.SEPARATORS, cls=self.encoder)
             return dumped.encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_dict(self, obj):
         try:
-            dumped = libjson.dumps(obj, separators=self.SEPARATORS, cls=self.ByteEncoder)
+            dumped = self.library.dumps(obj, separators=self.SEPARATORS, cls=self.encoder)
             return dumped.encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
@@ -443,6 +443,19 @@ class FormContentHandler(ContentHandler):
 
     SUPPORT_NESTED_DICTS = False
 
+    def __init__(self, **kwargs):
+        super(FormContentHandler, self).__init__(**kwargs)
+
+        if PY2:  # pragma: py2
+            from urlparse import parse_qs
+            from urllib import urlencode
+        else:  # pragma: py3
+            from urllib.parse import parse_qs
+            from urllib.parse import urlencode
+
+        self.parse_qs = parse_qs
+        self.urlencode = urlencode
+
     def _decode_dict(self, d):  # pragma: py2
         decoded = {}
         for key, value in d.items():
@@ -460,7 +473,7 @@ class FormContentHandler(ContentHandler):
         if PY3:  # pragma: py3
             body = body.decode('utf-8')
 
-        parsed_dict = parse_qs(body, True)
+        parsed_dict = self.parse_qs(body, True)
         ret_dict = {}
         for key, value in parsed_dict.items():
             if isinstance(value, list) and len(value) == 1:
@@ -480,7 +493,7 @@ class FormContentHandler(ContentHandler):
         if body == '':
             return []
 
-        parsed = parse_qs(body, True)['list']
+        parsed = self.parse_qs(body, True)['list']
 
         if PY2:  # pragma: py2
             parsed = [e.decode('utf-8') for e in parsed]
@@ -490,16 +503,16 @@ class FormContentHandler(ContentHandler):
         if PY3:  # pragma: py3
             body = body.decode('utf-8')
 
-        parsed = parse_qs(body, True)['str'][0]
+        parsed = self.parse_qs(body, True)['str'][0]
         return self.normalize_str(parsed)
 
     def marshal_str(self, obj):
         try:
             if PY2:  # pragma: py2
                 obj = obj.encode('utf-8')
-                return urlencode({'str': obj})
+                return self.urlencode({'str': obj})
             else:  # pragma: py3
-                return urlencode({'str': obj}).encode('utf-8')
+                return self.urlencode({'str': obj}).encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
@@ -528,9 +541,9 @@ class FormContentHandler(ContentHandler):
                     raise error.MarshalError(
                         "FormContentHandler doesn't support nested dictionaries.")
             if PY3:  # pragma: py3
-                return urlencode(obj, doseq=True).encode('utf-8')
+                return self.urlencode(obj, doseq=True).encode('utf-8')
             else:  # pragma: py2
-                return urlencode(obj, doseq=True)
+                return self.urlencode(obj, doseq=True)
         except Exception as e:
             raise error.MarshalError(e)
 
@@ -538,9 +551,9 @@ class FormContentHandler(ContentHandler):
         try:
             if PY2:  # pragma: py2
                 obj = [e.encode('utf-8') for e in obj]
-                return urlencode({'list': obj}, doseq=True)
+                return self.urlencode({'list': obj}, doseq=True)
             else:  # pragma: py3
-                return urlencode({'list': obj}, doseq=True).encode('utf-8')
+                return self.urlencode({'list': obj}, doseq=True).encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
@@ -556,41 +569,42 @@ class PickleContentHandler(ContentHandler):
     mime = 'application/pickle'
     """The mime-type used by this content handler is 'application/pickle'."""
 
+    librarypath = 'pickle'
     PROTOCOL = 2
 
     def marshal_str(self, obj):
         try:
-            return pickle.dumps(self.normalize_str(obj), protocol=self.PROTOCOL)
+            return self.library.dumps(self.normalize_str(obj), protocol=self.PROTOCOL)
         except Exception as e:
             raise error.MarshalError(str(e))
 
     def marshal_dict(self, obj):
         try:
-            return pickle.dumps(self.normalize_dict(obj), protocol=self.PROTOCOL)
+            return self.library.dumps(self.normalize_dict(obj), protocol=self.PROTOCOL)
         except Exception as e:
             raise error.MarshalError(str(e))
 
     def marshal_list(self, obj):
         try:
-            return pickle.dumps(self.normalize_list(obj), protocol=self.PROTOCOL)
+            return self.library.dumps(self.normalize_list(obj), protocol=self.PROTOCOL)
         except Exception as e:
             raise error.MarshalError(str(e))
 
     def unmarshal_str(self, data):
         try:
-            return self.normalize_str(pickle.loads(data))
+            return self.normalize_str(self.library.loads(data))
         except Exception as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_list(self, data):
         try:
-            return self.normalize_list(pickle.loads(data))
+            return self.normalize_list(self.library.loads(data))
         except Exception as e:
             raise error.UnmarshalError(str(e))
 
     def unmarshal_dict(self, data):
         try:
-            return self.normalize_dict(pickle.loads(data))
+            return self.normalize_dict(self.library.loads(data))
         except Exception as e:
             raise error.UnmarshalError(str(e))
 
