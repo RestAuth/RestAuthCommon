@@ -43,6 +43,8 @@ class TestHandler(ContentHandler):
     def __init__(self, librarypath):
         self.librarypath = librarypath
 
+JSONEncoder = JSONContentHandler().encoder
+
 
 class Unserializeable(object):
     """A class whose instances are completely unserializable."""
@@ -377,12 +379,12 @@ class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
         }
     else:
         EQUIVALENT3_MAPPING = {
-            'a': json.dumps([bytes('a', 'utf-8')], cls=JSONContentHandler.ByteEncoder),
+            'a': json.dumps([bytes('a', 'utf-8')], cls=JSONEncoder),
             ('a', 'b'): json.dumps([bytes('a', 'utf-8'), bytes('b', 'utf-8')],
-                                   cls=JSONContentHandler.ByteEncoder),
+                                   cls=JSONEncoder),
             (('a', 'b'), ('c', 'd')): json.dumps({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
                                                   bytes('c', 'utf-8'): bytes('d', 'utf-8')},
-                                                 cls=JSONContentHandler.ByteEncoder),
+                                                 cls=JSONEncoder),
         }
 
     def setUp(self):
