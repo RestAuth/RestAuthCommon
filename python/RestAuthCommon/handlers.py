@@ -253,14 +253,14 @@ class JSONContentHandler(ContentHandler):
                         obj = self.decode_dict(obj)
 
                     try:
-                        return self.library.JSONEncoder.encode(self, obj)
+                        return super(ByteEncoder, self).encode(obj)
                     except TypeError:
                         raise
 
                 def default(self, obj):
                     if isinstance(obj, bytes):
                         return obj.decode('utf-8')
-                    return self.library.JSONEncoder.default(self, obj)
+                    return super(ByteEncoder, self).default(obj)
 
             self.encoder = ByteEncoder
         else:
