@@ -1,4 +1,4 @@
-PyYAML>=3.10
-pymongo>=2.6.3
-lxml>=3.3.1
-msgpack-python>=0.4.1
+PyYAML>=3.11
+pymongo>=2.72
+lxml>=3.3.5
+msgpack-python>=0.4.2
