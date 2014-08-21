@@ -36,12 +36,12 @@ from setuptools import setup
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
-LATEST_RELEASE = '0.6.4.1'
+LATEST_RELEASE = '0.6.5'
 
 requires = []
 
-if sys.version_info < (2, 6):
-    print('ERROR: Sphinx requires at least Python 2.6 to run.')
+if sys.version_info < (2, 7):
+    print('ERROR: Sphinx requires at least Python 2.7 to run.')
     sys.exit(1)
 
 if 'python' not in sys.path:
