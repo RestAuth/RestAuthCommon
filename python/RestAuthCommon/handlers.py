@@ -237,24 +237,25 @@ class JSONContentHandler(ContentHandler):
         if PY3:  # pragma: py3
             class ByteEncoder(self.library.JSONEncoder):
                 def decode_dict(self, d):
-                    def conv(v):
+                    def key(v):  # keys are not handled by self.default()
                         if isinstance(v, bytes):
                             return v.decode('utf-8')
-                        elif isinstance(v, dict):
+                        return v
+
+                    def val(v):  # handle nested dicts
+                        if isinstance(v, dict):
                             return self.decode_dict(v)
                         return v
 
-                    return dict((conv(k), conv(v)) for k, v in d.items())
+                    return {key(k): val(v) for k, v in d.items()}
 
                 def encode(self, obj):
-                    if isinstance(obj, bytes):
-                        obj = obj.decode('utf-8')
-                    elif isinstance(obj, dict):
+                    if isinstance(obj, dict):
                         obj = self.decode_dict(obj)
 
                     return super(ByteEncoder, self).encode(obj)
 
-                def default(self, obj):
+                def default(self, obj):  # for objects of unknown type (i.e. bytes)
                     if isinstance(obj, bytes):
                         return obj.decode('utf-8')
                     return super(ByteEncoder, self).default(obj)
