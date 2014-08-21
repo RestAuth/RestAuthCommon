@@ -881,13 +881,3 @@ application/messagepack           :py:class:`.handlers.MessagePackContentHandler
 If you want to provide your own implementation of a :py:class:`.ContentHandler`, you can add it to
 this dictionary with the appropriate MIME type as the key.
 """
-
-# old names, for compatability:
-content_handler = ContentHandler
-json = JSONContentHandler
-xml = XMLContentHandler
-form = FormContentHandler
-
-# 'YamlContentHandler' was introduced in 0.6.1 and renamed for consistency to
-# 'YAMLContentHandler' in 0.6.2
-YamlContentHandler = YAMLContentHandler
