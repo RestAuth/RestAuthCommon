@@ -272,8 +272,7 @@ class JSONContentHandler(ContentHandler):
 
             string = pure[0]
 
-            # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
-            # not unicode.
+            # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and not unicode.
             return self.normalize_str(string)
         except ValueError as e:
             raise error.UnmarshalError(e)
@@ -468,24 +467,21 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         parsed_dict = self.parse_qs(body, True)
         ret_dict = {}
         for key, value in parsed_dict.items():
-            if isinstance(value, list) and len(value) == 1:
-                ret_dict[key] = value[0]
-            else:
-                ret_dict[key] = value
+            ret_dict[key] = value[0]
 
-        if PY2:  # pragma: py2
+        if PY2:  # pragma: no branch py2
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         if body == '':
@@ -493,12 +489,12 @@ class FormContentHandler(ContentHandler):
 
         parsed = self.parse_qs(body, True)['list']
 
-        if PY2:  # pragma: py2
+        if PY2:  # pragma: no branch py2
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         parsed = self.parse_qs(body, True)['str'][0]
@@ -529,7 +525,7 @@ class FormContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            if PY2:  # pragma: py2
+            if PY2:  # pragma: no branch py2
                 obj = self._encode_dict(obj)
 
             # verify that no value is a dictionary, because the unmarshalling for
@@ -640,7 +636,7 @@ class YAMLContentHandler(ContentHandler):
     def _marshal_str3(self, obj):  # pragma: py3
         return self.library.dump(self.normalize_str(obj), encoding='utf-8')
 
-    def _py2_str_helper(self, s):
+    def _py2_str_helper(self, s):  # pragma: py2
         """Wrap eratic behaviour of the Python2 YAML implementation.
 
         In Python2, the YAML implentation is unfortunately very eratic. Here is what the
@@ -677,10 +673,7 @@ class YAMLContentHandler(ContentHandler):
             except UnicodeEncodeError:
                 pass
         elif type(s) == str:
-            try:
-                s.encode('utf-8')
-            except UnicodeDecodeError:
-                return s.decode('utf-8')
+            s.encode('utf-8')
         return s
 
     def _marshal_str2(self, obj):  # pragma: py2
@@ -695,7 +688,7 @@ class YAMLContentHandler(ContentHandler):
     def _marshal_dict3(self, obj):  # pragma: py3
         return self.library.dump(self.normalize_dict(obj), encoding='utf-8')
 
-    def _py2_dict_helper(self, d):
+    def _py2_dict_helper(self, d):  # pragma: py2
         def conv(v):
             if isinstance(v, unicode):
                 return self._py2_str_helper(v)

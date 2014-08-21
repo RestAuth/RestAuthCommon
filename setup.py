@@ -165,9 +165,9 @@ class coverage(Command):
                                 branch=True, omit=omit)
 
         if PY3:
-            cov.exclude('pragma: py2')
+            cov.exclude('pragma: .*py2')
         else:
-            cov.exclude('pragma: py3')
+            cov.exclude('pragma: .*py3')
 
         import bson
         if hasattr(bson, 'BSON'):
