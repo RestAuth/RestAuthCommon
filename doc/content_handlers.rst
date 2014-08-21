@@ -12,14 +12,13 @@ handler:
 
 .. code-block:: python
 
-   import RestAuthCommon
+   from RestAuthCommon.handlers import CONTENT_HANDLERS
 
    # some example data:
    data = {"foo": "bar"}
 
    # lookup handler:
-   handler_class = RestAuthCommon.CONTENT_HANDLERS['application/json']
-   handler = handler_class()
+   handler = CONTENT_HANDLERS['application/json']()
 
    # marshal some data (to send it)
    marshalled = handler.marshal_dict(data)
