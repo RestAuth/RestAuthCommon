@@ -134,7 +134,7 @@ class ContentHandler(object):
         """Shortcut for marshalling just any object.
 
         .. NOTE:: If you know the type of **obj** in advance, you should use the marshal_* methods
-        directly for improved speed.
+            directly for improved speed.
 
         :param obj: The object to marshall.
         :return: The marshalled representation of the object.
