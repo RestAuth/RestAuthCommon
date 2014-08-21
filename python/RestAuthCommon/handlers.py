@@ -252,10 +252,7 @@ class JSONContentHandler(ContentHandler):
                     elif isinstance(obj, dict):
                         obj = self.decode_dict(obj)
 
-                    try:
-                        return super(ByteEncoder, self).encode(obj)
-                    except TypeError:
-                        raise
+                    return super(ByteEncoder, self).encode(obj)
 
                 def default(self, obj):
                     if isinstance(obj, bytes):
