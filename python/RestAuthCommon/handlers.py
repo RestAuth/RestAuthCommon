@@ -319,8 +319,8 @@ class BSONContentHandler(ContentHandler):
 
     .. seealso:: `Specification <http://bsonspec.org/>`_, `WikiPedia
        <http://en.wikipedia.org/wiki/BSON>`_,
-       `pymongo <https://pypi.python.org/pypi/pymongo>` on PyPi,
-       `bson <https://pypi.python.org/pypi/bson>` on PyPi
+       `pymongo <https://pypi.python.org/pypi/pymongo>`_ on PyPi,
+       `bson <https://pypi.python.org/pypi/bson>`_ on PyPi
     """
     mime = 'application/bson'
     """The mime-type used by this content handler is 'application/json'."""
