@@ -4,7 +4,7 @@ Installation from source
 Requirements
 ------------
 
-* **RestAuthCommon** requires `Python 2.6 <http://www.python.org/>`_ or later.
+* **RestAuthCommon** requires `Python 2.7 <http://www.python.org/>`_ or later.
   On Python3, RestAuthCommon is tested with Python 3.2 and later.
 * Some ContentHandlers require, if used, additional libraries:
 
