@@ -109,7 +109,7 @@ class ContentHandler(object):
                 return self._normalize_dict3(v)
             return v
 
-        return dict((conv(k), conv(v)) for k, v in d.items())
+        return {conv(k): conv(v) for k, v in d.items()}
 
     def _normalize_dict2(self, d):  # pragma: py2
         """Converts any keys or values of d that are str to unicode."""
@@ -120,7 +120,7 @@ class ContentHandler(object):
                 return self._normalize_dict2(v)
             return v
 
-        return dict((conv(k), conv(v)) for k, v in d.iteritems())
+        return {conv(k): conv(v) for k, v in d.iteritems()}
 
     def _normalize_str3(self, s):  # pragma: py3
         """Converts byte objects to str."""
