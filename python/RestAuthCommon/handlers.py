@@ -263,7 +263,7 @@ class JSONContentHandler(ContentHandler):
                     return super(ByteEncoder, self).default(obj)
 
             self.encoder = ByteEncoder
-        else:
+        else:  # pragma: py2
             self.encoder = self.library.JSONEncoder
 
     def unmarshal_str(self, body):
