@@ -1,3 +1,2 @@
-Sphinx>=1.2.1
+Sphinx>=1.2.2
 coverage>=3.7.1
-lxml==3.3.1

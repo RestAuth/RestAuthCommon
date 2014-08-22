@@ -1,40 +1,39 @@
 # This file is part of RestAuthCommon.
 #
-#    RestAuthCommon is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
+# GNU General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
 #
-#    RestAuthCommon is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+# the GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with RestAuthCommon.  If not, see <http://www.gnu.org/licenses/>.
-"""
-A collection of functions used in both server and client reference
-implementations.
+# You should have received a copy of the GNU General Public License along with RestAuthCommon. If
+# not, see <http://www.gnu.org/licenses/>.
+
+"""A collection of functions used in both server and client reference implementations.
 
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
+from __future__ import unicode_literals
+
 import sys
 import stringprep
 
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
 
 def resource_validator(name):
-    """
-    Check the *name* of a resource for some really bad characters that
-    shouldn't be used anywhere in RestAuth.
+    """Check the *name* of a resource for some really bad characters that shouldn't be used
+    anywhere in RestAuth.
 
-    This filters names containing a slash ("/") or colon (":") and those
-    starting with '.'. It also filters control characters etc., including those
-    from unicode.
+    This filters names containing a slash ("/") or colon (":") and those starting with '.'. It also
+    filters control characters etc., including those from unicode.
 
     :param str name: The name to validate
-    :returns: False if the name contains any invalid characters, True
-        otherwise.
+    :returns: False if the name contains any invalid characters, True otherwise.
     :rtype: bool
     """
     if '/' in name or ':' in name or '\\' in name or name.startswith('.'):
@@ -42,25 +41,25 @@ def resource_validator(name):
 
     # filter various dangerous characters
     for enc_char in name:
-        if sys.version_info < (3, 0) and isinstance(enc_char, str):
+        if PY2 and isinstance(enc_char, str):  # pragma: py2
             enc_char = enc_char.decode('utf-8')
 
-        if stringprep.in_table_c21_c22(enc_char):
+        if stringprep.in_table_c21_c22(enc_char):  # C.2 Control characters
             # control characters
             return False
-        if stringprep.in_table_c3(enc_char):
+        if stringprep.in_table_c3(enc_char):  # C.3 Private use
             return False
-        if stringprep.in_table_c4(enc_char):
+        if stringprep.in_table_c4(enc_char):  # C.4 Non-character code points
             return False
-        if stringprep.in_table_c5(enc_char):
+        if stringprep.in_table_c5(enc_char):  # C.5 Surrogate codes
             return False
-        if stringprep.in_table_c6(enc_char):
+        if stringprep.in_table_c6(enc_char):  # C.6 Inappropriate for plain text
             return False
-        if stringprep.in_table_c7(enc_char):
+        if stringprep.in_table_c7(enc_char):  # C.7 Inappropriate for canonical representation
             return False
-        if stringprep.in_table_c8(enc_char):
+        if stringprep.in_table_c8(enc_char):  # C.8 Change display properties or are deprecated
             return False
-        if stringprep.in_table_c9(enc_char):
+        if stringprep.in_table_c9(enc_char):  # C.9 Tagging characters
             return False
 
     return True

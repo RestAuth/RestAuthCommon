@@ -1,7 +1,10 @@
 PY2VERS=$(shell pyversions -vs)
 PY3VERS=$(shell py3versions -vs)
 PYVERS=${PY2VERS} ${PY3VERS}
+
+# location of your virtualenv python interpreters
 PY2=py2/bin/python
+PY3=py3/bin/python
 
 
 VERSION=$(shell ${PY2} setup.py -q version)

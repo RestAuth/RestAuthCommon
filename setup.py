@@ -36,12 +36,12 @@ from setuptools import setup
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
-LATEST_RELEASE = '0.6.2'
+LATEST_RELEASE = '0.6.5'
 
 requires = []
 
-if sys.version_info < (2, 6):
-    print('ERROR: Sphinx requires at least Python 2.6 to run.')
+if sys.version_info < (2, 7):
+    print('ERROR: Sphinx requires at least Python 2.7 to run.')
     sys.exit(1)
 
 if 'python' not in sys.path:
@@ -133,8 +133,7 @@ class test(Command):
         pass
 
     def run(self):
-        from RestAuthCommon import test
-        suite = unittest.TestLoader().loadTestsFromModule(test)
+        suite = unittest.TestLoader().discover('python')
         unittest.TextTestRunner().run(suite)
 
 
@@ -159,20 +158,26 @@ class coverage(Command):
             os.makedirs(self.dir)
 
         omit = [
-            'python/RestAuthCommon/test.py',
+            'python/RestAuthCommon/test/*',
         ]
 
         cov = coverage.coverage(cover_pylib=False, source=['python/RestAuthCommon', ],
                                 branch=True, omit=omit)
 
         if PY3:
-            cov.exclude('pragma: py2')
+            cov.exclude('pragma: .*py2')
         else:
-            cov.exclude('pragma: py3')
+            cov.exclude('pragma: .*py3')
+
+        import bson
+        if hasattr(bson, 'BSON'):
+            cov.exclude('pragma: libbson')
+        else:
+            cov.exclude('pragma: pymongo')
+
         cov.start()
 
-        from RestAuthCommon import test
-        suite = unittest.TestLoader().loadTestsFromModule(test)
+        suite = unittest.TestLoader().discover('python')
         unittest.TextTestRunner().run(suite)
 
         cov.stop()
@@ -190,7 +195,7 @@ setup(
     url=url,
     download_url='https://common.restauth.net/download/',
     package_dir={str(''): str('python')},
-    packages=find_packages(str('python'), exclude='RestAuthCommon.tests'),
+    packages=find_packages(str('python'), exclude=['RestAuthCommon.test', ]),
     keywords=[],
     install_requires=requires,
     license="GNU General Public License (GPL) v3",
@@ -203,12 +208,11 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",
