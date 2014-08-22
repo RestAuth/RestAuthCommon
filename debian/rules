@@ -37,6 +37,9 @@ override_dh_auto_install: ${PY2VERS:%=install-python%} ${PY3VERS:%=install-pytho
 test-python%:
 	python$* setup.py test
 
+override_dh_auto_clean:
+	-dh_auto_clean ${DH_ARGS}
+
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
 override_dh_auto_test: ${PY2VERS:%=test-python%} ${PY3VERS:%=test-python%}
 endif
