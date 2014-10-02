@@ -22,7 +22,6 @@ import sys
 import stringprep
 
 PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
 
 
 def resource_validator(name):
@@ -36,16 +35,14 @@ def resource_validator(name):
     :returns: False if the name contains any invalid characters, True otherwise.
     :rtype: bool
     """
-    if '/' in name or ':' in name or '\\' in name or name.startswith('.'):
-        return False
+    if PY2 and isinstance(name, str):  # pragma: py2
+        name = name.decode('utf-8')
 
     # filter various dangerous characters
     for enc_char in name:
-        if PY2 and isinstance(enc_char, str):  # pragma: py2
-            enc_char = enc_char.decode('utf-8')
-
+        if stringprep.in_table_c12(enc_char):  # C.1.2 Non-ASCII space characters
+            return False
         if stringprep.in_table_c21_c22(enc_char):  # C.2 Control characters
-            # control characters
             return False
         if stringprep.in_table_c3(enc_char):  # C.3 Private use
             return False
