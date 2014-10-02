@@ -16,7 +16,7 @@
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
 import re
 
@@ -137,7 +137,7 @@ prep_pattern = re.compile(
 
 def stringprep(name):
     """Lowercase, normalize and remove stringprep B.1 characters."""
-    return prep_pattern.sub('', unicodedata.normalizze('NFC', name)).lower()
+    return prep_pattern.sub('', unicodedata.normalize('NFC', name)).lower()
 
 
 def stringcheck(name):
