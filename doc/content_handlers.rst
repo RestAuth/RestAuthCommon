@@ -6,20 +6,19 @@ transforms them to serializable strings that can be sent over the network while 
 the exact opposite: it transforms a string into a python object.
 
 Both the `RestAuth server <https://server.restauth.net>`_ and `RestAuthClient
-<https://python.restauth.net>`_ use concrete implementations of the :py:class:`~.content_handler`
+<https://python.restauth.net>`_ use concrete implementations of the :py:class:`~.ContentHandler`
 class to (un)marshal data. To use such a content handler, simply create an instance of the content
 handler:
 
 .. code-block:: python
 
-   import RestAuthCommon
+   from RestAuthCommon.handlers import CONTENT_HANDLERS
 
    # some example data:
    data = {"foo": "bar"}
 
    # lookup handler:
-   handler_class = RestAuthCommon.CONTENT_HANDLERS['application/json']
-   handler = handler_class()
+   handler = CONTENT_HANDLERS['application/json']()
 
    # marshal some data (to send it)
    marshalled = handler.marshal_dict(data)
@@ -46,7 +45,7 @@ Existing content handlers
 Custom handlers
 ---------------
 
-To implement your own content handler, simply subclass :py:class:`Contenthandler`. Note that
+To implement your own content handler, simply subclass :py:class:`~.ContentHandler`. Note that
 serialization should be agnostic of input types, deserialization should return the same type
 regardless of the type: In Python 2 all strings should be ``unicode`` (and not ``str``) objects, in
 Python3 all strings should be ``str`` (and not ``byte``) objects, this includes elements of lists

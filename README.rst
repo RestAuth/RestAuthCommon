@@ -19,7 +19,7 @@ libraries, e.g.::
    pip install lxml PyYAML pymongo msgpack-python
 
 **Note:** The pymongo_ package provides BSON support, but you can also use the bson_ package
-instaed, if you use Python 2 and want a library written in pure Python.
+instead, if you use Python 2 and want a library written in pure Python.
 
 You can also download `release tarballs`_. We also provide packages for other distributions, please
 see `our homepage`_ for more information.
@@ -27,8 +27,7 @@ see `our homepage`_ for more information.
 Requirements
 ____________
 
-* **RestAuthCommon** requires Python 2.6 or later or Python 3.2 or later.
-* The ``bson`` content handler does not work with Python 3, because bson_ is not compatible.
+* **RestAuthCommon** requires Python 2.7 or later or Python 3.2 or later.
 
 .. _our homepage: https://common.restauth.net
 .. _release tarballs: https://common.restauth.net/download

@@ -36,12 +36,12 @@ from setuptools import setup
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
-LATEST_RELEASE = '0.6.4.1'
+LATEST_RELEASE = '0.6.5'
 
 requires = []
 
-if sys.version_info < (2, 6):
-    print('ERROR: Sphinx requires at least Python 2.6 to run.')
+if sys.version_info < (2, 7):
+    print('ERROR: Sphinx requires at least Python 2.7 to run.')
     sys.exit(1)
 
 if 'python' not in sys.path:
@@ -165,9 +165,9 @@ class coverage(Command):
                                 branch=True, omit=omit)
 
         if PY3:
-            cov.exclude('pragma: py2')
+            cov.exclude('pragma: .*py2')
         else:
-            cov.exclude('pragma: py3')
+            cov.exclude('pragma: .*py3')
 
         import bson
         if hasattr(bson, 'BSON'):
@@ -208,11 +208,11 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Software Development :: Libraries :: Python Modules",

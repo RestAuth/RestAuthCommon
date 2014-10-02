@@ -1,7 +1,13 @@
 restauth-common 0.6.5 (XX XXXX 2014)
 
+  * RestAuthCommon now requires Python 2.7 or later.
+  * Do not import modules from the Python standard library upon module import
+	(pickle, json, urllib) but upon first usage via the library attribute.
+	This greatly improves import speed.
+  * Remove old module-level aliases for content handlers.
   * PyYAML: Wrap eratic behaviour of the Python2 version of PyYAML.
   * BSON: Cast marshalled data to str.
+  * Update documentation in various places.
 
 restauth-common 0.6.4.1 (08 March 2014)
 

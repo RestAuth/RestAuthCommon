@@ -109,7 +109,7 @@ class ContentHandler(object):
                 return self._normalize_dict3(v)
             return v
 
-        return dict((conv(k), conv(v)) for k, v in d.items())
+        return {conv(k): conv(v) for k, v in d.items()}
 
     def _normalize_dict2(self, d):  # pragma: py2
         """Converts any keys or values of d that are str to unicode."""
@@ -120,7 +120,7 @@ class ContentHandler(object):
                 return self._normalize_dict2(v)
             return v
 
-        return dict((conv(k), conv(v)) for k, v in d.iteritems())
+        return {conv(k): conv(v) for k, v in d.iteritems()}
 
     def _normalize_str3(self, s):  # pragma: py3
         """Converts byte objects to str."""
@@ -134,7 +134,7 @@ class ContentHandler(object):
         """Shortcut for marshalling just any object.
 
         .. NOTE:: If you know the type of **obj** in advance, you should use the marshal_* methods
-        directly for improved speed.
+            directly for improved speed.
 
         :param obj: The object to marshall.
         :return: The marshalled representation of the object.
@@ -237,33 +237,31 @@ class JSONContentHandler(ContentHandler):
         if PY3:  # pragma: py3
             class ByteEncoder(self.library.JSONEncoder):
                 def decode_dict(self, d):
-                    def conv(v):
+                    def key(v):  # keys are not handled by self.default()
                         if isinstance(v, bytes):
                             return v.decode('utf-8')
-                        elif isinstance(v, dict):
+                        return v
+
+                    def val(v):  # handle nested dicts
+                        if isinstance(v, dict):
                             return self.decode_dict(v)
                         return v
 
-                    return dict((conv(k), conv(v)) for k, v in d.items())
+                    return {key(k): val(v) for k, v in d.items()}
 
                 def encode(self, obj):
-                    if isinstance(obj, bytes):
-                        obj = obj.decode('utf-8')
-                    elif isinstance(obj, dict):
+                    if isinstance(obj, dict):
                         obj = self.decode_dict(obj)
 
-                    try:
-                        return super(ByteEncoder, self).encode(obj)
-                    except TypeError:
-                        raise
+                    return super(ByteEncoder, self).encode(obj)
 
-                def default(self, obj):
+                def default(self, obj):  # for objects of unknown type (i.e. bytes)
                     if isinstance(obj, bytes):
                         return obj.decode('utf-8')
                     return super(ByteEncoder, self).default(obj)
 
             self.encoder = ByteEncoder
-        else:
+        else:  # pragma: py2
             self.encoder = self.library.JSONEncoder
 
     def unmarshal_str(self, body):
@@ -274,8 +272,7 @@ class JSONContentHandler(ContentHandler):
 
             string = pure[0]
 
-            # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and
-            # not unicode.
+            # In python 2.7.1 (not 2.7.2) json.loads("") returns a str and not unicode.
             return self.normalize_str(string)
         except ValueError as e:
             raise error.UnmarshalError(e)
@@ -322,8 +319,8 @@ class BSONContentHandler(ContentHandler):
 
     .. seealso:: `Specification <http://bsonspec.org/>`_, `WikiPedia
        <http://en.wikipedia.org/wiki/BSON>`_,
-       `pymongo <https://pypi.python.org/pypi/pymongo>` on PyPi,
-       `bson <https://pypi.python.org/pypi/bson>` on PyPi
+       `pymongo <https://pypi.python.org/pypi/pymongo>`_ on PyPi,
+       `bson <https://pypi.python.org/pypi/bson>`_ on PyPi
     """
     mime = 'application/bson'
     """The mime-type used by this content handler is 'application/json'."""
@@ -470,24 +467,21 @@ class FormContentHandler(ContentHandler):
         return decoded
 
     def unmarshal_dict(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         parsed_dict = self.parse_qs(body, True)
         ret_dict = {}
         for key, value in parsed_dict.items():
-            if isinstance(value, list) and len(value) == 1:
-                ret_dict[key] = value[0]
-            else:
-                ret_dict[key] = value
+            ret_dict[key] = value[0]
 
-        if PY2:  # pragma: py2
+        if PY2:  # pragma: no branch py2
             ret_dict = self._decode_dict(ret_dict)
 
         return ret_dict
 
     def unmarshal_list(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         if body == '':
@@ -495,12 +489,12 @@ class FormContentHandler(ContentHandler):
 
         parsed = self.parse_qs(body, True)['list']
 
-        if PY2:  # pragma: py2
+        if PY2:  # pragma: no branch py2
             parsed = [e.decode('utf-8') for e in parsed]
         return parsed
 
     def unmarshal_str(self, body):
-        if PY3:  # pragma: py3
+        if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
 
         parsed = self.parse_qs(body, True)['str'][0]
@@ -531,7 +525,7 @@ class FormContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            if PY2:  # pragma: py2
+            if PY2:  # pragma: no branch py2
                 obj = self._encode_dict(obj)
 
             # verify that no value is a dictionary, because the unmarshalling for
@@ -642,7 +636,7 @@ class YAMLContentHandler(ContentHandler):
     def _marshal_str3(self, obj):  # pragma: py3
         return self.library.dump(self.normalize_str(obj), encoding='utf-8')
 
-    def _py2_str_helper(self, s):
+    def _py2_str_helper(self, s):  # pragma: py2
         """Wrap eratic behaviour of the Python2 YAML implementation.
 
         In Python2, the YAML implentation is unfortunately very eratic. Here is what the
@@ -679,10 +673,7 @@ class YAMLContentHandler(ContentHandler):
             except UnicodeEncodeError:
                 pass
         elif type(s) == str:
-            try:
-                s.encode('utf-8')
-            except UnicodeDecodeError:
-                return s.decode('utf-8')
+            s.encode('utf-8')
         return s
 
     def _marshal_str2(self, obj):  # pragma: py2
@@ -697,7 +688,7 @@ class YAMLContentHandler(ContentHandler):
     def _marshal_dict3(self, obj):  # pragma: py3
         return self.library.dump(self.normalize_dict(obj), encoding='utf-8')
 
-    def _py2_dict_helper(self, d):
+    def _py2_dict_helper(self, d):  # pragma: py2
         def conv(v):
             if isinstance(v, unicode):
                 return self._py2_str_helper(v)
@@ -881,13 +872,3 @@ application/messagepack           :py:class:`.handlers.MessagePackContentHandler
 If you want to provide your own implementation of a :py:class:`.ContentHandler`, you can add it to
 this dictionary with the appropriate MIME type as the key.
 """
-
-# old names, for compatability:
-content_handler = ContentHandler
-json = JSONContentHandler
-xml = XMLContentHandler
-form = FormContentHandler
-
-# 'YamlContentHandler' was introduced in 0.6.1 and renamed for consistency to
-# 'YAMLContentHandler' in 0.6.2
-YamlContentHandler = YAMLContentHandler

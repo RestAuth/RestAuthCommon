@@ -19,11 +19,11 @@ Installation
 ============
 .. toctree::
    :maxdepth: 1
-   
+
    install/from-source
    install/with-pip
    install/debian-ubuntu
-   
+
 Documentation
 =============
 
@@ -33,6 +33,7 @@ Documentation
    content_handlers
    validation
    error
+   contribute
 
 Indices and tables
 ==================
