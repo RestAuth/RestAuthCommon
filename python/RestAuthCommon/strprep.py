@@ -131,7 +131,7 @@ check_pattern = re.compile(
 
 # Table B.1 Commonly mapped to nothing:
 prep_pattern = re.compile(
-    '[\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05'
+    '[\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05'
     '\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF]')
 
 
@@ -142,6 +142,8 @@ def stringprep(name):
 
 def stringcheck(name):
     """Same as ``stringprep`` but raises PreconditionFailed if name contains invalid characters."""
-    if check_pattern.search(name) is not None:
-        return prep_pattern.sub('', unicodedata.normalize('NFC', name)).lower()
+    name = prep_pattern.sub('', name)
+
+    if check_pattern.search(name) is None:
+        return unicodedata.normalize('NFC', name).lower()
     raise PreconditionFailed("Invalid characters")
