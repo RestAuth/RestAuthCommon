@@ -677,7 +677,11 @@ class YAMLContentHandler(ContentHandler):
             except UnicodeEncodeError:
                 pass
         elif type(s) == str:
-            s.encode('utf-8')
+            try:
+                s.encode('utf-8')
+                return s
+            except UnicodeDecodeError:
+                return s.decode('utf-8')
         return s
 
     def _marshal_str2(self, obj):  # pragma: py2
