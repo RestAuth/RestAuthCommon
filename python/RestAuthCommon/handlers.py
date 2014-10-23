@@ -105,6 +105,8 @@ class ContentHandler(object):
         def conv(v):
             if isinstance(v, bytes):
                 return v.decode('utf-8')
+            elif isinstance(v, list):
+                return self._normalize_list3(v)
             elif isinstance(v, dict):
                 return self._normalize_dict3(v)
             return v
@@ -116,6 +118,8 @@ class ContentHandler(object):
         def conv(v):
             if isinstance(v, str):
                 return v.decode('utf-8')
+            elif isinstance(v, list):
+                return self._normalize_list2(v)
             elif isinstance(v, dict):
                 return self._normalize_dict2(v)
             return v
