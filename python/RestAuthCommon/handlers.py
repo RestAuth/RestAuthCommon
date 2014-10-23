@@ -789,6 +789,8 @@ class XMLContentHandler(ContentHandler):
         # parse subdictionaries
         for subdict in tree.iterfind('dict'):
             d[subdict.attrib['key']] = self._unmarshal_dict(subdict)
+        for sublist in tree.iterfind('list'):
+            d[sublist.attrib['key']] = self._unmarshal_list(sublist)
 
         return d
 
@@ -796,14 +798,17 @@ class XMLContentHandler(ContentHandler):
         d = self._unmarshal_dict(self.library.fromstring(body))
         return self.normalize_dict(d)
 
-    def unmarshal_list(self, body):
+    def _unmarshal_list(self, tree):
         l = []
-        for elem in self.library.fromstring(body).iterfind('str'):
+        for elem in tree.iterfind('str'):
             if elem.text is None:
                 l.append('')
             else:
                 l.append(elem.text)
         return self.normalize_list(l)
+
+    def unmarshal_list(self, body):
+        return self._unmarshal_list(self.library.fromstring(body))
 
     def marshal_str(self, obj):
         try:
@@ -814,18 +819,23 @@ class XMLContentHandler(ContentHandler):
         except Exception as e:
             raise error.MarshalError(e)
 
-    def marshal_list(self, obj):
+    def _marshal_list(self, obj, key=None):
         try:
             obj = self.normalize_list(obj)
 
             root = self.library.Element('list')
+            if key is not None:
+                root.attrib['key'] = key
             for value in obj:
                 elem = self.library.Element('str')
                 elem.text = value
                 root.append(elem)
-            return self.library.tostring(root)
+            return root
         except Exception as e:
             raise error.MarshalError(e)
+
+    def marshal_list(self, obj):
+        return self.library.tostring(self._marshal_list(obj))
 
     def _marshal_dict(self, obj, key=None):
         root = self.library.Element('dict')
@@ -837,6 +847,8 @@ class XMLContentHandler(ContentHandler):
         for key, value in obj.items():
             if isinstance(value, dict):
                 root.append(self._marshal_dict(value, key=key))
+            if isinstance(value, list):
+                root.append(self._marshal_list(value, key=key))
             else:
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
@@ -845,7 +857,9 @@ class XMLContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            return self.library.tostring(self._marshal_dict(obj))
+            s = self.library.tostring(self._marshal_dict(obj))
+            print(obj, s)
+            return s
         except Exception as e:
             raise error.MarshalError(e)
 
