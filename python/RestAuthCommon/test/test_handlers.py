@@ -16,6 +16,7 @@
 from __future__ import unicode_literals
 
 import json
+import os
 import pickle
 import sys
 import unittest
@@ -372,33 +373,6 @@ class TestContentHandler(object):
         self.assertEqual(handler.foo, 'bar')
 
 
-#class TestJSONContentHandler(unittest.TestCase, TestContentHandler):
-#    INVALID = [
-#        (str, '["foo"'),
-#        (str, '"rawstr"'),
-#        (list, '["foo"'),
-#        (dict, '["foo"'),
-#    ]
-#    if PY2:
-#        EQUIVALENT2_MAPPING = {
-#            'a': json.dumps([str('a')]),
-#            ('a', 'b'): json.dumps([str('a'), str('b')]),
-#            (('a', 'b'), ('c', 'd')): json.dumps({str('a'): str('b'), str('c'): str('d')}),
-#        }
-#    else:
-#        EQUIVALENT3_MAPPING = {
-#            'a': json.dumps([bytes('a', 'utf-8')], cls=JSONEncoder),
-#            ('a', 'b'): json.dumps([bytes('a', 'utf-8'), bytes('b', 'utf-8')],
-#                                   cls=JSONEncoder),
-#            (('a', 'b'), ('c', 'd')): json.dumps({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
-#                                                  bytes('c', 'utf-8'): bytes('d', 'utf-8')},
-#                                                 cls=JSONEncoder),
-#        }
-#
-#    def setUp(self):
-#        self.handler = JSONContentHandler()
-
-
 #class TestFormContentHandler(unittest.TestCase, TestContentHandler):
 #    SUPPORT_NESTED_DICTS = False
 #
@@ -410,100 +384,43 @@ class TestContentHandler(object):
 #            self.assertRaises(MarshalError, self.handler.marshal_dict, (testdict))
 #
 #
-#class TestPickleContentHandler(unittest.TestCase, TestContentHandler):
-#    INVALID = [
-#        (str, 'invalid'),
-#        (list, 'invalid'),
-#        (dict, 'invalid'),
-#    ]
-#    if PY2:
-#        EQUIVALENT2_MAPPING = {
-#            'a': pickle.dumps(str('a')),
-#            ('a', 'b'): pickle.dumps([str('a'), str('b')]),
-#            (('a', 'b'), ('c', 'd')): pickle.dumps({str('a'): str('b'), str('c'): str('d')}),
-#        }
-#    else:
-#        EQUIVALENT3_MAPPING = {
-#            'a': pickle.dumps(bytes('a', 'utf-8')),
-#            ('a', 'b'): pickle.dumps([bytes('a', 'utf-8'), bytes('b', 'utf-8')]),
-#            (('a', 'b'), ('c', 'd')): pickle.dumps({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
-#                                                    bytes('c', 'utf-8'): bytes('d', 'utf-8')}),
-#        }
 #
-#    def setUp(self):
-#        self.handler = PickleContentHandler()
-#
-#
-#if PY3:
-#    class TestPickle3ContentHandler(unittest.TestCase, TestContentHandler):
-#        def setUp(self):
-#            self.handler = Pickle3ContentHandler()
-#
-#
-#class TestYAMLContentHandler(unittest.TestCase, TestContentHandler):
-#    INVALID = [
-#        (str, '%invalid'),
-#        (list, '%invalid'),
-#        (dict, '%invalid'),
-#    ]
-#    if PY2:
-#        EQUIVALENT2_MAPPING = {
-#            'a': yaml.dump(str('a')),
-#            ('a', 'b'): yaml.dump([str('a'), str('b')]),
-#            (('a', 'b'), ('c', 'd')): yaml.dump({str('a'): str('b'), str('c'): str('d')}),
-#        }
-#    else:
-#        EQUIVALENT3_MAPPING = {
-#            'a': yaml.dump(bytes('a', 'utf-8')),
-#            ('a', 'b'): yaml.dump([bytes('a', 'utf-8'), bytes('b', 'utf-8')]),
-#            (('a', 'b'), ('c', 'd')): yaml.dump({bytes('a', 'utf-8'): bytes('b', 'utf-8'),
-#                                                 bytes('c', 'utf-8'): bytes('d', 'utf-8')}),
-#        }
-#
-#    def setUp(self):
-#        self.handler = YAMLContentHandler()
-#
-#
-#class TestXMLContentHandler(unittest.TestCase, TestContentHandler):
-#    def setUp(self):
-#        self.handler = XMLContentHandler()
 
 
-#if PY2 or hasattr(bson, 'BSON'):  # the pure BSON module bson doesn't work with Python3
-#    class TestBSONContentHandler(unittest.TestCase, TestContentHandler):
-#        def setUp(self):
-#            self.handler = BSONContentHandler()
-#
-#        def test_unserializable(self):  # bson just silently discards unserializeable objects
-#            pass
-#
-#        def test_marshal(self):  # same as parent function, but doesn't test unserializeable data
-#            self.test_str(handler_func='marshal')
-#            self.test_dict(handler_func='marshal')
-#            self.test_list(handler_func='marshal')
 
 
-#class TestMessagePackContentHandler(unittest.TestCase, TestContentHandler):
-#    def setUp(self):
-#        self.handler = MessagePackContentHandler()
 
 
 rep001_testdata = None
 def setUpModule():
     global rep001_testdata
-    response = request.urlopen('https://restauth.net/rep-001.json')
-    data = response.read()
-    if PY3:
-        data = data.decode('utf-8')
 
-    rep001_testdata = json.loads(data)
+    cache_dir = os.path.join('build', 'test')
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir)
+
+    rep_001_cache_path = os.path.join(cache_dir, 'rep-001.json')
+    if not os.path.exists(rep_001_cache_path):
+        response = request.urlopen('https://restauth.net/rep-001.json')
+        data = response.read()
+        if PY3:
+            data = data.decode('utf-8')
+        rep001_testdata = json.loads(data)
+
+        with open(rep_001_cache_path, 'w') as rep_001_cache:
+            json.dump(rep001_testdata, rep_001_cache)
+    else:
+        with open(rep_001_cache_path) as rep_001_cache:
+            rep001_testdata = json.load(rep_001_cache)
 
 
-class InvalidMixin(object):
+
+class CommonMixin(object):
     def test_invalid(self):
-        for typ, obj in self.INVALID:
-            func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
-            self.assertRaises(UnmarshalError, func, obj)
+        if hasattr(self, 'INVALID'):
+            for typ, obj in self.INVALID:
+                func = getattr(self.handler, 'unmarshal_%s' % typ.__name__)
+                self.assertRaises(UnmarshalError, func, obj)
 
     def test_unserializable(self):
         self.assertRaises(MarshalError, self.handler.marshal_str, (Unserializeable(), ))
@@ -567,6 +484,7 @@ class REP001Mixin(object):
                 elif isinstance(testcase, dict):
                     converted = self.byteify_dict(testcase)
             else:
+                self.assertTrue(isinstance(testcase, (str, unicode, list, dict)))
                 if isinstance(testcase, unicode):
                     converted = testcase.encode('utf-8')
                 elif isinstance(testcase, list):
@@ -577,7 +495,8 @@ class REP001Mixin(object):
             serialized_converted = self.handler.marshal(converted)
             self.assertEqual(type(serialized_converted), self.marshal_type)
 
-            self.assertEqual(serialized, serialized_converted)
+            # NOTE: We do not compare serialized and serialized_converted, because dicts are
+            # serialized in arbitrary order
 
             if isinstance(testcase, string_types):
                 deserialized = self.handler.unmarshal_str(serialized)
@@ -593,7 +512,7 @@ class REP001Mixin(object):
             self.assertEqual(deserialized_converted, testcase)
 
 
-class JSONTestCase(unittest.TestCase, REP001Mixin, InvalidMixin):
+class JSONTestCase(unittest.TestCase, REP001Mixin, CommonMixin):
     handler = JSONContentHandler()
     INVALID = [
         (str, '["foo"'),
@@ -603,10 +522,37 @@ class JSONTestCase(unittest.TestCase, REP001Mixin, InvalidMixin):
     ]
 
 
-class TestPickleContentHandler(unittest.TestCase, REP001Mixin, InvalidMixin):
+class TestPickleContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
     handler = PickleContentHandler()
     INVALID = [
         (str, 'invalid'),
         (list, 'invalid'),
         (dict, 'invalid'),
     ]
+
+
+@unittest.skipIf(PY2, "Only in Python3")
+class TestPickle3ContentHandler(TestPickleContentHandler):
+    handler = Pickle3ContentHandler()
+
+
+class TestYAMLContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+    INVALID = [
+        (str, '%invalid'),
+        (list, '%invalid'),
+        (dict, '%invalid'),
+    ]
+    handler = YAMLContentHandler()
+
+
+class TestXMLContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+    handler = XMLContentHandler()
+
+
+#class TestMessagePackContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+#    handler = MessagePackContentHandler()
+
+
+#if PY2 or hasattr(bson, 'BSON'):  # the pure BSON module bson doesn't work with Python3
+#    class TestBSONContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+#        handler = BSONContentHandler()

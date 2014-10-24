@@ -847,7 +847,7 @@ class XMLContentHandler(ContentHandler):
         for key, value in obj.items():
             if isinstance(value, dict):
                 root.append(self._marshal_dict(value, key=key))
-            if isinstance(value, list):
+            elif isinstance(value, list):
                 root.append(self._marshal_list(value, key=key))
             else:
                 elem = self.library.Element('str', attrib={'key': key})
@@ -858,7 +858,6 @@ class XMLContentHandler(ContentHandler):
     def marshal_dict(self, obj):
         try:
             s = self.library.tostring(self._marshal_dict(obj))
-            print(obj, s)
             return s
         except Exception as e:
             raise error.MarshalError(e)
