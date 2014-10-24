@@ -154,7 +154,7 @@ class ContentHandler(object):
             func = getattr(self, func_name)
             return func(obj)
         except error.MarshalError as e:
-            raise e
+            raise
         except Exception as e:
             raise error.MarshalError(e)
 
@@ -342,13 +342,22 @@ class BSONContentHandler(ContentHandler):
             self.loads = self.library.loads
 
     def marshal_dict(self, obj):
-        return self.marshal_cast(self.dumps({'d': self.normalize_dict(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'d': self.normalize_dict(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_list(self, obj):
-        return self.marshal_cast(self.dumps({'l': self.normalize_list(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'l': self.normalize_list(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_str(self, obj):
-        return self.marshal_cast(self.dumps({'s': self.normalize_str(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'s': self.normalize_str(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def _unmarshal_dict2(self, body):  # pragma: py2
         # NOTE: We convert unicode because some old versions of RestAuthClient
@@ -470,6 +479,15 @@ class FormContentHandler(ContentHandler):
 
         return decoded
 
+    def _normalize_str2(self, s):
+        return s.encode('utf-8') if isinstance(s, unicode) else s
+
+    def _normalize_list2(self, l):
+        return [self._normalize_str2(s) for s in l]
+
+    def _normalize_dict2(self, d):
+        return {self._normalize_str2(k): self._normalize_str2(v) for k, v in d.iteritems()}
+
     def unmarshal_dict(self, body):
         if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
@@ -507,48 +525,35 @@ class FormContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             if PY2:  # pragma: py2
-                obj = obj.encode('utf-8')
+                obj = self._normalize_str2(obj)
                 return self.urlencode({'str': obj})
             else:  # pragma: py3
                 return self.urlencode({'str': obj}).encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
-    def _encode_dict(self, d):  # pragma: py2
-        encoded = {}
-        for key, value in d.items():
-            key = key.encode('utf-8')
-            if isinstance(value, (str, unicode)):
-                encoded[key] = value.encode('utf-8')
-            elif isinstance(value, list):  # pragma: no cover
-                encoded[key] = [e.encode('utf-8') for e in value]
-            elif isinstance(value, dict):  # pragma: no branch
-                encoded[key] = self._encode_dict(value)
-
-        return encoded
-
     def marshal_dict(self, obj):
         try:
             if PY2:  # pragma: no branch py2
-                obj = self._encode_dict(obj)
+                obj = self._normalize_dict2(obj)
 
-            # verify that no value is a dictionary, because the unmarshalling for
-            # that doesn't work:
-            for v in obj.values():
-                if isinstance(v, dict):
-                    raise error.MarshalError(
-                        "FormContentHandler doesn't support nested dictionaries.")
+            for value in obj.values():
+                if isinstance(value, (list, dict)):
+                    raise error.MarshalError("No nested dictionaries!")
+
             if PY3:  # pragma: py3
                 return self.urlencode(obj, doseq=True).encode('utf-8')
             else:  # pragma: py2
                 return self.urlencode(obj, doseq=True)
+        except error.MarshalError:
+            raise
         except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
             if PY2:  # pragma: py2
-                obj = [e.encode('utf-8') for e in obj]
+                obj = self._normalize_list2(obj)
                 return self.urlencode({'list': obj}, doseq=True)
             else:  # pragma: py3
                 return self.urlencode({'list': obj}, doseq=True).encode('utf-8')

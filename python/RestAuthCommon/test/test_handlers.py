@@ -22,7 +22,6 @@ import sys
 import unittest
 
 import bson
-import yaml
 
 from RestAuthCommon.error import MarshalError
 from RestAuthCommon.error import UnmarshalError
@@ -363,33 +362,6 @@ class TestContentHandler(object):
                 serialized = self.EQUIVALENT3_MAPPING[equiv]
                 self.assertEqual(func(serialized), typ(equiv))
 
-    def test_unserializable(self):
-        self.assertRaises(MarshalError, self.handler.marshal_str, (Unserializeable(), ))
-        self.assertRaises(MarshalError, self.handler.marshal_list, (Unserializeable(), ))
-        self.assertRaises(MarshalError, self.handler.marshal_dict, (Unserializeable(), ))
-
-    def test_constructor(self):
-        handler = self.handler.__class__(foo='bar')
-        self.assertEqual(handler.foo, 'bar')
-
-
-#class TestFormContentHandler(unittest.TestCase, TestContentHandler):
-#    SUPPORT_NESTED_DICTS = False
-#
-#    def setUp(self):
-#        self.handler = FormContentHandler()
-#
-#    def test_nesteddicts(self):
-#        for testdict in self.nested_dicts:
-#            self.assertRaises(MarshalError, self.handler.marshal_dict, (testdict))
-#
-#
-#
-
-
-
-
-
 
 rep001_testdata = None
 def setUpModule():
@@ -414,7 +386,6 @@ def setUpModule():
             rep001_testdata = json.load(rep_001_cache)
 
 
-
 class CommonMixin(object):
     def test_invalid(self):
         if hasattr(self, 'INVALID'):
@@ -426,9 +397,16 @@ class CommonMixin(object):
         self.assertRaises(MarshalError, self.handler.marshal_str, (Unserializeable(), ))
         self.assertRaises(MarshalError, self.handler.marshal_list, (Unserializeable(), ))
         self.assertRaises(MarshalError, self.handler.marshal_dict, (Unserializeable(), ))
+        self.assertRaises(MarshalError, self.handler.marshal, (Unserializeable(), ))
+
+    def test_constructor(self):
+        handler = self.handler.__class__(foo='bar')
+        self.assertEqual(handler.foo, 'bar')
 
 
 class REP001Mixin(object):
+    SUPPORT_NESTED_DICTS = True
+
     if PY3:
         marshal_type = bytes
         unmarshal_type = str
@@ -473,7 +451,24 @@ class REP001Mixin(object):
 
     def test_rep001(self):
         for testcase in rep001_testdata:
-            serialized = self.handler.marshal(testcase)
+            skip_testcase = False
+            if not self.SUPPORT_NESTED_DICTS and isinstance(testcase, dict):
+                for key, value in testcase.items():
+                    if isinstance(value, (list, dict)):
+                        skip_testcase = True
+            if skip_testcase:
+                continue
+
+            if isinstance(testcase, string_types):
+                serialized = self.handler.marshal_str(testcase)
+            elif isinstance(testcase, dict):
+                serialized = self.handler.marshal_dict(testcase)
+            else:
+                try:
+                    serialized = self.handler.marshal(testcase)
+                except Exception:
+                    print(testcase, type(testcase))
+                    raise
             self.assertEqual(type(serialized), self.marshal_type)
 
             if PY3:
@@ -492,7 +487,16 @@ class REP001Mixin(object):
                 elif isinstance(testcase, dict):
                     converted = self.strify_dict(testcase)
 
-            serialized_converted = self.handler.marshal(converted)
+            try:
+                if isinstance(testcase, list):
+                    serialized_converted = self.handler.marshal_list(converted)
+                elif isinstance(testcase, dict):
+                    serialized_converted = self.handler.marshal_dict(converted)
+                else:
+                    serialized_converted = self.handler.marshal(converted)
+            except:
+                print(converted, type(converted))
+                raise
             self.assertEqual(type(serialized_converted), self.marshal_type)
 
             # NOTE: We do not compare serialized and serialized_converted, because dicts are
@@ -549,10 +553,25 @@ class TestXMLContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
     handler = XMLContentHandler()
 
 
-#class TestMessagePackContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
-#    handler = MessagePackContentHandler()
+class TestMessagePackContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+    handler = MessagePackContentHandler()
 
 
-#if PY2 or hasattr(bson, 'BSON'):  # the pure BSON module bson doesn't work with Python3
-#    class TestBSONContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
-#        handler = BSONContentHandler()
+class TestFormContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+    SUPPORT_NESTED_DICTS = False
+    handler = FormContentHandler()
+
+    def test_nested_dicts(self):
+        with self.assertRaises(MarshalError):
+            self.handler.marshal({'key': []})
+        with self.assertRaises(MarshalError):
+            self.handler.marshal({'key': {}})
+        with self.assertRaises(MarshalError):
+            self.handler.marshal_dict({'key': []})
+        with self.assertRaises(MarshalError):
+            self.handler.marshal_dict({'key': {}})
+
+
+if PY2 or hasattr(bson, 'BSON'):  # the pure BSON module bson doesn't work with Python3
+    class TestBSONContentHandler(unittest.TestCase, REP001Mixin, CommonMixin):
+        handler = BSONContentHandler()
