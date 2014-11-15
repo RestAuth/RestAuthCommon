@@ -479,13 +479,13 @@ class FormContentHandler(ContentHandler):
 
         return decoded
 
-    def _normalize_str2(self, s):
+    def _normalize_str2(self, s):  # pragma: py2
         return s.encode('utf-8') if isinstance(s, unicode) else s
 
-    def _normalize_list2(self, l):
+    def _normalize_list2(self, l):  # pragma: py2
         return [self._normalize_str2(s) for s in l]
 
-    def _normalize_dict2(self, d):
+    def _normalize_dict2(self, d):  # pragma: py2
         return {self._normalize_str2(k): self._normalize_str2(v) for k, v in d.iteritems()}
 
     def unmarshal_dict(self, body):
