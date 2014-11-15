@@ -1,4 +1,4 @@
-restauth-common 0.6.5 (XX XXXX 2014)
+restauth-common 0.6.5 (21 August 2014)
 
   * RestAuthCommon now requires Python 2.7 or later.
   * Do not import modules from the Python standard library upon module import
