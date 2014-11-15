@@ -165,6 +165,21 @@ class ResourceNotFound(RestAuthError):
         return self.response.getheader('Resource-Type')
 
 
+class UserNotFound(ResourceNotFound):
+    """Raised when a user was not found."""
+    pass
+
+
+class PropertyNotFound(ResourceNotFound):
+    """Raised when a property was not found."""
+    pass
+
+
+class GroupNotFound(ResourceNotFound):
+    """Raised when a group was not found."""
+    pass
+
+
 class ResourceConflict(RestAuthError):
     """
     Thrown when trying to create a resource that already exists.
@@ -172,6 +187,21 @@ class ResourceConflict(RestAuthError):
     On a protocol level, this represents HTTP status code 409.
     """
     response_code = 409
+
+
+class UserExists(ResourceConflict):
+    """Raised when a user already exists."""
+    pass
+
+
+class PropertyExists(ResourceConflict):
+    """Raised when a property already exists."""
+    pass
+
+
+class GroupExists(ResourceConflict):
+    """Raised when a group already exists."""
+    pass
 
 
 class PreconditionFailed(RestAuthError):

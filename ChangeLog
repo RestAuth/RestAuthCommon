@@ -6,6 +6,9 @@ restauth-common 0.7.0 (XX XXXX 2014)
 	according to the restrictions of RestAuth 0.7. This methd is also faster
 	then RestAuthCommon.resource_validator, which is now deprecated and should
 	no longer be used.
+  * ResourceNotFound no longer takes a (client-dependent) HTTPResponse.
+  * Add subclasses to ResourceNotFound and ResourceConflict to cover users,
+    groups and properties.
   * Update requirements.
 
 restauth-common 0.6.5 (21 August 2014)
