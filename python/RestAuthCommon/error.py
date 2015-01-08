@@ -21,23 +21,20 @@ Exceptions related to RestAuth communication.
 
 
 class RestAuthException(Exception):
-    """
-    Common base class for all RestAuth related exceptions. All exceptions in this module are a
-    subclass of this exception.
-    """
+    """Common base class for all Exceptions in this module."""
     response_code = 500
 
 
 class RestAuthImplementationException(RestAuthException):
-    """
-    Base class for errors that should not occur in a production environment. If you ever catch such
-    an exception, it is most likely due to a buggy client or server implementation.
+    """Base class for errors that should not occur in a production environment.
+
+    If you ever catch such an exception, it is most likely due to a buggy client or server
+    implementation.
     """
 
 
 class BadRequest(RestAuthImplementationException):
-    """
-    Thrown when RestAuth was unable to parse/find the required request parameters.
+    """Thrown when RestAuth was unable to parse/find the required request parameters.
 
     On a protocol level, this represents HTTP status code 400.
     """
@@ -55,10 +52,7 @@ class UnmarshalError(RestAuthImplementationException):
 
 
 class RestAuthSetupException(RestAuthException):
-    """
-    Base class for errors that should not occur in a production environment that is correctly
-    configured.
-    """
+    """Base class for errors that should not occur in an correctly configured environment."""
     pass
 
 
@@ -71,9 +65,7 @@ class Unauthorized(RestAuthSetupException):
 
 
 class Forbidden(RestAuthSetupException):
-    """
-    Thrown when service authentication succeeded, but the client is not allowed to perform such a
-    request.
+    """Thrown when authentication succeeded but the client is not allowed to perform the request.
 
     On a protocol level, this represents HTTP status code 403.
     """
@@ -102,9 +94,9 @@ class UnsupportedMediaType(ContentTypeException):
 
 
 class RestAuthRuntimeException(RestAuthException):
-    """
-    Base class for exceptions that may occur at runtime but are not related to user input. Any
-    subclass of this exception may be thrown by every method that interacts with the RestAuth
+    """Base class for exceptions that may occur at runtime but are not related to user input.
+
+    Any subclass of this exception may be thrown by every method that interacts with the RestAuth
     service.
     """
     pass
@@ -191,10 +183,9 @@ class GroupExists(ResourceConflict):
 
 
 class PreconditionFailed(RestAuthError):
-    """
-    Thrown when the submitted data was unacceptable to the system. This usually occurs when the
-    username is invalid or the password is to short.
+    """Thrown when the submitted data was unacceptable to the system.
 
-    On a protocol level, this represents HTTP status code 412.
+    This usually occurs when the username is invalid or the password is to short. On a protocol
+    level, this represents HTTP status code 412.
     """
     response_code = 412
