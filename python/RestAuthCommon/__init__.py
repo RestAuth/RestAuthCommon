@@ -17,6 +17,7 @@
 """
 
 from __future__ import unicode_literals, absolute_import
+import warnings
 
 import sys
 import stringprep
@@ -31,10 +32,17 @@ def resource_validator(name):
     This filters names containing a slash ("/") or colon (":") and those starting with '.'. It also
     filters control characters etc., including those from unicode.
 
+    .. deprecated:: 0.7.0
+       This method is deprecated in favour of the RestAuthCommon.strprep. This method will be
+       removed in 0.7.1.
+
     :param str name: The name to validate
     :returns: False if the name contains any invalid characters, True otherwise.
     :rtype: bool
     """
+    warnings.warn('This method is deprecated, use RestAuthCommon.strprep.stringcheck() instead.',
+                  DeprecationWarning)
+
     if PY2 and isinstance(name, str):  # pragma: py2
         name = name.decode('utf-8')
 

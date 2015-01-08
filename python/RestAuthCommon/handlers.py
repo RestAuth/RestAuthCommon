@@ -105,6 +105,8 @@ class ContentHandler(object):
         def conv(v):
             if isinstance(v, bytes):
                 return v.decode('utf-8')
+            elif isinstance(v, list):
+                return self._normalize_list3(v)
             elif isinstance(v, dict):
                 return self._normalize_dict3(v)
             return v
@@ -116,6 +118,8 @@ class ContentHandler(object):
         def conv(v):
             if isinstance(v, str):
                 return v.decode('utf-8')
+            elif isinstance(v, list):
+                return self._normalize_list2(v)
             elif isinstance(v, dict):
                 return self._normalize_dict2(v)
             return v
@@ -150,7 +154,7 @@ class ContentHandler(object):
             func = getattr(self, func_name)
             return func(obj)
         except error.MarshalError as e:
-            raise e
+            raise
         except Exception as e:
             raise error.MarshalError(e)
 
@@ -338,13 +342,22 @@ class BSONContentHandler(ContentHandler):
             self.loads = self.library.loads
 
     def marshal_dict(self, obj):
-        return self.marshal_cast(self.dumps({'d': self.normalize_dict(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'d': self.normalize_dict(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_list(self, obj):
-        return self.marshal_cast(self.dumps({'l': self.normalize_list(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'l': self.normalize_list(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def marshal_str(self, obj):
-        return self.marshal_cast(self.dumps({'s': self.normalize_str(obj), }))
+        try:
+            return self.marshal_cast(self.dumps({'s': self.normalize_str(obj), }))
+        except Exception as e:
+            raise error.MarshalError(e)
 
     def _unmarshal_dict2(self, body):  # pragma: py2
         # NOTE: We convert unicode because some old versions of RestAuthClient
@@ -466,6 +479,15 @@ class FormContentHandler(ContentHandler):
 
         return decoded
 
+    def _normalize_str2(self, s):  # pragma: py2
+        return s.encode('utf-8') if isinstance(s, unicode) else s
+
+    def _normalize_list2(self, l):  # pragma: py2
+        return [self._normalize_str2(s) for s in l]
+
+    def _normalize_dict2(self, d):  # pragma: py2
+        return {self._normalize_str2(k): self._normalize_str2(v) for k, v in d.iteritems()}
+
     def unmarshal_dict(self, body):
         if PY3:  # pragma: no branch py3
             body = body.decode('utf-8')
@@ -503,48 +525,35 @@ class FormContentHandler(ContentHandler):
     def marshal_str(self, obj):
         try:
             if PY2:  # pragma: py2
-                obj = obj.encode('utf-8')
+                obj = self._normalize_str2(obj)
                 return self.urlencode({'str': obj})
             else:  # pragma: py3
                 return self.urlencode({'str': obj}).encode('utf-8')
         except Exception as e:
             raise error.MarshalError(e)
 
-    def _encode_dict(self, d):  # pragma: py2
-        encoded = {}
-        for key, value in d.items():
-            key = key.encode('utf-8')
-            if isinstance(value, (str, unicode)):
-                encoded[key] = value.encode('utf-8')
-            elif isinstance(value, list):  # pragma: no cover
-                encoded[key] = [e.encode('utf-8') for e in value]
-            elif isinstance(value, dict):  # pragma: no branch
-                encoded[key] = self._encode_dict(value)
-
-        return encoded
-
     def marshal_dict(self, obj):
         try:
             if PY2:  # pragma: no branch py2
-                obj = self._encode_dict(obj)
+                obj = self._normalize_dict2(obj)
 
-            # verify that no value is a dictionary, because the unmarshalling for
-            # that doesn't work:
-            for v in obj.values():
-                if isinstance(v, dict):
-                    raise error.MarshalError(
-                        "FormContentHandler doesn't support nested dictionaries.")
+            for value in obj.values():
+                if isinstance(value, (list, dict)):
+                    raise error.MarshalError("No nested dictionaries!")
+
             if PY3:  # pragma: py3
                 return self.urlencode(obj, doseq=True).encode('utf-8')
             else:  # pragma: py2
                 return self.urlencode(obj, doseq=True)
+        except error.MarshalError:
+            raise
         except Exception as e:
             raise error.MarshalError(e)
 
     def marshal_list(self, obj):
         try:
             if PY2:  # pragma: py2
-                obj = [e.encode('utf-8') for e in obj]
+                obj = self._normalize_list2(obj)
                 return self.urlencode({'list': obj}, doseq=True)
             else:  # pragma: py3
                 return self.urlencode({'list': obj}, doseq=True).encode('utf-8')
@@ -673,7 +682,11 @@ class YAMLContentHandler(ContentHandler):
             except UnicodeEncodeError:
                 pass
         elif type(s) == str:
-            s.encode('utf-8')
+            try:
+                s.encode('utf-8')
+                return s
+            except UnicodeDecodeError:
+                return s.decode('utf-8')
         return s
 
     def _marshal_str2(self, obj):  # pragma: py2
@@ -781,6 +794,8 @@ class XMLContentHandler(ContentHandler):
         # parse subdictionaries
         for subdict in tree.iterfind('dict'):
             d[subdict.attrib['key']] = self._unmarshal_dict(subdict)
+        for sublist in tree.iterfind('list'):
+            d[sublist.attrib['key']] = self._unmarshal_list(sublist)
 
         return d
 
@@ -788,14 +803,17 @@ class XMLContentHandler(ContentHandler):
         d = self._unmarshal_dict(self.library.fromstring(body))
         return self.normalize_dict(d)
 
-    def unmarshal_list(self, body):
+    def _unmarshal_list(self, tree):
         l = []
-        for elem in self.library.fromstring(body).iterfind('str'):
+        for elem in tree.iterfind('str'):
             if elem.text is None:
                 l.append('')
             else:
                 l.append(elem.text)
         return self.normalize_list(l)
+
+    def unmarshal_list(self, body):
+        return self._unmarshal_list(self.library.fromstring(body))
 
     def marshal_str(self, obj):
         try:
@@ -806,18 +824,23 @@ class XMLContentHandler(ContentHandler):
         except Exception as e:
             raise error.MarshalError(e)
 
-    def marshal_list(self, obj):
+    def _marshal_list(self, obj, key=None):
         try:
             obj = self.normalize_list(obj)
 
             root = self.library.Element('list')
+            if key is not None:
+                root.attrib['key'] = key
             for value in obj:
                 elem = self.library.Element('str')
                 elem.text = value
                 root.append(elem)
-            return self.library.tostring(root)
+            return root
         except Exception as e:
             raise error.MarshalError(e)
+
+    def marshal_list(self, obj):
+        return self.library.tostring(self._marshal_list(obj))
 
     def _marshal_dict(self, obj, key=None):
         root = self.library.Element('dict')
@@ -829,6 +852,8 @@ class XMLContentHandler(ContentHandler):
         for key, value in obj.items():
             if isinstance(value, dict):
                 root.append(self._marshal_dict(value, key=key))
+            elif isinstance(value, list):
+                root.append(self._marshal_list(value, key=key))
             else:
                 elem = self.library.Element('str', attrib={'key': key})
                 elem.text = value
@@ -837,7 +862,8 @@ class XMLContentHandler(ContentHandler):
 
     def marshal_dict(self, obj):
         try:
-            return self.library.tostring(self._marshal_dict(obj))
+            s = self.library.tostring(self._marshal_dict(obj))
+            return s
         except Exception as e:
             raise error.MarshalError(e)
 

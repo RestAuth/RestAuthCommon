@@ -134,17 +134,26 @@ class RestAuthError(RestAuthException):
 
 
 class ResourceNotFound(RestAuthError):
-    """
-    Thrown when a queried resource is not found.
-    """
+    """Thrown when a queried resource is not found."""
     response_code = 404
 
-    def __init__(self, response):
+    def __init__(self, response=None):  # pragma: no cover
+        """
+        .. deprecated:: 0.7.0
+           As this code only works on the client (and is never used), ResourceNotFound.response
+           is deprecated and will be removed in 0.7.1.
+
+        .. versionchanged:: 0.7.0
+           The ``response`` parameter is optional and will be removed in 0.7.1.
+        """
         self.response = response
 
-    def get_type(self):
-        """
-        Get the type of the queried resource that wasn't found.
+    def get_type(self):  # pragma: no cover
+        """Get the type of the queried resource that wasn't found.
+
+        .. deprecated:: 0.7.0
+           As this code only works on the client (and is never used), ResourceNotFound.response
+           is deprecated and will be removed in 0.7.1.
 
         See the `specification
         <https://restauth.net/wiki/Specification#Resource-Type_header>`_ for
@@ -156,6 +165,21 @@ class ResourceNotFound(RestAuthError):
         return self.response.getheader('Resource-Type')
 
 
+class UserNotFound(ResourceNotFound):
+    """Raised when a user was not found."""
+    pass
+
+
+class PropertyNotFound(ResourceNotFound):
+    """Raised when a property was not found."""
+    pass
+
+
+class GroupNotFound(ResourceNotFound):
+    """Raised when a group was not found."""
+    pass
+
+
 class ResourceConflict(RestAuthError):
     """
     Thrown when trying to create a resource that already exists.
@@ -163,6 +187,21 @@ class ResourceConflict(RestAuthError):
     On a protocol level, this represents HTTP status code 409.
     """
     response_code = 409
+
+
+class UserExists(ResourceConflict):
+    """Raised when a user already exists."""
+    pass
+
+
+class PropertyExists(ResourceConflict):
+    """Raised when a property already exists."""
+    pass
+
+
+class GroupExists(ResourceConflict):
+    """Raised when a group already exists."""
+    pass
 
 
 class PreconditionFailed(RestAuthError):

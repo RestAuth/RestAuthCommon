@@ -27,6 +27,8 @@ PY3 = sys.version_info[0] == 3
 
 username1 = "mati1 愑"  # \u6111
 username2 = "mati2 愒"  # \u6112
+if PY2 is True:
+    chr = unichr
 
 b1_table = {
     '\u00AD', '\u034F', '\u1806', '\u180B', '\u180C', '\u180D', '\u200B', '\u200C', '\u200D',
