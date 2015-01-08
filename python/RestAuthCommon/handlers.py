@@ -653,8 +653,8 @@ class YAMLContentHandler(ContentHandler):
 
         * str objects are converted into !!str, !!python/str or !binary nodes depending on whether
           the object is an ASCII, UTF-8 or binary string.
-        * unicode objects are converted into !!python/unicode or !!str nodes depending on whether the
-          object is an ASCII string or not.
+        * unicode objects are converted into !!python/unicode or !!str nodes depending on whether
+          the object is an ASCII string or not.
 
         This is unfortunately unreproduceable::
 
