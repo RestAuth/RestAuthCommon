@@ -31,6 +31,7 @@ Documentation
    :maxdepth: 1
 
    content_handlers
+   strprep
    validation
    error
    contribute
