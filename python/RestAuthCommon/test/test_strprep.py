@@ -135,10 +135,13 @@ prohibition_table = {
     ('\U000E0020', '\U000E007F'),  # [TAGGING CHARACTERS]
 }
 
+if PY2:
+    chr = unichr
+
 class strprep_tests(unittest.TestCase):
     def unirange(self, start, end):
         for c in range(ord(start), ord(end) + 1):
-            yield unichr(c)
+            yield chr(c)
 
     def test_ok(self):
         self.assertEqual(username1, stringprep(username1))
