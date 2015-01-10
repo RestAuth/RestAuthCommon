@@ -32,9 +32,16 @@ Documentation
 
    handlers
    strprep
-   validation
    error
    contribute
+
+Deprecated
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   validation
 
 Indices and tables
 ==================
