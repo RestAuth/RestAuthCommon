@@ -30,7 +30,7 @@ Documentation
 .. toctree::
    :maxdepth: 1
 
-   content_handlers
+   handlers
    strprep
    validation
    error
