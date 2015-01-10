@@ -14,12 +14,12 @@ Adding our APT repository
 
 To add the repositories, simply add this line to your :file:`/etc/apt/sources.list` file::
 
-   deb http://apt.fsinf.at <dist> restauth
+   deb http://apt.restauth.net <dist> restauth
 
 ... where :samp:`{<dist>}` is any of the supported distributions.  Please see the WikiPedia pages
 for `Ubuntu <http://en.wikipedia.org/wiki/List_of_Ubuntu_releases#Table_of_versions>`_ and `Debian
 <http://en.wikipedia.org/wiki/Debian#Release_history>`_ to see how they map to your installation.
-You can also check the `APT repository itself <http://apt.fsinf.at/dists>`_ for a list of available
+You can also check the `APT repository itself <https://apt.restauth.net/dists>`_ for a list of available
 distributions (don't forget to check the 'Last modified' timestamp!).
 
 .. NOTE:: Repositories for older distributions might contain older versions of this software.
@@ -30,6 +30,7 @@ repositories, so you won't get any warnings when updating. You can either instal
 
 .. code-block:: bash
 
+   apt-get install apt-transport-https
    apt-get update
    apt-get install fsinf-keyring
    apt-get update
@@ -38,7 +39,7 @@ or download and add the key directly using:
 
 .. code-block:: bash
 
-   wget -O - http://apt.fsinf.at/keys/apt-repository@fsinf.at | apt-key add -
+   wget -O - https://apt.restauth.net/gpg-key | apt-key add -
 
 Install RestAuthCommon
 ----------------------
