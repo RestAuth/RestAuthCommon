@@ -143,7 +143,7 @@ def stringprep(name):
 
 
 def stringcheck(name):
-    """Same as ``stringprep`` but raises PreconditionFailed if name contains invalid characters."""
+    """Same as :py:func:`stringprep` but raises PreconditionFailed if name contains invalid characters."""
     name = prep_pattern.sub('', name)
 
     if check_pattern.search(name) is None:
