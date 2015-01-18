@@ -10,12 +10,14 @@ PY3=py3/bin/python
 VERSION=$(shell ${PY2} setup.py -q version)
 VENVDIR=test/virtualenv
 
-TARPREFIX=restauth-common-$(VERSION)
-TARBALL=../${TARPREFIX}.tar.gz
+PREFIX=restauth-common-$(VERSION)
+TARBALL=../${PREFIX}.tar.gz
+CHECKSUMS=../${PREFIX}.checksums.txt
 
 clean:
 	${PY2} setup.py clean
 	rm -rf test dist build *.egg-info
+	rm -f ${TARBALL} ${CHECKSUMS}
 
 ${VENVDIR}/python%:
 	virtualenv -p python$* ${VENVDIR}/python$*
@@ -47,10 +49,36 @@ homepage:
 	${PY2} setup.py build_doc
 
 tarball:
-	git archive --prefix=${TARPREFIX} master | gzip > ${TARBALL}
-	md5sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.md5
-	sha1sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.sha1
-	sha512sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.sha512
+	git archive --prefix=${PREFIX} master | gzip > ${TARBALL}
+
+	# create checksums
+	echo "MD5 checksums:" > ${CHECKSUMS}
+	echo "==============" >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	md5sum ${TARBALL} | sed 's/\.\.\///' >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+
+	echo "SHA1 checksums:" >> ${CHECKSUMS}
+	echo "===============" >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	sha1sum ${TARBALL} | sed 's/\.\.\///'  >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+
+	echo "SHA256 checksums:" >> ${CHECKSUMS}
+	echo "=================" >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	sha256sum ${TARBALL} | sed 's/\.\.\///' >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	
+	echo "SHA512 checksums:" >> ${CHECKSUMS}
+	echo "=================" >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	sha512sum ${TARBALL} | sed 's/\.\.\///'  >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+
+	# sign checksum files:
+	gpg --clearsign ${CHECKSUMS}
+	mv ${CHECKSUMS}.asc ${CHECKSUMS}
 
 release: clean test build sdist sdist-test homepage tarball
 	# done
