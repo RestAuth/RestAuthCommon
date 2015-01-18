@@ -48,9 +48,9 @@ homepage:
 
 tarball:
 	git archive --prefix=${TARPREFIX} master | gzip > ${TARBALL}
-	md5sum ${TARBALL} > ${TARBALL}.md5
-	sha1sum ${TARBALL} > ${TARBALL}.sha1
-	sha512sum ${TARBALL} > ${TARBALL}.sha512
+	md5sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.md5
+	sha1sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.sha1
+	sha512sum ${TARBALL} | sed 's/\.\.\///' > ${TARBALL}.sha512
 
 release: clean test build sdist sdist-test homepage tarball
 	# done
