@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of RestAuthCommon.
 #
 # RestAuthCommon is free software: you can redistribute it and/or modify it under the terms of the
@@ -5,8 +7,8 @@
 # License, or (at your option) any later version.
 #
 # RestAuthCommon is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
-# the GNU General Public License for more details.
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with RestAuthCommon. If
 # not, see <http://www.gnu.org/licenses/>.
@@ -131,8 +133,8 @@ check_pattern = re.compile(
 
 # Table B.1 Commonly mapped to nothing:
 prep_pattern = re.compile(
-    '[\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05'
-    '\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF]')
+    '[\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04'
+    '\uFE05\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF]')
 
 
 def stringprep(name):
@@ -141,7 +143,7 @@ def stringprep(name):
 
 
 def stringcheck(name):
-    """Same as ``stringprep`` but raises PreconditionFailed if name contains invalid characters."""
+    """Same as :py:func:`stringprep` but raises PreconditionFailed if name contains invalid characters."""
     name = prep_pattern.sub('', name)
 
     if check_pattern.search(name) is None:
