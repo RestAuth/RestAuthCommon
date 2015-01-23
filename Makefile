@@ -52,7 +52,11 @@ tarball:
 	git archive --prefix=${PREFIX} master | gzip > ${TARBALL}
 
 	# create checksums
-	echo "MD5 checksums:" > ${CHECKSUMS}
+	echo "Release: restauth-common" > ${CHECKSUMS}
+	echo "Version: ${VERSION}" >> ${CHECKSUMS}
+	echo "Date: $(shell date -R)" >> ${CHECKSUMS}
+	echo "" >> ${CHECKSUMS}
+	echo "MD5 checksums:" >> ${CHECKSUMS}
 	echo "==============" >> ${CHECKSUMS}
 	echo "" >> ${CHECKSUMS}
 	md5sum ${TARBALL} | sed 's/\.\.\///' >> ${CHECKSUMS}
