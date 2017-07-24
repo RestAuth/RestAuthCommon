@@ -1,8 +1,4 @@
-restauth-common 0.7.1 (XX XXXX 201X)
-
-  * None so far.
-
-restauth-common 0.7.0 (23 January 2015)
+restauth-common 0.7.0 (XX XXXX 2014)
 
   * Content handlers now support lists as dictionary values, as required by
     RestAuth 0.7.
