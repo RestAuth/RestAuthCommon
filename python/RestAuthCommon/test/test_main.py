@@ -33,12 +33,8 @@ class validator_tests(unittest.TestCase):
         self.assertTrue(resource_validator(username2))
         self.assertTrue(resource_validator(str('foobar')))
 
-    def test_basic_error(self):
-        self.assertFalse(resource_validator('foo/bar'))
-        self.assertFalse(resource_validator('foo\\bar'))
-        self.assertFalse(resource_validator('.foobar'))
-
     def test_stringprep(self):
+        self.assertFalse(resource_validator('foo\u2000bar'))  # C.1.2 Non-ASCII space characters
         self.assertFalse(resource_validator('foo\u0002bar'))  # C.2.1 ASCII control characters
         self.assertFalse(resource_validator('foo\u001Fbar'))  # C.2.1 ASCII control characters
         self.assertFalse(resource_validator('foo\u180Ebar'))  # C.2.2 Non-ASCII control characters

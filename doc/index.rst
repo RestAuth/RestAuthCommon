@@ -30,10 +30,18 @@ Documentation
 .. toctree::
    :maxdepth: 1
 
-   content_handlers
-   validation
+   handlers
+   strprep
    error
    contribute
+
+Deprecated
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   validation
 
 Indices and tables
 ==================

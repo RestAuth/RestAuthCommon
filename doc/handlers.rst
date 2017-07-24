@@ -1,5 +1,5 @@
-Content handlers
-================
+``RestAuthCommon.handlers`` - Content handlers
+==============================================
 
 This module collects code related to *marshalling* and *unmarshalling* data. Marshalling objects
 transforms them to serializable strings that can be sent over the network while unmarshalling does

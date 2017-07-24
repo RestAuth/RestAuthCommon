@@ -16,13 +16,13 @@
 .. moduleauthor:: Mathias Ertl <mati@restauth.net>
 """
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
+import warnings
 
 import sys
 import stringprep
 
 PY2 = sys.version_info[0] == 2
-PY3 = sys.version_info[0] == 3
 
 
 def resource_validator(name):
@@ -32,20 +32,25 @@ def resource_validator(name):
     This filters names containing a slash ("/") or colon (":") and those starting with '.'. It also
     filters control characters etc., including those from unicode.
 
+    .. deprecated:: 0.7.0
+       This method is deprecated in favour of the RestAuthCommon.strprep. This method will be
+       removed in 0.7.1.
+
     :param str name: The name to validate
     :returns: False if the name contains any invalid characters, True otherwise.
     :rtype: bool
     """
-    if '/' in name or ':' in name or '\\' in name or name.startswith('.'):
-        return False
+    warnings.warn('This method is deprecated, use RestAuthCommon.strprep.stringcheck() instead.',
+                  DeprecationWarning)
+
+    if PY2 and isinstance(name, str):  # pragma: py2
+        name = name.decode('utf-8')
 
     # filter various dangerous characters
     for enc_char in name:
-        if PY2 and isinstance(enc_char, str):  # pragma: py2
-            enc_char = enc_char.decode('utf-8')
-
+        if stringprep.in_table_c12(enc_char):  # C.1.2 Non-ASCII space characters
+            return False
         if stringprep.in_table_c21_c22(enc_char):  # C.2 Control characters
-            # control characters
             return False
         if stringprep.in_table_c3(enc_char):  # C.3 Private use
             return False

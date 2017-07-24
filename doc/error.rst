@@ -1,5 +1,5 @@
-Error handling
-==============
+``RestAuthCommon.error`` - Error handling
+=========================================
 
 This module collects various exceptions that may be thrown when communication with a RestAuth
 server. The exceptions are collected here because the `RestAuth server
@@ -53,7 +53,7 @@ Concrete exceptions
    :members:
    :exclude-members: RestAuthException, RestAuthImplementationException, RestAuthSetupException, RestAuthError, RestAuthRuntimeException, ContentTypeException
    :show-inheritance:
-   
+
 .. _error-example:
 
 Example
@@ -68,19 +68,19 @@ Here is a detailed example showing the different granularity-levels you may use:
    try:
        # some code related to RestAuth:
        pass
-       
+
    # catch some general types of errors:
    except error.RestAuthRuntimeException:
        print( "The authentication service suffers from internal problems." )
    except error.RestAuthSetupException:
        print( "Configuration error." )
-       
+
    # do a more detailed report on data the user entered:
    except error.ResourceNotFound:
        print( "The resource addressed wasn't found" )
    except error.ResourceConflict:
        print( "Tried to create a resource that already exists" )
-       
+
    # make sure that no RestAuthException propagates:
    except error.RestAuthException:
        print( "uncaught RestAuthException." )
