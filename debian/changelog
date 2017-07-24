@@ -1,6 +1,7 @@
 restauth-common (0.7.0-1) unstable; urgency=low
 
   * New upstream release.
+  * Update Standards-Version to 4.0.0.
 
  -- Mathias Ertl <mati@restauth.net>  Mon, 24 Jul 2017 19:44:00 +0200
 
