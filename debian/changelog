@@ -1,3 +1,9 @@
+restauth-common (0.7.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Mathias Ertl <mati@restauth.net>  Mon, 24 Jul 2017 19:44:00 +0200
+
 restauth-common (0.6.5-1) unstable; urgency=low
 
   * New upstream release.
