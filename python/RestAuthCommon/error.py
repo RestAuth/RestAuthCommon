@@ -120,10 +120,10 @@ class ResourceNotFound(RestAuthError):
         """
         .. deprecated:: 0.7.0
            As this code only works on the client (and is never used), ResourceNotFound.response
-           is deprecated and will be removed in 0.7.1.
+           is deprecated and will be removed in 0.7.2.
 
         .. versionchanged:: 0.7.0
-           The ``response`` parameter is optional and will be removed in 0.7.1.
+           The ``response`` parameter is optional and will be removed in 0.7.2.
         """
         self.response = response
 
@@ -132,7 +132,7 @@ class ResourceNotFound(RestAuthError):
 
         .. deprecated:: 0.7.0
            As this code only works on the client (and is never used), ResourceNotFound.response
-           is deprecated and will be removed in 0.7.1.
+           is deprecated and will be removed in 0.7.2.
 
         See the `specification
         <https://restauth.net/wiki/Specification#Resource-Type_header>`_ for
