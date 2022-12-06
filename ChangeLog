@@ -1,4 +1,12 @@
-restauth-common 0.7.0 (XX XXXX 2014)
+restauth-common 0.7.2 (XX XXXX 202X)
+
+  * None so far.
+
+restauth-common 0.7.1 (06 December 2022)
+
+  * Update to Django 3.
+
+restauth-common 0.7.0 (23 January 2015)
 
   * Content handlers now support lists as dictionary values, as required by
     RestAuth 0.7.

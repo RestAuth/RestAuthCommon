@@ -34,7 +34,7 @@ def resource_validator(name):
 
     .. deprecated:: 0.7.0
        This method is deprecated in favour of the RestAuthCommon.strprep. This method will be
-       removed in 0.7.1.
+       removed in 0.7.2.
 
     :param str name: The name to validate
     :returns: False if the name contains any invalid characters, True otherwise.
