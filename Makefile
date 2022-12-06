@@ -1,13 +1,11 @@
-PY2VERS=$(shell pyversions -vs)
 PY3VERS=$(shell py3versions -vs)
-PYVERS=${PY2VERS} ${PY3VERS}
+PYVERS=${PY3VERS}
 
 # location of your virtualenv python interpreters
-PY2=py2/bin/python
 PY3=py3/bin/python
 
 
-VERSION=$(shell ${PY2} setup.py -q version)
+VERSION=$(shell ${PY3} setup.py -q version)
 VENVDIR=test/virtualenv
 
 PREFIX=restauth-common-$(VERSION)
@@ -15,7 +13,7 @@ TARBALL=../${PREFIX}.tar.gz
 CHECKSUMS=../${PREFIX}.checksums.txt
 
 clean:
-	${PY2} setup.py clean
+	${PY3} setup.py clean
 	rm -rf test dist build *.egg-info
 	rm -f ${TARBALL} ${CHECKSUMS}
 
@@ -46,7 +44,7 @@ sdist-test-python%: ${VENVDIR}/python%
 sdist-test: ${PYVERS:%=sdist-test-python%}
 
 homepage:
-	${PY2} setup.py build_doc
+	${PY3} setup.py build_doc
 
 tarball:
 	git archive --prefix=${PREFIX} master | gzip > ${TARBALL}
